@@ -1,12 +1,8 @@
-package model;
+package com.yacorso.nowaste.model;
 
-import com.raizlabs.android.dbflow.annotation.Table;
-import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
 
 import java.util.List;
-
-import data.FoodDatabase;
 
 public class FoodList {
     private List<Food> foodList;

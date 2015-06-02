@@ -1,4 +1,4 @@
-package data;
+package com.yacorso.nowaste.data;
 
 import com.raizlabs.android.dbflow.annotation.Database;
 

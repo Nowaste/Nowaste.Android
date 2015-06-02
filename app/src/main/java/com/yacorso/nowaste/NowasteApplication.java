@@ -1,3 +1,5 @@
+package com.yacorso.nowaste;
+
 import android.app.Application;
 import com.raizlabs.android.dbflow.config.FlowManager;
 

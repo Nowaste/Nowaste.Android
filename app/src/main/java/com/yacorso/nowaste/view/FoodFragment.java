@@ -1,4 +1,4 @@
-package view;
+package com.yacorso.nowaste.view;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import com.yacorso.nowaste.R;
 
-import adapter.FoodAdapter;
+import com.yacorso.nowaste.adapter.FoodAdapter;
 
 public class FoodFragment extends Fragment implements AbsListView.OnItemClickListener {
 
@@ -56,7 +56,7 @@ public class FoodFragment extends Fragment implements AbsListView.OnItemClickLis
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_fooditem2, container, false);
 
-        // Set the adapter
+        // Set the com.yacorso.nowaste.adapter
         listView = (AbsListView) view.findViewById(android.R.id.list);
         ((AdapterView<ListAdapter>) listView).setAdapter(adapter);
 

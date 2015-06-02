@@ -1,4 +1,4 @@
-package model;
+package com.yacorso.nowaste.model;
 
 import android.content.ContentValues;
 import android.os.Parcel;
@@ -9,9 +9,7 @@ import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
-import java.util.Date;
-
-import data.FoodDatabase;
+import com.yacorso.nowaste.data.FoodDatabase;
 
 @Table(databaseName = FoodDatabase.NAME)
 public class Food extends BaseModel implements Parcelable {
