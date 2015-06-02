@@ -4,21 +4,31 @@ import android.content.ContentValues;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.PrimaryKey;
+import com.raizlabs.android.dbflow.annotation.Table;
+import com.raizlabs.android.dbflow.structure.BaseModel;
+
 import java.util.Date;
 
-/**
- * Created by florian on 01/06/15.
- */
-public class Food implements Parcelable {
+import data.FoodDatabase;
 
-    private int id;
+@Table(databaseName = FoodDatabase.NAME)
+public class Food extends BaseModel implements Parcelable {
+
+    @Column
+    @PrimaryKey(autoincrement = true)
+    private long id;
+    @Column
     private String title;
+    @Column
     private String date;
+    @Column
     private int quantity = 0;
 
     public Food() {}
 
-    public Food(int id, String isbn, String title, String date, int quantity) {
+    public Food(int id, String title, String date, int quantity) {
         this.id = id;
         this.title = title;
         this.date = date;
@@ -32,7 +42,7 @@ public class Food implements Parcelable {
         quantity = in.readInt();
     }
 
-    public int getId() { return id; }
+    public long getId() { return id; }
     public void setId(int id) { this.id = id; }
 
     public String getTitle() { return title; }
@@ -68,7 +78,7 @@ public class Food implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel out, int flags) {
-        out.writeInt(id);
+        out.writeLong(id);
         out.writeString(title);
         out.writeString(date);
         out.writeInt(quantity);
