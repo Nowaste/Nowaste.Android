@@ -12,6 +12,7 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import com.yacorso.nowaste.R;
+/** test **/
 
 import com.yacorso.nowaste.view.adapter.FoodAdapter;
 
