@@ -11,11 +11,12 @@ import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
+import com.raizlabs.android.dbflow.structure.cache.BaseCacheableModel;
 import com.raizlabs.android.dbflow.structure.container.ForeignKeyContainer;
 import com.yacorso.nowaste.data.FoodDatabase;
 
 @Table(databaseName = FoodDatabase.NAME)
-public class Food extends BaseModel implements Parcelable {
+public class Food extends BaseCacheableModel implements Parcelable {
 
     @Column
     @PrimaryKey(autoincrement = true)

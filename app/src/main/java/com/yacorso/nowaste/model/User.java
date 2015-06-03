@@ -5,10 +5,11 @@ import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 
 import com.raizlabs.android.dbflow.structure.BaseModel;
+import com.raizlabs.android.dbflow.structure.cache.BaseCacheableModel;
 import com.yacorso.nowaste.data.FoodDatabase;
 
 @Table(databaseName = FoodDatabase.NAME)
-public class User extends BaseModel {
+public class User extends BaseCacheableModel {
     @Column
     @PrimaryKey(autoincrement = true)
     protected int id;

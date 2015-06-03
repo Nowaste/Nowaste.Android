@@ -7,11 +7,12 @@ import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
 import com.raizlabs.android.dbflow.structure.BaseModel;
+import com.raizlabs.android.dbflow.structure.cache.BaseCacheableModel;
 import com.yacorso.nowaste.data.FoodDatabase;
 
 import java.util.List;
 
-public abstract class FoodList extends BaseModel {
+public abstract class FoodList extends BaseCacheableModel {
 
     @Column
     @PrimaryKey(autoincrement = true)
