@@ -5,10 +5,13 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.ForeignKey;
+import com.raizlabs.android.dbflow.annotation.ForeignKeyReference;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
+import com.raizlabs.android.dbflow.structure.container.ForeignKeyContainer;
 import com.yacorso.nowaste.data.FoodDatabase;
 
 @Table(databaseName = FoodDatabase.NAME)
@@ -16,13 +19,22 @@ public class Food extends BaseModel implements Parcelable {
 
     @Column
     @PrimaryKey(autoincrement = true)
-    private long id;
+    protected int id;
     @Column
-    private String title;
+    protected String title;
     @Column
-    private String date;
+    protected String date;
     @Column
-    private int quantity = 0;
+    protected int quantity = 0;
+
+    @Column
+    @ForeignKey(
+        references = {@ForeignKeyReference(columnName = "foodlist_id",
+                columnType = Long.class,
+                foreignColumnName = "id")},
+        saveForeignKeyModel = false
+    )
+    ForeignKeyContainer<FoodList> foodList;
 
     public Food() {}
 
@@ -88,4 +100,9 @@ public class Food extends BaseModel implements Parcelable {
         @Override
         public Food[] newArray(int size) { return new Food[size]; }
     };
+
+    @Override
+    public String toString() {
+        return "Food [id =" + id + ", name =" + title + ", " + "date =" + date.toString() + ", quantity =" + quantity + "]";
+    }
 }

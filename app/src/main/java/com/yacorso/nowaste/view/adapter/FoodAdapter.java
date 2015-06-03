@@ -1,4 +1,4 @@
-package com.yacorso.nowaste.adapter;
+package com.yacorso.nowaste.view.adapter;
 
 import android.view.View;
 import android.view.ViewGroup;
