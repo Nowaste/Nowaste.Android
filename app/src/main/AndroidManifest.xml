@@ -33,6 +33,10 @@
             android:label="@string/title_activity_login"
             android:windowSoftInputMode="adjustResize|stateVisible" >
         </activity>
+        <activity
+            android:name=".view.AddFoodActivity"
+            android:label="@string/title_activity_add_food" >
+        </activity>
     </application>
 
 </manifest>
