@@ -97,7 +97,12 @@ public class Food extends BaseCacheableModel implements Parcelable {
         this.name = name;
     }
 
-    public FoodFridge getFoodFridge() { return foodFridge; }
+    public FoodFridge getFoodFridge() {
+        if (foodFridge == null) {
+            foodFridge = new FoodFridge();
+        }
+        return foodFridge;
+    }
     public void setFoodFridge(FoodFridge foodFridge) { this.foodFridge = foodFridge; }
 
     public ForeignKeyContainer<Fridge> getFridge() {

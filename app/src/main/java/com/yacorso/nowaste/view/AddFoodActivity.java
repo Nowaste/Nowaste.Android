@@ -43,6 +43,10 @@ public class AddFoodActivity extends Activity implements View.OnClickListener {
         nameField = (EditText) findViewById(R.id.food_name);
         datePicker = (DatePicker) findViewById(R.id.food_date);
         numberPicker = (NumberPicker) findViewById(R.id.food_quantity);
+        numberPicker.setMinValue(1);
+        numberPicker.setMaxValue(20);
+        numberPicker.setWrapSelectorWheel(false);
+        numberPicker.setValue(1);
         buttonValidate = (Button) findViewById(R.id.food_button_validate);
         buttonValidate.setOnClickListener(this);
         buttonCheck = (Button) findViewById(R.id.food_button_check);
@@ -64,14 +68,15 @@ public class AddFoodActivity extends Activity implements View.OnClickListener {
         Food food = new Food();
         FoodFridge foodFridge = food.getFoodFridge();
         foodFridge.setOutOfDate(getDateFromDatePicker(datePicker));
-        foodFridge.setQuantity(Integer.parseInt(numberPicker.toString()));
-        food.setName(nameField.toString());
+        foodFridge.setQuantity(numberPicker.getValue());
+        food.setName(nameField.getText().toString());
         TransactionManager.getInstance().saveOnSaveQueue(food);
         //TransactionManager.getInstance().addTransaction(new SaveModelListTransaction<>(ProcessModelInfo.withModels(food)));
     }
 
     private void checkFood () {
         List<Food> foodList = new Select().from(Food.class).queryList();
+        foodList.toString();
     }
 
     @Override

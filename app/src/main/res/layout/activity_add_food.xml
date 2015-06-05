@@ -17,22 +17,29 @@
         android:id="@+id/food_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/food_name"></DatePicker>
-
-    <NumberPicker
-        android:id="@+id/food_quantity"
+        android:layout_below="@id/food_name"
+        android:datePickerMode="spinner"/>
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/food_date"></NumberPicker>
+        android:orientation="horizontal">
+        <NumberPicker
+            android:id="@+id/food_quantity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/food_date"
+            />
 
-    <Button
-        android:id="@+id/food_button_validate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        <Button
+            android:id="@+id/food_button_validate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
-    <Button
-        android:id="@+id/food_button_check"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        <Button
+            android:id="@+id/food_button_check"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
 
 </LinearLayout>
