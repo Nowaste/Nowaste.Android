@@ -26,7 +26,7 @@ public class Food extends BaseCacheableModel implements Parcelable {
 
     @Column
     @PrimaryKey(autoincrement = true)
-    protected int id;
+    protected long id;
 
     @Column
     protected String name;
@@ -77,23 +77,22 @@ public class Food extends BaseCacheableModel implements Parcelable {
 
     public Food() {}
 
-    public Food(int id, String name) {
+    public Food(long id, String name) {
         this.id = id;
         this.name = name;
     }
 
     public Food(Parcel in) {
-        this.id = in.readInt();
+        this.id = in.readLong();
         this.name = in.readString();
     }
 
     public long getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public void setId(long id) { this.id = id; }
 
     public String getName() {
         return name;
     }
-
     public void setName(String name) {
         this.name = name;
     }
@@ -104,7 +103,6 @@ public class Food extends BaseCacheableModel implements Parcelable {
     public ForeignKeyContainer<Fridge> getFridge() {
         return fridge;
     }
-
     public void setFridge(ForeignKeyContainer<Fridge> fridge) {
         this.fridge = fridge;
     }
@@ -112,14 +110,11 @@ public class Food extends BaseCacheableModel implements Parcelable {
     public ForeignKeyContainer<CustomList> getCustomList() {
         return customList;
     }
-
     public void setCustomList(ForeignKeyContainer<CustomList> customList) { this.customList = customList; }
-
 
     public ForeignKeyContainer<User> getUser() {
         return user;
     }
-
     public void setUser(ForeignKeyContainer<User> user) {
         this.user = user;
     }

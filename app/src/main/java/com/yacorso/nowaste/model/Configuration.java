@@ -21,7 +21,7 @@ public class Configuration extends BaseCacheableModel implements Parcelable {
 
     @Column
     @PrimaryKey(autoincrement = true)
-    protected int id;
+    protected long id;
 
     @Column
     protected String name;
@@ -50,25 +50,23 @@ public class Configuration extends BaseCacheableModel implements Parcelable {
 
     }
 
-    public Configuration(int id, String name, String key, String value) {
+    public Configuration(long id, String name, String key, String value) {
         this.id = id;
         this.name = name;
         this.key = key;
         this.value = value;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
-
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
     public String getName() {
         return name;
     }
-
     public void setName(String name) {
         this.name = name;
     }
@@ -76,7 +74,6 @@ public class Configuration extends BaseCacheableModel implements Parcelable {
     public String getKey() {
         return key;
     }
-
     public void setKey(String key) {
         this.key = key;
     }
@@ -84,7 +81,6 @@ public class Configuration extends BaseCacheableModel implements Parcelable {
     public String getValue() {
         return value;
     }
-
     public void setValue(String value) {
         this.value = value;
     }
@@ -92,7 +88,6 @@ public class Configuration extends BaseCacheableModel implements Parcelable {
     public User getUser() {
         return user;
     }
-
     public void setUser(User user) {
         this.user = user;
     }

@@ -20,7 +20,7 @@ public abstract class FoodList extends BaseCacheableModel {
 
     @Column
     @PrimaryKey(autoincrement = true)
-    protected int id;
+    protected long id;
 
     @Column
     protected String name;
@@ -44,7 +44,7 @@ public abstract class FoodList extends BaseCacheableModel {
     public FoodList () { }
 
     public long getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public void setId(long id) { this.id = id; }
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }

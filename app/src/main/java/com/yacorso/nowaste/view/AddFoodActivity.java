@@ -26,6 +26,7 @@ import com.yacorso.nowaste.model.FoodFridge;
 import java.util.List;
 
 import static com.raizlabs.android.dbflow.runtime.transaction.process.ProcessModelInfo.withModels;
+import static com.yacorso.nowaste.util.Utils.getDateFromDatePicker;
 
 public class AddFoodActivity extends Activity implements View.OnClickListener {
 
@@ -62,7 +63,7 @@ public class AddFoodActivity extends Activity implements View.OnClickListener {
     private void createFood () {
         Food food = new Food();
         FoodFridge foodFridge = food.getFoodFridge();
-        foodFridge.setOutOfDate(datePicker.getDate);
+        foodFridge.setOutOfDate(getDateFromDatePicker(datePicker));
         foodFridge.setQuantity(Integer.parseInt(numberPicker.toString()));
         food.setName(nameField.toString());
         TransactionManager.getInstance().saveOnSaveQueue(food);

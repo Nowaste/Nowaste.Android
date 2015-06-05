@@ -25,7 +25,7 @@ public class FoodFridge extends BaseCacheableModel implements Parcelable {
 
     @Column
     @PrimaryKey(autoincrement = true)
-    protected int id;
+    protected long id;
 
     @Column
     protected Date outOfDate;
@@ -49,7 +49,7 @@ public class FoodFridge extends BaseCacheableModel implements Parcelable {
 
     public FoodFridge() {}
 
-    public FoodFridge(int id, Date outOfDate, Date consumedDate, int quantity, Boolean open,
+    public FoodFridge(long id, Date outOfDate, Date consumedDate, int quantity, Boolean open,
                       Boolean visible) {
         this.id = id;
         this.outOfDate = outOfDate;
@@ -59,18 +59,16 @@ public class FoodFridge extends BaseCacheableModel implements Parcelable {
         this.visible = visible;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
-
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
     public Date getOutOfDate() {
         return outOfDate;
     }
-
     public void setOutOfDate(Date outOfDate) {
         this.outOfDate = outOfDate;
     }
@@ -78,7 +76,6 @@ public class FoodFridge extends BaseCacheableModel implements Parcelable {
     public Date getConsumedDate() {
         return consumedDate;
     }
-
     public void setConsumedDate(Date consumedDate) {
         this.consumedDate = consumedDate;
     }
@@ -86,7 +83,6 @@ public class FoodFridge extends BaseCacheableModel implements Parcelable {
     public int getQuantity() {
         return quantity;
     }
-
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
@@ -94,7 +90,6 @@ public class FoodFridge extends BaseCacheableModel implements Parcelable {
     public Boolean getVisible() {
         return visible;
     }
-
     public void setVisible(Boolean visible) {
         this.visible = visible;
     }
@@ -102,7 +97,6 @@ public class FoodFridge extends BaseCacheableModel implements Parcelable {
     public Boolean getOpen() {
         return open;
     }
-
     public void setOpen(Boolean open) {
         this.open = open;
     }

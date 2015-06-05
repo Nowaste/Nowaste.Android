@@ -18,7 +18,7 @@ public class User extends BaseCacheableModel {
 
     @Column
     @PrimaryKey(autoincrement = true)
-    protected int id;
+    protected long id;
     @Column
     protected String firstName;
 
@@ -44,7 +44,7 @@ public class User extends BaseCacheableModel {
     public User () { }
 
     public long getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public void setId(long id) { this.id = id; }
 
     public String getFirstName() { return firstName; }
     public void setFirstName(String firstName) { this.firstName = firstName; }
