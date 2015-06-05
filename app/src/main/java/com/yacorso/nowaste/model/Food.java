@@ -9,64 +9,126 @@ import com.raizlabs.android.dbflow.annotation.ForeignKey;
 import com.raizlabs.android.dbflow.annotation.ForeignKeyReference;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
-import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import com.raizlabs.android.dbflow.structure.cache.BaseCacheableModel;
 import com.raizlabs.android.dbflow.structure.container.ForeignKeyContainer;
-import com.yacorso.nowaste.data.FoodDatabase;
+import com.yacorso.nowaste.data.NowasteDatabase;
 
-@Table(databaseName = FoodDatabase.NAME)
+@Table(databaseName = NowasteDatabase.NAME)
 public class Food extends BaseCacheableModel implements Parcelable {
+
+
+    /**
+     * Attributes
+     */
 
     @Column
     @PrimaryKey(autoincrement = true)
     protected int id;
+
     @Column
-    protected String title;
-    @Column
-    protected String date;
-    @Column
-    protected int quantity = 0;
+    protected String name;
 
     @Column
     @ForeignKey(
-        references = {@ForeignKeyReference(columnName = "foodlist_id",
+            references = {@ForeignKeyReference(
+                    columnName = "foodfridge_id",
+                    columnType = Long.class,
+                    foreignColumnName = "id"
+            )}
+    )
+    protected ForeignKeyContainer<FoodFridge> foodFridge;
+
+
+    @Column
+    @ForeignKey(
+        references = {@ForeignKeyReference(columnName = "fridge_id",
                 columnType = Long.class,
                 foreignColumnName = "id")},
         saveForeignKeyModel = false
     )
-    ForeignKeyContainer<FoodList> foodList;
+    protected ForeignKeyContainer<Fridge> fridge;
+
+    @Column
+    @ForeignKey(
+            references = {@ForeignKeyReference(columnName = "customlist_id",
+                    columnType = Long.class,
+                    foreignColumnName = "id")},
+            saveForeignKeyModel = false
+    )
+    protected ForeignKeyContainer<CustomList> customList;
+
+    @Column
+    @ForeignKey(
+            references = {@ForeignKeyReference(columnName = "user_id",
+                    columnType = Long.class,
+                    foreignColumnName = "id")},
+            saveForeignKeyModel = false
+    )
+    protected ForeignKeyContainer<User> user;
+
+
+    /**
+     * Functions
+     */
 
     public Food() {}
 
-    public Food(int id, String title, String date, int quantity) {
+    public Food(int id, String name) {
         this.id = id;
-        this.title = title;
-        this.date = date;
-        this.quantity = quantity;
+        this.name = name;
     }
 
     public Food(Parcel in) {
-        id = in.readInt();
-        title = in.readString();
-        date = in.readString();
-        quantity = in.readInt();
+        this.id = in.readInt();
+        this.name = in.readString();
     }
 
     public long getId() { return id; }
     public void setId(int id) { this.id = id; }
 
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
+    public String getName() {
+        return name;
+    }
 
-    public String getDate() { return date; }
-    public void setDate(String date) { this.date = date; }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public int getQuantity() { return quantity; }
-    public void setQuantity(int wishlist) { this.quantity = quantity; }
+    public ForeignKeyContainer<FoodFridge> getFoodFridge() {
+        return foodFridge;
+    }
+
+    public void setFoodFridge(ForeignKeyContainer<FoodFridge> foodFridge) {
+        this.foodFridge = foodFridge;
+    }
+
+    public ForeignKeyContainer<Fridge> getFridge() {
+        return fridge;
+    }
+
+    public void setFridge(ForeignKeyContainer<Fridge> fridge) {
+        this.fridge = fridge;
+    }
+
+    public ForeignKeyContainer<CustomList> getCustomList() {
+        return customList;
+    }
+
+    public void setCustomList(ForeignKeyContainer<CustomList> customList) {
+        this.customList = customList;
+    }
+
+    public ForeignKeyContainer<User> getUser() {
+        return user;
+    }
+
+    public void setUser(ForeignKeyContainer<User> user) {
+        this.user = user;
+    }
 
     public boolean isEmpty () {
-        if (this.title.isEmpty()) {
+        if (this.name.isEmpty()) {
             return true;
         }
         else {
@@ -76,9 +138,7 @@ public class Food extends BaseCacheableModel implements Parcelable {
 
     public ContentValues getContentValues () {
         ContentValues cV = new ContentValues();
-        cV.put("title", title);
-        cV.put("date", date);
-        cV.put("quantity", quantity);
+        cV.put("name", this.name);
         return cV;
     }
 
@@ -89,10 +149,8 @@ public class Food extends BaseCacheableModel implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel out, int flags) {
-        out.writeLong(id);
-        out.writeString(title);
-        out.writeString(date);
-        out.writeInt(quantity);
+        out.writeLong(this.id);
+        out.writeString(this.name);
     }
 
     public static final Parcelable.Creator<Food> CREATOR = new Parcelable.Creator<Food>() {
@@ -104,6 +162,6 @@ public class Food extends BaseCacheableModel implements Parcelable {
 
     @Override
     public String toString() {
-        return "Food [id =" + id + ", name =" + title + ", " + "date =" + date.toString() + ", quantity =" + quantity + "]";
+        return "Food [id =" + this.id + ", name =" + this.name + "]";
     }
 }

@@ -1,15 +1,12 @@
 package com.yacorso.nowaste.model;
 
-import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.ModelContainer;
-import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 
-import com.raizlabs.android.dbflow.structure.BaseModel;
-import com.yacorso.nowaste.data.FoodDatabase;
+import com.yacorso.nowaste.data.NowasteDatabase;
 
 @ModelContainer
-@Table(databaseName = FoodDatabase.NAME)
+@Table(databaseName = NowasteDatabase.NAME)
 public class Fridge extends FoodList {
     public Fridge () { }
 }

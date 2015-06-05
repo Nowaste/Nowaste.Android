@@ -1,15 +1,22 @@
 package com.yacorso.nowaste.model;
 
 import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.ModelContainer;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 
 import com.raizlabs.android.dbflow.structure.BaseModel;
 import com.raizlabs.android.dbflow.structure.cache.BaseCacheableModel;
-import com.yacorso.nowaste.data.FoodDatabase;
+import com.yacorso.nowaste.data.NowasteDatabase;
 
-@Table(databaseName = FoodDatabase.NAME)
+@ModelContainer
+@Table(databaseName = NowasteDatabase.NAME)
 public class User extends BaseCacheableModel {
+
+    /**
+     * Attributes
+     */
+
     @Column
     @PrimaryKey(autoincrement = true)
     protected int id;
@@ -26,31 +33,45 @@ public class User extends BaseCacheableModel {
     protected String email;
 
     @Column
-    protected String token;
+    protected String password;
 
     @Column
     protected boolean enabled;
 
+    /**
+     * Functions
+     */
     public User () { }
 
-    public long getId() { return id; }
-    public void setId(int id) { this.id = id; }
-    
-    public String getFirstName() { return firstName; }
-    public void setFirstName(String firstName) { this.firstName = firstName; }
+    public int getId() {
+        return id;
+    }
 
-    public String getLastName() { return lastName; }
-    public void setLastName(String lastName) { this.lastName = lastName; }
+    public void setId(int id) {
+        this.id = id;
+    }
 
-    public String getSalt() { return salt; }
-    public void setSalt(String salt) { this.salt = salt; }
+    public String getName() {
+        return name;
+    }
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public String getToken() { return token; }
-    public void setToken(String token) { this.token = token; }
+    public String getEmail() {
+        return email;
+    }
 
-    public boolean isEnabled() { return enabled; }
-    public void setEnabled(boolean enabled) { this.enabled = enabled; }
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 }
