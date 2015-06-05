@@ -10,6 +10,8 @@ import com.raizlabs.android.dbflow.annotation.ForeignKeyReference;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 
+import com.raizlabs.android.dbflow.sql.builder.Condition;
+import com.raizlabs.android.dbflow.sql.language.Select;
 import com.raizlabs.android.dbflow.structure.cache.BaseCacheableModel;
 import com.raizlabs.android.dbflow.structure.container.ForeignKeyContainer;
 import com.yacorso.nowaste.data.NowasteDatabase;
@@ -35,9 +37,10 @@ public class Food extends BaseCacheableModel implements Parcelable {
                     columnName = "foodfridge_id",
                     columnType = Long.class,
                     foreignColumnName = "id"
-            )}
+            )},
+            saveForeignKeyModel = false
     )
-    protected ForeignKeyContainer<FoodFridge> foodFridge;
+    protected FoodFridge foodFridge;
 
 
     @Column
@@ -95,13 +98,8 @@ public class Food extends BaseCacheableModel implements Parcelable {
         this.name = name;
     }
 
-    public ForeignKeyContainer<FoodFridge> getFoodFridge() {
-        return foodFridge;
-    }
-
-    public void setFoodFridge(ForeignKeyContainer<FoodFridge> foodFridge) {
-        this.foodFridge = foodFridge;
-    }
+    public FoodFridge getFoodFridge() { return foodFridge; }
+    public void setFoodFridge(FoodFridge foodFridge) { this.foodFridge = foodFridge; }
 
     public ForeignKeyContainer<Fridge> getFridge() {
         return fridge;
@@ -115,9 +113,8 @@ public class Food extends BaseCacheableModel implements Parcelable {
         return customList;
     }
 
-    public void setCustomList(ForeignKeyContainer<CustomList> customList) {
-        this.customList = customList;
-    }
+    public void setCustomList(ForeignKeyContainer<CustomList> customList) { this.customList = customList; }
+
 
     public ForeignKeyContainer<User> getUser() {
         return user;

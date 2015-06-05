@@ -43,8 +43,6 @@ public class FoodFridge extends BaseCacheableModel implements Parcelable {
     protected Boolean open;
 
 
-
-
     /**
      * Functions
      */

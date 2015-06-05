@@ -49,17 +49,6 @@ public abstract class FoodList extends BaseCacheableModel {
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
-    @OneToMany(methods = {OneToMany.Method.ALL})
-    public List<Food> getFoodList() {
-        if(foodList == null) {
-            foodList = new Select()
-                    .from(Food.class)
-                    .where(Condition.column(Food$Table.FOODLIST_FOODLIST_ID).is(id))
-                    .queryList();
-        }
-        return foodList;
-    }
-
 
     @Override
     public String toString()
