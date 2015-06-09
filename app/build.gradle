@@ -11,13 +11,14 @@ android {
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
-            applicationIdSuffix ".test"
+            applicationIdSuffix ".debug"
         }
     }
 }
@@ -34,4 +35,5 @@ dependencies {
     compile 'com.raizlabs.android:DBFlow:2.0.0'
     compile 'com.google.android.gms:play-services:7.5.0'
     compile 'com.squareup.okhttp:okhttp:2.0.0'
+    testCompile "org.robolectric:robolectric:3.0-rc3"
 }
