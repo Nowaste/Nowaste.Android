@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
+apply plugin: 'org.robolectric'
 
 android {
     compileSdkVersion 22
@@ -36,4 +37,5 @@ dependencies {
     compile 'com.google.android.gms:play-services:7.5.0'
     compile 'com.squareup.okhttp:okhttp:2.0.0'
     testCompile "org.robolectric:robolectric:3.0-rc3"
+    testCompile 'junit:junit:4.12'
 }
