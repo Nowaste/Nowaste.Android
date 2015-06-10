@@ -27,27 +27,11 @@ public class FoodTest {
     @Test
     public void checkFoodNotNull() throws Exception {
         assertNotNull("Food is not instantiated", food);
-        //Put all parameters here
-        /*Field[] fields = Food.class.getDeclaredFields();
-        for (Field field : fields) {
-            assertNotNull("Food is not instantiated", field);
-        }*/
-
-        //assertNotNull("Food is not instantiated", food.getId());
-        //assertNotNull("Food is not instantiated", food.getName());
     }
 
     @Test
     public void checkFoodFridgeNotNull() throws Exception {
         foodFridge = food.getFoodFridge();
         assertNotNull("FoodFridge not instantiate", foodFridge);
-        //assertTrue("TextView contains incorrect text", "Hello world!".equals(tvHelloWorld.getText().toString()));
-    }
-
-    @Test
-    public void checkFoodFridgeType() throws Exception {
-        //Date date = foodFridge.getOutOfDate();
-        //assertTrue("TextView contains incorrect text", "Hello world!".equals(tvHelloWorld.getText().toString()));
-        //assertNull("FoodFridge Date type incorrect", date);
     }
 }
