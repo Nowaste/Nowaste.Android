@@ -6,4 +6,6 @@
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_main2">Main2Activity</string>
     <string name="title_activity_add_food">AddFoodActivity</string>
+    <string name="title_activity_foods">FoodsActivity</string>
+    <string name="title_activity_activity_food_list">ActivityFoodList</string>
 </resources>

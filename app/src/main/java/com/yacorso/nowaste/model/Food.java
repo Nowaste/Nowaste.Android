@@ -105,9 +105,30 @@ public class Food extends BaseCacheableModel implements Parcelable {
     }
     public void setFoodFridge(FoodFridge foodFridge) { this.foodFridge = foodFridge; }
 
+    public boolean hasFoodFridge(){
+        boolean hasFoodFridge = false;
+        if(this.foodFridge != null)
+        {
+            hasFoodFridge = true;
+        }
+
+        return hasFoodFridge;
+    }
+
     public ForeignKeyContainer<Fridge> getFridge() {
         return fridge;
     }
+
+    public boolean hasFridge(){
+        boolean hasFridge = true;
+        if(this.fridge != null)
+        {
+            hasFridge = true;
+        }
+
+        return hasFridge;
+    }
+
     public void setFridge(ForeignKeyContainer<Fridge> fridge) {
         this.fridge = fridge;
     }
@@ -116,6 +137,16 @@ public class Food extends BaseCacheableModel implements Parcelable {
         return customList;
     }
     public void setCustomList(ForeignKeyContainer<CustomList> customList) { this.customList = customList; }
+
+    public boolean hasCustomList(){
+        boolean hasCustomList = false;
+        if(this.customList != null)
+        {
+            hasCustomList = true;
+        }
+
+        return hasCustomList;
+    }
 
     public ForeignKeyContainer<User> getUser() {
         return user;

@@ -1,8 +1,14 @@
-package com.yacorso.nowaste.view;
+package com.yacorso.nowaste.view.old;
 
 import android.app.Activity;
-import android.support.v7.app.ActionBarActivity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -10,16 +16,10 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.NumberPicker;
-import android.widget.Toast;
 
-import com.raizlabs.android.dbflow.runtime.TransactionManager;
-import com.raizlabs.android.dbflow.runtime.transaction.SelectListTransaction;
-import com.raizlabs.android.dbflow.runtime.transaction.TransactionListenerAdapter;
-import com.raizlabs.android.dbflow.runtime.transaction.process.ProcessModelInfo;
-import com.raizlabs.android.dbflow.runtime.transaction.process.SaveModelTransaction;
 import com.raizlabs.android.dbflow.sql.language.Select;
-import com.raizlabs.android.dbflow.structure.container.ForeignKeyContainer;
 import com.yacorso.nowaste.R;
+import com.yacorso.nowaste.data.dao.FoodDao;
 import com.yacorso.nowaste.model.Food;
 import com.yacorso.nowaste.model.FoodFridge;
 
@@ -51,6 +51,8 @@ public class AddFoodActivity extends Activity implements View.OnClickListener {
         buttonValidate.setOnClickListener(this);
         buttonCheck = (Button) findViewById(R.id.food_button_check);
         buttonCheck.setOnClickListener(this);
+
+        this.registerReceivers();
     }
 
     @Override
@@ -70,8 +72,14 @@ public class AddFoodActivity extends Activity implements View.OnClickListener {
         foodFridge.setOutOfDate(getDateFromDatePicker(datePicker));
         foodFridge.setQuantity(numberPicker.getValue());
         food.setName(nameField.getText().toString());
-        TransactionManager.getInstance().saveOnSaveQueue(food);
-        //TransactionManager.getInstance().addTransaction(new SaveModelListTransaction<>(ProcessModelInfo.withModels(food)));
+
+        FoodDao dao  = new FoodDao();
+        dao.create(food);
+
+        Log.e("toto", "tt");
+
+//        TransactionManager.getInstance().saveOnSaveQueue(food);
+//        TransactionManager.getInstance().addTransaction(new SaveModelListTransaction<>(ProcessModelInfo.withModels(food)));
     }
 
     private void checkFood () {
@@ -99,5 +107,26 @@ public class AddFoodActivity extends Activity implements View.OnClickListener {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+
+    private BroadcastReceiver mConnReveiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            boolean noConnectivity = intent.getBooleanExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY, false);
+            String reason = intent.getStringExtra(ConnectivityManager.EXTRA_REASON);
+            boolean isFailover = intent.getBooleanExtra(ConnectivityManager.EXTRA_IS_FAILOVER, false);
+
+            NetworkInfo currentNetworkInfo = (NetworkInfo) intent.getParcelableExtra(ConnectivityManager.EXTRA_NETWORK_INFO);
+            NetworkInfo otherNetworkInfo = (NetworkInfo) intent.getParcelableExtra(ConnectivityManager.EXTRA_OTHER_NETWORK_INFO);
+
+            Log.d("BroadcastReceiver", "yep");
+
+        }
+    };
+
+    private void registerReceivers() {
+        registerReceiver(this.mConnReveiver,
+                new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
 }

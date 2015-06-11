@@ -1,4 +1,4 @@
-package com.yacorso.nowaste.view;
+package com.yacorso.nowaste.view.old;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -13,8 +13,6 @@ import android.widget.TextView;
 
 import com.yacorso.nowaste.R;
 /** test **/
-
-import com.yacorso.nowaste.view.adapter.FoodAdapter;
 
 public class FoodFragment extends Fragment implements AbsListView.OnItemClickListener {
 
@@ -49,7 +47,7 @@ public class FoodFragment extends Fragment implements AbsListView.OnItemClickLis
             paramTest = getArguments().getString(ARG_PARAM1);
         }
 
-        adapter = new FoodAdapter();
+//        adapter = new FoodAdapter();
     }
 
     @Override

@@ -110,4 +110,16 @@ public class FoodFridge extends BaseCacheableModel implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
 
     }
+
+    @Override
+    public String toString() {
+        return "FoodFridge{" +
+                "id=" + id +
+                ", outOfDate=" + outOfDate +
+                ", consumedDate=" + consumedDate +
+                ", quantity=" + quantity +
+                ", visible=" + visible +
+                ", open=" + open +
+                '}';
+    }
 }

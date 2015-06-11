@@ -1,4 +1,4 @@
-package com.yacorso.nowaste.view;
+package com.yacorso.nowaste.view.old;
 
 import android.app.Activity;
 import android.content.Intent;
