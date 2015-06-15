@@ -53,16 +53,17 @@ public class FoodFragment extends Fragment implements AbsListView.OnItemClickLis
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_fooditem2, container, false);
+//        View view = inflater.inflate(R.layout.fragment_fooditem2, container, false);
+//
+//         Set the com.yacorso.nowaste.view.adapter
+//        listView = (AbsListView) view.findViewById(android.R.id.list);
+//        ((AdapterView<ListAdapter>) listView).setAdapter(adapter);
+//
+//         Set OnItemClickListener so we can be notified on item clicks
+//        listView.setOnItemClickListener(this);
 
-        // Set the com.yacorso.nowaste.view.adapter
-        listView = (AbsListView) view.findViewById(android.R.id.list);
-        ((AdapterView<ListAdapter>) listView).setAdapter(adapter);
-
-        // Set OnItemClickListener so we can be notified on item clicks
-        listView.setOnItemClickListener(this);
-
-        return view;
+//        return view;
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     @Override
