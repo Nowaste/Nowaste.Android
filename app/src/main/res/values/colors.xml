@@ -6,4 +6,7 @@
     <color name="text_primary">#343334</color>
     <color name="text_secondary">#D9000000</color>
 
+
+    <color name="refresh_progress_1">@color/primary_dark</color>
+    <color name="refresh_progress_2">#FFFF00</color>
 </resources>

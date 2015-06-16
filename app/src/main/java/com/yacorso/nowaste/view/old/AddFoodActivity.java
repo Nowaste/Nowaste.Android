@@ -9,8 +9,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -26,7 +24,7 @@ import com.yacorso.nowaste.model.FoodFridge;
 import java.util.List;
 
 import static com.raizlabs.android.dbflow.runtime.transaction.process.ProcessModelInfo.withModels;
-import static com.yacorso.nowaste.util.Utils.getDateFromDatePicker;
+import static com.yacorso.nowaste.utils.Utils.getDateFromDatePicker;
 
 public class AddFoodActivity extends Activity implements View.OnClickListener {
 

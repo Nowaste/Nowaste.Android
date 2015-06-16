@@ -1,20 +1,20 @@
 
 /**
  * Copyright 2015 Patrice Mueller. All rights reserved.
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.yacorso.nowaste.util;
+package com.yacorso.nowaste.utils;
 
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
@@ -23,8 +23,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
 
-
-public class Navigator{
+public class NavigatorUtil {
     @NonNull
     protected final FragmentManager mFragmentManager;
 
@@ -34,12 +33,12 @@ public class Navigator{
     /**
      * This constructor should be only called once per
      *
-     * @param fragmentManager Your FragmentManger
+     * @param fragmentManager  Your FragmentManger
      * @param defaultContainer Your container id where the fragments should be placed
      */
-    public Navigator(@NonNull final FragmentManager fragmentManager, @IdRes final int defaultContainer){
+    public NavigatorUtil(@NonNull final FragmentManager fragmentManager, @IdRes final int defaultContainer) {
         mFragmentManager = fragmentManager;
-        mDefaultContainer =defaultContainer;
+        mDefaultContainer = defaultContainer;
     }
 
     /**
@@ -71,6 +70,7 @@ public class Navigator{
     /**
      * This is just a helper method which returns the simple name of
      * the fragment.
+     *
      * @param fragment that get added to the history (BackStack)
      * @return the simple name of the given fragment
      */
@@ -84,8 +84,8 @@ public class Navigator{
      *
      * @param startFragment the new root fragment
      */
-    public void setRootFragment(final Fragment startFragment){
-        if(getSize() > 0){
+    public void setRootFragment(final Fragment startFragment) {
+        if (getSize() > 0) {
             this.clearHistory();
         }
         this.replaceFragment(startFragment);
@@ -142,6 +142,6 @@ public class Navigator{
      */
     public void clearHistory() {
         //noinspection StatementWithEmptyBody - it works as wanted
-        while(mFragmentManager.popBackStackImmediate());
+        while (mFragmentManager.popBackStackImmediate()) ;
     }
 }

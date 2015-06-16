@@ -8,14 +8,15 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
 import com.yacorso.nowaste.R;
-import com.yacorso.nowaste.util.Navigator;
+import com.yacorso.nowaste.utils.LogUtil;
+import com.yacorso.nowaste.utils.NavigatorUtil;
+import com.yacorso.nowaste.utils.NetworkUtil;
 import com.yacorso.nowaste.view.fragments.BaseFragment;
 import com.yacorso.nowaste.view.fragments.FoodListFragment;
 
@@ -31,7 +32,7 @@ public class DrawerActivity extends AppCompatActivity implements DrawerLayout.Dr
     @InjectView(R.id.navigation_view)
     NavigationView mNavigationView;
 
-    private static Navigator mNavigator;
+    private static NavigatorUtil mNavigator;
     private Toolbar mToolbar;
     private ActionBarDrawerToggle mDrawerToggle;
     private @IdRes int mCurrentMenuItem;
@@ -50,14 +51,13 @@ public class DrawerActivity extends AppCompatActivity implements DrawerLayout.Dr
         mCurrentMenuItem = R.id.menu_item_my_fridge;
         setNewRootFragment(FoodListFragment.newInstance());
 
-
     }
 
 
     private void setupToolbar() {
         mToolbar = ButterKnife.findById(this, R.id.toolbar);
         if(mToolbar == null) {
-            Log.e("##YACORSO##", "Didn't find a toolbar");
+            LogUtil.LOGD(this, "Didn't find a toolbar");
             return;
         }
         setSupportActionBar(mToolbar);
@@ -69,7 +69,7 @@ public class DrawerActivity extends AppCompatActivity implements DrawerLayout.Dr
 
     private void initNavigator() {
         if(mNavigator != null) return;
-        mNavigator = new Navigator(getSupportFragmentManager(), R.id.container);
+        mNavigator = new NavigatorUtil(getSupportFragmentManager(), R.id.container);
     }
 
     private void setNewRootFragment(BaseFragment fragment){
@@ -96,7 +96,8 @@ public class DrawerActivity extends AppCompatActivity implements DrawerLayout.Dr
 
     private void setupNavDrawer() {
         if(mDrawerLayout == null) {
-            Log.d("##YACORSO##", "mDrawerLayout is null - Can not setup the NavDrawer! Have you set the android.support.v7.widget.DrawerLayout?");
+            LogUtil.LOGE(this, "mDrawerLayout is null - Can not setup the NavDrawer! Have " +
+                    "you set the android.support.v7.widget.DrawerLayout?");
             return;
         }
         mDrawerLayout.setDrawerListener(this);
@@ -109,7 +110,7 @@ public class DrawerActivity extends AppCompatActivity implements DrawerLayout.Dr
 
         mDrawerToggle.syncState();
         mNavigationView.setNavigationItemSelectedListener(this);
-        Log.d("##YACORSO##", "setup setupNavDrawer");
+        LogUtil.LOGD(this, "setup setupNavDrawer");
     }
 
     @Override
@@ -122,20 +123,28 @@ public class DrawerActivity extends AppCompatActivity implements DrawerLayout.Dr
 
     @Override
     public void onDrawerSlide(View drawerView, float slideOffset) {
+        LogUtil.LOGD(this, "onDrawerSlide");
+
         mDrawerToggle.onDrawerSlide(drawerView, slideOffset);
     }
 
     @Override
     public void onDrawerOpened(View drawerView) {
+        LogUtil.LOGD(this, "onDrawerOpened");
+
         mDrawerToggle.onDrawerOpened(drawerView);
     }
 
     public void openDrawer(){
+        LogUtil.LOGD(this, "openDrawer");
+
         mDrawerLayout.openDrawer(Gravity.LEFT);
     }
 
     @Override
     public void onDrawerClosed(View drawerView) {
+        LogUtil.LOGD(this, "onDrawerClosed");
+
         mDrawerToggle.onDrawerClosed(drawerView);
     }
 

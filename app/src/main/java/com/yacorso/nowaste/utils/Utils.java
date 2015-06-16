@@ -1,4 +1,4 @@
-package com.yacorso.nowaste.util;
+package com.yacorso.nowaste.utils;
 
 import android.widget.DatePicker;
 
@@ -17,4 +17,6 @@ public class Utils {
 
         return calendar.getTime();
     }
+
+
 }
