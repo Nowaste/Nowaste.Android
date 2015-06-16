@@ -2,7 +2,6 @@ package com.yacorso.nowaste.data.dao;
 
 import android.util.Log;
 
-import com.raizlabs.android.dbflow.runtime.DBTransactionInfo;
 import com.raizlabs.android.dbflow.runtime.TransactionManager;
 import com.raizlabs.android.dbflow.runtime.transaction.BaseTransaction;
 import com.raizlabs.android.dbflow.runtime.transaction.TransactionListener;
@@ -13,9 +12,7 @@ import com.yacorso.nowaste.model.FoodFridge;
 import com.yacorso.nowaste.model.FoodList;
 
 import java.util.ArrayList;
-import java.util.Date;
-
-import static com.yacorso.nowaste.util.Utils.getDateFromDatePicker;
+import java.util.List;
 
 public class FoodDao implements Dao<Food, Integer> {
     @Override
@@ -107,7 +104,7 @@ public class FoodDao implements Dao<Food, Integer> {
     }
 
     @Override
-    public ArrayList<Food> getAll() {
+    public List<Food> all() {
         return null;
     }
 }

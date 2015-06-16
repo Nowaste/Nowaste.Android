@@ -1,6 +1,7 @@
 package com.yacorso.nowaste.data.dao;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Interface DAO
@@ -41,5 +42,5 @@ public interface Dao<T, U> {
      * Get all object with Type T from database
      * @return
      */
-    ArrayList<T> getAll();
+    List<T> all();
 }
