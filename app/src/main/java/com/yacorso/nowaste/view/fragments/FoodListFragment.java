@@ -27,6 +27,7 @@ import android.view.animation.DecelerateInterpolator;
 import com.raizlabs.android.dbflow.sql.language.Select;
 import com.yacorso.nowaste.NowasteApplication;
 import com.yacorso.nowaste.R;
+import com.yacorso.nowaste.events.AddFoodEvent;
 import com.yacorso.nowaste.events.CurrentFridgeChangedEvent;
 import com.yacorso.nowaste.events.FoodCreatedEvent;
 import com.yacorso.nowaste.events.FridgesLoadedEvent;
@@ -38,6 +39,7 @@ import com.yacorso.nowaste.models.User;
 import com.yacorso.nowaste.services.FoodService;
 import com.yacorso.nowaste.services.FridgeService;
 import com.yacorso.nowaste.utils.LogUtil;
+import com.yacorso.nowaste.utils.MessageEvent;
 import com.yacorso.nowaste.view.adapter.FoodListAdapter;
 
 import java.math.BigInteger;
@@ -174,7 +176,7 @@ public class FoodListFragment extends BaseFragment {
         mFabButton = ButterKnife.findById(getDrawerActivity(), R.id.btnAddFood);
         mFabButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                addFood();
+                EventBus.getDefault().post(new AddFoodEvent());
             }
         });
     }
@@ -229,26 +231,6 @@ public class FoodListFragment extends BaseFragment {
     @Override
     protected int getLayout() {
         return R.layout.fragment_food_list;
-    }
-
-    public void addFood() {
-
-        Food food = new Food();
-        FoodFridge foodFridge = food.getFoodFridge();
-        foodFridge.setOutOfDate(new Date());
-        foodFridge.setQuantity(5);
-
-        List<Fridge> fridgeList = new Select().from(Fridge.class).queryList();
-        List<FoodFridge> foodFridgeList = new Select().from(FoodFridge.class).queryList();
-        List<Food> foodList = new Select().from(Food.class).queryList();
-        food.setFridge(mCurrentFridge);
-
-        SecureRandom random = new SecureRandom();
-        food.setName(new BigInteger(32, random).toString());
-
-        mCurrentFridge.addFood(food);
-
-        mFridgeService.update(mCurrentFridge);
     }
 
     @Override

@@ -29,8 +29,11 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.yacorso.nowaste.R;
+import com.yacorso.nowaste.events.AddFoodEvent;
 import com.yacorso.nowaste.utils.LogUtil;
+import com.yacorso.nowaste.utils.MessageEvent;
 import com.yacorso.nowaste.utils.NavigatorUtil;
+import com.yacorso.nowaste.view.fragments.AddFoodFragment;
 import com.yacorso.nowaste.view.fragments.BaseFragment;
 import com.yacorso.nowaste.view.fragments.FoodListFragment;
 import com.yacorso.nowaste.view.fragments.NavigationDrawerFragment;
@@ -100,7 +103,7 @@ public class DrawerActivity extends AppCompatActivity implements
     }
 
     private void displayView(int position) {
-        Fragment fragment = null;
+        BaseFragment fragment = null;
         String title = getString(R.string.app_name);
         switch (position) {
             case 0:
@@ -119,14 +122,22 @@ public class DrawerActivity extends AppCompatActivity implements
                 break;
         }
 
+        launchFragment(fragment, false);
+
+    }
+
+    private void launchFragment (BaseFragment fragment, boolean addTobackStack) {
         if (fragment != null) {
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.replace(R.id.container_body, fragment);
+            if (addTobackStack) {
+                fragmentTransaction.addToBackStack(null);
+            }
             fragmentTransaction.commit();
 
             // set the toolbar title
-            getSupportActionBar().setTitle(title);
+            getSupportActionBar().setTitle(fragment.getTitle());
         }
     }
 
@@ -139,71 +150,21 @@ public class DrawerActivity extends AppCompatActivity implements
     public boolean onNavigationItemSelected(MenuItem menuItem) {
         return false;
     }
-//    private void initNavigator() {
-//        if(mNavigator != null) return;
-//        mNavigator = new NavigatorUtil(getSupportFragmentManager(), R.id.container);
-//    }
-//
-//    private void setNewRootFragment(BaseFragment fragment){
-//        mNavigator.setRootFragment(fragment);
-//        getSupportActionBar().setTitle(fragment.getTitle());
-//        mDrawerLayout.closeDrawers();
-//    }
-//
-//    @Override
-//    protected void onPostCreate(Bundle savedInstanceState) {
-//        super.onPostCreate(savedInstanceState);
-//        // Sync the toggle state after onRestoreInstanceState has occurred.
-//        mDrawerToggle.syncState();
-//    }
-//
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        if (mDrawerToggle.onOptionsItemSelected(item)) {
-//            return true;
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
-//
-//    @Override
-//    public void onConfigurationChanged(Configuration newConfig) {
-//        super.onConfigurationChanged(newConfig);
-//        mDrawerToggle.onConfigurationChanged(newConfig);
-//    }
-//
-//
-//    @Override
-//    public boolean onNavigationItemSelected(MenuItem menuItem) {
-//        @IdRes int id = menuItem.getItemId();
-//        if(id == mCurrentMenuItem) {
-//            mDrawerLayout.closeDrawers();
-//            return false;
-//        }
-//        switch (id){
-//            case R.id.menu_item_my_fridge:
-//                Toast.makeText(this, "Mon frigo", Toast.LENGTH_SHORT).show();
-////                setNewRootFragment(StandardAppBarFragment.newInstance());
-//                break;
-//            case R.id.menu_item_settings:
-//                Toast.makeText(this, "Paramètres", Toast.LENGTH_SHORT).show();
-//
-////                setNewRootFragment(TabHolderFragment.newInstance());
-//                break;
-//        }
-//        mCurrentMenuItem = id;
-//        menuItem.setChecked(true);
-//        return false;
-//    }
 
-//    @Override
-//    public void finish() {
-//        mNavigator = null;
-//        super.finish();
-//    }
-//
-//    private void openFragment (BaseFragment fragment) {
-//        mNavigator.goTo(fragment);
-//        getSupportActionBar().setTitle(fragment.getTitle());
-//    }
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
+    }
+
+    public void onEvent(AddFoodEvent event){
+        launchFragment(AddFoodFragment.newInstance(), true);
+
+    }
 }
