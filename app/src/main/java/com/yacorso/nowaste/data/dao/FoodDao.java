@@ -15,7 +15,7 @@ import com.yacorso.nowaste.model.FoodList;
 import java.util.ArrayList;
 import java.util.Date;
 
-import static com.yacorso.nowaste.util.Utils.getDateFromDatePicker;
+import static com.yacorso.nowaste.utils.Utils.getDateFromDatePicker;
 
 public class FoodDao implements Dao<Food, Integer> {
     @Override
