@@ -16,7 +16,6 @@ import android.widget.Toast;
 import com.yacorso.nowaste.R;
 import com.yacorso.nowaste.utils.LogUtil;
 import com.yacorso.nowaste.utils.NavigatorUtil;
-import com.yacorso.nowaste.utils.NetworkUtil;
 import com.yacorso.nowaste.view.fragments.BaseFragment;
 import com.yacorso.nowaste.view.fragments.FoodListFragment;
 
