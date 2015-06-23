@@ -1,16 +1,15 @@
-package com.yacorso.nowaste.model;
+package com.yacorso.nowaste.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.Expose;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.ModelContainer;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.structure.cache.BaseCacheableModel;
 import com.yacorso.nowaste.data.NowasteDatabase;
-
-import org.apache.http.protocol.HttpDateGenerator;
 
 import java.util.Date;
 
@@ -24,22 +23,28 @@ public class FoodFridge extends BaseCacheableModel implements Parcelable {
      */
 
     @Column
+    @Expose
     @PrimaryKey(autoincrement = true)
     protected long id;
 
     @Column
+    @Expose
     protected Date outOfDate;
 
     @Column
+    @Expose
     protected Date consumedDate;
 
     @Column
+    @Expose
     protected int quantity;
 
     @Column
+    @Expose
     protected Boolean visible;
 
     @Column
+    @Expose
     protected Boolean open;
 
 
@@ -47,7 +52,8 @@ public class FoodFridge extends BaseCacheableModel implements Parcelable {
      * Functions
      */
 
-    public FoodFridge() {}
+    public FoodFridge() {
+    }
 
     public FoodFridge(long id, Date outOfDate, Date consumedDate, int quantity, Boolean open,
                       Boolean visible) {
@@ -62,6 +68,7 @@ public class FoodFridge extends BaseCacheableModel implements Parcelable {
     public long getId() {
         return id;
     }
+
     public void setId(long id) {
         this.id = id;
     }
@@ -69,6 +76,7 @@ public class FoodFridge extends BaseCacheableModel implements Parcelable {
     public Date getOutOfDate() {
         return outOfDate;
     }
+
     public void setOutOfDate(Date outOfDate) {
         this.outOfDate = outOfDate;
     }
@@ -76,6 +84,7 @@ public class FoodFridge extends BaseCacheableModel implements Parcelable {
     public Date getConsumedDate() {
         return consumedDate;
     }
+
     public void setConsumedDate(Date consumedDate) {
         this.consumedDate = consumedDate;
     }
@@ -83,6 +92,7 @@ public class FoodFridge extends BaseCacheableModel implements Parcelable {
     public int getQuantity() {
         return quantity;
     }
+
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
@@ -90,6 +100,7 @@ public class FoodFridge extends BaseCacheableModel implements Parcelable {
     public Boolean getVisible() {
         return visible;
     }
+
     public void setVisible(Boolean visible) {
         this.visible = visible;
     }
@@ -97,8 +108,19 @@ public class FoodFridge extends BaseCacheableModel implements Parcelable {
     public Boolean getOpen() {
         return open;
     }
+
     public void setOpen(Boolean open) {
         this.open = open;
+    }
+
+    public boolean isEmpty() {
+        boolean isEmpty = true;
+
+        if (outOfDate != null) {
+            isEmpty = false;
+        }
+
+        return isEmpty;
     }
 
     @Override

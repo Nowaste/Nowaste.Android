@@ -1,15 +1,13 @@
 package com.yacorso.nowaste;
 
-import com.yacorso.nowaste.model.Food;
-import com.yacorso.nowaste.model.FoodFridge;
+import com.yacorso.nowaste.models.Food;
+import com.yacorso.nowaste.models.FoodFridge;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
-
-import java.lang.reflect.Field;
 
 import static org.junit.Assert.assertNotNull;
 

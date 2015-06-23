@@ -1,27 +1,22 @@
-package com.yacorso.nowaste.model;
+package com.yacorso.nowaste.models;
 
 import android.content.ContentValues;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
 
+import com.google.gson.annotations.Expose;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.ForeignKey;
 import com.raizlabs.android.dbflow.annotation.ForeignKeyReference;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
-
-import com.raizlabs.android.dbflow.sql.builder.Condition;
-import com.raizlabs.android.dbflow.sql.language.Select;
 import com.raizlabs.android.dbflow.structure.cache.BaseCacheableModel;
 import com.raizlabs.android.dbflow.structure.container.ForeignKeyContainer;
 import com.yacorso.nowaste.data.NowasteDatabase;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @Table(databaseName = NowasteDatabase.NAME)
 public class Food extends BaseCacheableModel implements Parcelable {
@@ -32,13 +27,16 @@ public class Food extends BaseCacheableModel implements Parcelable {
      */
 
     @Column
+    @Expose
     @PrimaryKey(autoincrement = true)
     protected long id;
 
     @Column
+    @Expose
     protected String name;
 
     @Column
+    @Expose
     @ForeignKey(
             references = {@ForeignKeyReference(
                     columnName = "foodfridge_id",
@@ -51,6 +49,7 @@ public class Food extends BaseCacheableModel implements Parcelable {
 
 
     @Column
+    @Expose
     @ForeignKey(
             references = {@ForeignKeyReference(columnName = "fridge_id",
                     columnType = Long.class,
@@ -60,6 +59,7 @@ public class Food extends BaseCacheableModel implements Parcelable {
     protected ForeignKeyContainer<Fridge> fridge;
 
     @Column
+    @Expose
     @ForeignKey(
             references = {@ForeignKeyReference(columnName = "customlist_id",
                     columnType = Long.class,
@@ -69,6 +69,7 @@ public class Food extends BaseCacheableModel implements Parcelable {
     protected ForeignKeyContainer<CustomList> customList;
 
     @Column
+    @Expose
     @ForeignKey(
             references = {@ForeignKeyReference(columnName = "user_id",
                     columnType = Long.class,
@@ -144,8 +145,19 @@ public class Food extends BaseCacheableModel implements Parcelable {
         return hasFridge;
     }
 
-    public void setFridge(ForeignKeyContainer<Fridge> fridge) {
-        this.fridge = fridge;
+//    public void setFridge(ForeignKeyContainer<Fridge> fridge) {
+//        this.fridge = fridge;
+//    }
+
+
+    public void setFridge(Fridge fridge) {
+        if(! fridge.isEmpty()){
+            this.fridge = new ForeignKeyContainer<>(Fridge.class);
+            Map<String, Object> keys = new LinkedHashMap<>();
+            keys.put(User$Table.ID, fridge.id);
+            this.fridge.setData(keys);
+            this.fridge.setModel(fridge);
+        }
     }
 
     public ForeignKeyContainer<CustomList> getCustomList() {
@@ -174,11 +186,12 @@ public class Food extends BaseCacheableModel implements Parcelable {
     }
 
     public boolean isEmpty() {
-        if (this.name.isEmpty()) {
-            return true;
-        } else {
-            return false;
+        boolean isEmpty = false;
+
+        if (name.isEmpty()) {
+            isEmpty = true;
         }
+        return isEmpty;
     }
 
     public ContentValues getContentValues() {
@@ -198,7 +211,7 @@ public class Food extends BaseCacheableModel implements Parcelable {
         out.writeString(this.name);
     }
 
-    public static final Parcelable.Creator<Food> CREATOR = new Parcelable.Creator<Food>() {
+    public static final Creator<Food> CREATOR = new Creator<Food>() {
         @Override
         public Food createFromParcel(Parcel in) {
             return new Food(in);

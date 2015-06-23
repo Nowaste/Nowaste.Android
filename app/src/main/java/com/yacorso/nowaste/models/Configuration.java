@@ -1,8 +1,9 @@
-package com.yacorso.nowaste.model;
+package com.yacorso.nowaste.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.Expose;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.ForeignKey;
 import com.raizlabs.android.dbflow.annotation.ForeignKeyReference;
@@ -21,18 +22,23 @@ public class Configuration extends BaseCacheableModel implements Parcelable {
 
     @Column
     @PrimaryKey(autoincrement = true)
+    @Expose
     protected long id;
 
     @Column
+    @Expose
     protected String name;
 
     @Column
+    @Expose
     protected String key;
 
     @Column
+    @Expose
     protected String value;
 
     @Column
+    @Expose
     @ForeignKey(
             references = {@ForeignKeyReference(
                             columnName = "user_id",
