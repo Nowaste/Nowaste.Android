@@ -2,29 +2,24 @@ package com.yacorso.nowaste.services;
 
 import android.content.Context;
 
-import com.squareup.otto.Bus;
 import com.yacorso.nowaste.webservice.NowasteApi;
 
 import java.util.List;
 
-/**
- * Created by quentin on 16/06/15.
- */
+import de.greenrobot.event.EventBus;
+
 public abstract class Service<T, U> {
 
     Context mContext;
     NowasteApi mApi;
-    Bus mBus;
 
-    public Service(Bus bus){
-        mBus= bus;
+    public Service(){
         mApi = NowasteApi.ApiInstance.getInstance();
     }
 
-    public Service(NowasteApi api, Bus bus)
+    public Service(NowasteApi api)
     {
         mApi = api;
-        mBus = bus;
     }
 
     /**
@@ -59,6 +54,5 @@ public abstract class Service<T, U> {
      * @return
      */
     public abstract List<T> all();
-
 
 }

@@ -1,8 +1,8 @@
 package com.yacorso.nowaste.view.fragments;
 
+import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,17 +11,12 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 
 import com.raizlabs.android.dbflow.sql.language.Select;
-import com.squareup.otto.Bus;
-import com.squareup.otto.Subscribe;
 import com.yacorso.nowaste.NowasteApplication;
 import com.yacorso.nowaste.R;
-import com.yacorso.nowaste.bus.BusProvider;
-import com.yacorso.nowaste.dao.FoodDao;
 import com.yacorso.nowaste.events.CurrentFridgeChangedEvent;
 import com.yacorso.nowaste.events.FoodCreatedEvent;
 import com.yacorso.nowaste.events.FridgesLoadedEvent;
 import com.yacorso.nowaste.events.LoadFoodsEvent;
-import com.yacorso.nowaste.events.LoadFridgesEvent;
 import com.yacorso.nowaste.models.Food;
 import com.yacorso.nowaste.models.FoodFridge;
 import com.yacorso.nowaste.models.Fridge;
@@ -30,7 +25,6 @@ import com.yacorso.nowaste.services.FoodService;
 import com.yacorso.nowaste.services.FridgeService;
 import com.yacorso.nowaste.utils.LogUtil;
 import com.yacorso.nowaste.view.adapter.FoodListAdapter;
-import com.yacorso.nowaste.webservice.NowasteApi;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
@@ -39,6 +33,7 @@ import java.util.Date;
 import java.util.List;
 
 import butterknife.ButterKnife;
+import de.greenrobot.event.EventBus;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -52,12 +47,9 @@ public class FoodListFragment extends BaseFragment {
     SwipeRefreshLayout mSwipeRefreshLayout;
     Fridge mCurrentFridge;
     List<Food> mFoodItems = new ArrayList<Food>();
-    Bus mBus;
-
 
     FoodService mFoodService;
     FridgeService mFridgeService;
-
 
     public static FoodListFragment newInstance() {
         return new FoodListFragment();
@@ -70,8 +62,8 @@ public class FoodListFragment extends BaseFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mFoodService = new FoodService(getBus());
-        mFridgeService = new FridgeService(getBus());
+        mFoodService = new FoodService();
+        mFridgeService = new FridgeService();
 
         mCurrentFridge = mFridgeService.getCurrentFridge();
 
@@ -81,35 +73,38 @@ public class FoodListFragment extends BaseFragment {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        // Registring the bus for MessageEvent
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         LogUtil.LOGD(this, "OnResume");
 
-        getBus().register(this);
-        getBus().post(new LoadFoodsEvent(new Fridge()));
+        EventBus.getDefault().post(new LoadFoodsEvent(new Fridge()));
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-
-        getBus().unregister(this);
+    public void onStop() {
+        // Unregistering the bus
+        EventBus.getDefault().unregister(this);
+        super.onStop();
     }
 
-    @Subscribe
-    public void onFridgesLoaded(FridgesLoadedEvent event) {
+    public void onEvent(FridgesLoadedEvent event) {
         LogUtil.LOGD(this, "onFridgeLoaded");
         LogUtil.LOGD(this, event.getFridges().toString());
     }
 
-    @Subscribe
-    public void onCurrentFridgeChangedEvent(CurrentFridgeChangedEvent event) {
+    public void onEvent(CurrentFridgeChangedEvent event) {
         mFoodItems = event.getFridge().getFoods();
         refreshItems();
     }
 
-    @Subscribe
-    public void onFoodCreated(FoodCreatedEvent event) {
+    public void onEvent(FoodCreatedEvent event) {
         refreshItems();
     }
 
@@ -248,16 +243,5 @@ public class FoodListFragment extends BaseFragment {
         mCurrentFridge.addFood(food);
 
         mFridgeService.update(mCurrentFridge);
-    }
-
-    private Bus getBus() {
-        if (mBus == null) {
-            mBus = BusProvider.getInstance();
-        }
-        return mBus;
-    }
-
-    public void setBus(Bus bus) {
-        mBus = bus;
     }
 }

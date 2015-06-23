@@ -2,8 +2,6 @@ package com.yacorso.nowaste.services;
 
 import android.content.Context;
 
-import com.squareup.otto.Bus;
-import com.squareup.otto.Subscribe;
 import com.yacorso.nowaste.NowasteApplication;
 import com.yacorso.nowaste.dao.FridgeDao;
 import com.yacorso.nowaste.events.ApiErrorEvent;
@@ -18,36 +16,35 @@ import com.yacorso.nowaste.models.Fridge;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.greenrobot.event.EventBus;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-/**
- * Created by quentin on 20/06/15.
- */
 public class FridgeService extends Service<Fridge, Long> {
 
     FridgeDao mFridgeDao = new FridgeDao();
 
-    public FridgeService(Bus bus) {
-        super(bus);
+    public FridgeService() {
+        super();
+        EventBus.getDefault().register(this);
     }
-    public FridgeService(NowasteApi api, Bus bus) {
-        super(api, bus);
+    public FridgeService(NowasteApi api) {
+        super(api);
+        EventBus.getDefault().register(this);
     }
 
-    @Subscribe
-    public void onLoadFridges(LoadFridgesEvent event){
+    public void onEvent(LoadFridgesEvent event){
 
         mApi.getAllFridges(new Callback<List<Fridge>>() {
             @Override
             public void success(List<Fridge> fridges, Response response) {
-                mBus.post(new FridgesLoadedEvent(fridges));
+                EventBus.getDefault().post(new FridgesLoadedEvent(fridges));
             }
 
             @Override
             public void failure(RetrofitError error) {
-                mBus.post(new ApiErrorEvent(error));
+                EventBus.getDefault().post(new ApiErrorEvent(error));
             }
         });
     }

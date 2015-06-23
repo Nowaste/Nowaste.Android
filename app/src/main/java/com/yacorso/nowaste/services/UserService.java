@@ -1,7 +1,9 @@
 package com.yacorso.nowaste.services;
 
-import com.squareup.otto.Bus;
 import com.yacorso.nowaste.dao.UserDao;
+import com.yacorso.nowaste.events.ApiErrorEvent;
+import com.yacorso.nowaste.events.LoadFoodsEvent;
+import com.yacorso.nowaste.models.Fridge;
 import com.yacorso.nowaste.models.User;
 import com.yacorso.nowaste.utils.LogUtil;
 import com.yacorso.nowaste.webservice.NowasteApi;
@@ -9,18 +11,20 @@ import com.yacorso.nowaste.webservice.NowasteApi;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by quentin on 22/06/15.
- */
+import de.greenrobot.event.EventBus;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
+
 public class UserService extends Service<User, Long> {
 
     UserDao mUserDao = new UserDao();
 
-    public UserService(Bus bus) {
-        super(bus);
+    public UserService() {
+        super();
     }
-    public UserService(NowasteApi api, Bus bus) {
-        super(api, bus);
+    public UserService(NowasteApi api) {
+        super(api);
     }
 
     @Override
@@ -108,5 +112,9 @@ public class UserService extends Service<User, Long> {
         }
 
         return isCreatable;
+    }
+
+    public void onEvent(){
+
     }
 }

@@ -3,8 +3,6 @@ package com.yacorso.nowaste.services;
 import android.content.Context;
 import android.util.Log;
 
-import com.squareup.otto.Bus;
-import com.squareup.otto.Subscribe;
 import com.yacorso.nowaste.NowasteApplication;
 import com.yacorso.nowaste.dao.FoodDao;
 import com.yacorso.nowaste.events.ApiErrorEvent;
@@ -23,23 +21,23 @@ import com.yacorso.nowaste.models.Food;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.greenrobot.event.EventBus;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-/**
- * Created by quentin on 17/06/15.
- */
 public class FoodService extends Service<Food, Long> {
 
     FoodDao mFoodDao = new FoodDao();
 
-    public FoodService(Bus bus) {
-        super(bus);
+    public FoodService() {
+        super();
+        EventBus.getDefault().register(this);
     }
 
-    public FoodService(NowasteApi api, Bus bus) {
-        super(api, bus);
+    public FoodService(NowasteApi api) {
+        super(api);
+        EventBus.getDefault().register(this);
     }
 
     @Override
@@ -165,8 +163,8 @@ public class FoodService extends Service<Food, Long> {
         return isCreatable;
     }
 
-    @Subscribe
-    public void onLoadFoods(LoadFoodsEvent event){
+
+    public void onEvent(LoadFoodsEvent event){
 
         mApi.getAllFridges(new Callback<List<Fridge>>() {
             @Override
@@ -177,7 +175,7 @@ public class FoodService extends Service<Food, Long> {
 
             @Override
             public void failure(RetrofitError error) {
-                mBus.post(new ApiErrorEvent(error));
+                EventBus.getDefault().post(new ApiErrorEvent(error));
             }
         });
     }

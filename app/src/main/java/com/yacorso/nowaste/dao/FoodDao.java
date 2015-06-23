@@ -24,6 +24,8 @@ import com.yacorso.nowaste.utils.LogUtil;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.greenrobot.event.EventBus;
+
 public class FoodDao extends Dao<Food, Long> {
 
     TransactionListener mResultReceiverFoodFridge;
@@ -72,7 +74,7 @@ public class FoodDao extends Dao<Food, Long> {
 
             @Override
             public void onResultReceived(Object o) {
-                getBus().post(new FoodCreatedEvent());
+                EventBus.getDefault().post(new FoodCreatedEvent());
                 LogUtil.LOGD(this, "onResultReceived -- Food");
             }
 
@@ -182,7 +184,7 @@ public class FoodDao extends Dao<Food, Long> {
 
             @Override
             public void onResultReceived(Object o) {
-                getBus().post(new FoodCreatedEvent());
+                EventBus.getDefault().post(new FoodCreatedEvent());
                 LogUtil.LOGD(this, "onResultReceived -- Food");
             }
 

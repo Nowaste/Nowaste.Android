@@ -3,9 +3,6 @@ package com.yacorso.nowaste;
 import android.app.Application;
 
 import com.raizlabs.android.dbflow.config.FlowManager;
-import com.squareup.otto.Bus;
-import com.squareup.otto.Subscribe;
-import com.yacorso.nowaste.bus.BusProvider;
 import com.yacorso.nowaste.events.ApiErrorEvent;
 import com.yacorso.nowaste.models.Fridge;
 import com.yacorso.nowaste.models.User;
@@ -17,12 +14,13 @@ import com.yacorso.nowaste.webservice.NowasteApi;
 
 import java.util.List;
 
+import de.greenrobot.event.EventBus;
+
 
 public class NowasteApplication extends Application {
 
     private FridgeService mFridgeService;
     private FoodService mFoodService;
-    private Bus mBus = BusProvider.getInstance();
 
 
     private static User sCurrentUser ;
@@ -33,14 +31,11 @@ public class NowasteApplication extends Application {
 
         FlowManager.init(this);
 
-        mFridgeService = new FridgeService(mBus);
-        mFoodService = new FoodService(mBus);
-        mBus.register(mFridgeService);
-        mBus.register(mFoodService);
+        mFridgeService = new FridgeService();
+        mFoodService = new FoodService();
+        EventBus.getDefault().register(this);
 
-        mBus.register(this);
-
-        UserService userService = new UserService(mBus);
+        UserService userService = new UserService();
         List<User> users = userService.all();
 
 
@@ -64,7 +59,7 @@ public class NowasteApplication extends Application {
             f.setName("Default fridge");
             f.setUser(user);
 
-            FridgeService fridgeService = new FridgeService(mBus);
+            FridgeService fridgeService = new FridgeService();
             fridgeService.create(f);
             user.addFridge(f);
         }
@@ -80,14 +75,10 @@ public class NowasteApplication extends Application {
         super.onTerminate();
         FlowManager.destroy();
 
-        mBus.unregister(mFridgeService);
-        mBus.unregister(mFoodService);
-
-        mBus.unregister(this);
+        EventBus.getDefault().unregister(this);
     }
 
-    @Subscribe
-    public void onApiError(ApiErrorEvent event) {
+    public void onEvent(ApiErrorEvent event) {
         LogUtil.LOGD(this, "###API-FAIL### " + event.getErrorMessage());
     }
 

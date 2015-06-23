@@ -1,8 +1,5 @@
 package com.yacorso.nowaste.dao;
 
-import com.squareup.otto.Bus;
-import com.yacorso.nowaste.bus.BusProvider;
-
 import java.util.List;
 
 /**
@@ -12,10 +9,7 @@ import java.util.List;
  */
 public abstract class Dao<T, U> {
 
-
-    protected Bus mBus;
-
-    /**
+     /**
      *  Insert item in database
      * @param item
      * @return
@@ -48,14 +42,4 @@ public abstract class Dao<T, U> {
      */
     abstract List<T> all();
 
-    /**
-     * Get current bus
-     * @return
-     */
-    protected Bus getBus(){
-        if(mBus == null){
-            mBus = BusProvider.getInstance();
-        }
-        return mBus;
-    }
 }
