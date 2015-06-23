@@ -16,9 +16,6 @@ import com.yacorso.nowaste.models.Food;
 
 public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private static final int TYPE_HEADER = 2;
-    private static final int TYPE_ITEM = 1;
-
     List<Food> foods;
 
     public FoodListAdapter() {
@@ -39,48 +36,21 @@ public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         Context context = parent.getContext();
         RecyclerView.ViewHolder vh ;
 
-        if (viewType == TYPE_ITEM) {
-            view = LayoutInflater.from(context).inflate(R.layout.card_food_item, parent, false);
-            vh = new FoodListViewHolder(view);
-        } else if (viewType == TYPE_HEADER) {
-            view = LayoutInflater.from(context).inflate(R.layout.food_list_header, parent, false);
-            vh = new FoodListHeaderViewHolder(view);
-        } else {
-            throw new RuntimeException("There is no type that matches the type " + viewType +
-                    " + make sure your using types    correctly");
-        }
-//        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_food_item, parent, false);
+        view = LayoutInflater.from(context).inflate(R.layout.card_food_item, parent, false);
+        vh = new FoodListViewHolder(view);
 
         return vh;
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-        if (!isPositionHeader(position)) {
             FoodListViewHolder holder = (FoodListViewHolder) viewHolder;
-            holder.name.setText(foods.get(position - 1).getName());
-        }
-    }
-
-    public int getBasicItemCount() {
-        return foods == null ? 0 : foods.size();
+            holder.name.setText(foods.get(position).getName());
     }
 
     @Override
     public int getItemCount() {
-        return getBasicItemCount() + 1;
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        if (isPositionHeader(position)) {
-            return TYPE_HEADER;
-        }
-        return TYPE_ITEM;
-    }
-
-    private boolean isPositionHeader(int position) {
-        return position == 0;
+        return foods == null ? 0 : foods.size();
     }
 
     public static class FoodListViewHolder extends RecyclerView.ViewHolder
@@ -117,11 +87,4 @@ public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             return false;
         }
     }
-
-    public static class FoodListHeaderViewHolder extends RecyclerView.ViewHolder {
-        public FoodListHeaderViewHolder(View itemView) {
-            super(itemView);
-        }
-    }
-
 }

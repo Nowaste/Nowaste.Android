@@ -127,7 +127,7 @@ public class FoodListFragment extends BaseFragment {
     private void initSwipeRefreshLayout() {
         mSwipeRefreshLayout = ButterKnife.findById(getActivity(), R.id.swipeRefreshFoodListLayout);
         mSwipeRefreshLayout.setColorSchemeResources(R.color.refresh_progress_1, R.color.refresh_progress_2);
-        //mSwipeRefreshLayout.setProgressViewOffset(false, 150, 200);
+//        mSwipeRefreshLayout.setProgressViewOffset(false, 150, 200);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {

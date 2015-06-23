@@ -7,25 +7,23 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
-
-    <FrameLayout
-        android:id="@+id/container"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
-        <android.support.design.widget.AppBarLayout
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- The ActionBar -->
+        <include
+            layout="@layout/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            >
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_height="?attr/actionBarSize"
-                android:layout_width="match_parent"
-                android:minHeight="?attr/actionBarSize"
-                style="@style/Widget.MyApp.ActionBar"
-                />
-        </android.support.design.widget.AppBarLayout>
-    </FrameLayout>
+            android:layout_height="wrap_content" />
+
+        <!-- The main content view -->
+        <FrameLayout
+            android:id="@+id/container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
 
     <android.support.design.widget.NavigationView
         android:id="@+id/navigation_view"
@@ -34,6 +32,4 @@
         android:layout_gravity="start"
         app:headerLayout="@layout/drawer_header"
         app:menu="@menu/menu_drawer" />
-
-    <!---->
 </android.support.v4.widget.DrawerLayout>
