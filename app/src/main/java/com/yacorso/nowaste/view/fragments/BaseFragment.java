@@ -20,9 +20,6 @@ import butterknife.ButterKnife;
  */
 public abstract class BaseFragment extends Fragment {
 
-
-    Toolbar mToolbar;
-
     public DrawerActivity getDrawerActivity() {
         return (DrawerActivity) super.getActivity();
     }
@@ -40,31 +37,9 @@ public abstract class BaseFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        setToolbar(view);
     }
 
-    protected void setToolbar(View view) {
-        if(!hasCustomToolbar()) return;
-        mToolbar = ButterKnife.findById(view,getToolbarId());
-        mToolbar.setTitle(getTitle());
-        mToolbar.setNavigationIcon(R.drawable.ic_menu);
-        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getDrawerActivity().openDrawer();
-            }
-        });
-    }
-
-    protected @IdRes int getToolbarId(){
-        return R.id.toolbar;
-    }
-
-    public boolean hasCustomToolbar(){
-        return false;
-    }
-
-    protected @StringRes int getTitle(){
+    public @StringRes int getTitle(){
         return R.string.not_title_set;
     }
 

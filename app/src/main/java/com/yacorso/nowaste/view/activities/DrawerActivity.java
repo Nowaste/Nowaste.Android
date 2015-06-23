@@ -1,10 +1,10 @@
 package com.yacorso.nowaste.view.activities;
 
+import android.content.res.Configuration;
 import android.support.annotation.IdRes;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -21,9 +21,9 @@ import com.yacorso.nowaste.view.fragments.FoodListFragment;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import de.greenrobot.event.EventBus;
 
-public class DrawerActivity extends AppCompatActivity implements DrawerLayout.DrawerListener,
-        NavigationView.OnNavigationItemSelectedListener{
+public class DrawerActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     @InjectView(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
@@ -43,27 +43,30 @@ public class DrawerActivity extends AppCompatActivity implements DrawerLayout.Dr
 
         ButterKnife.inject(this);
 
-        setupToolbar();
-        setupNavDrawer();
+        initActionBarAndNavDrawer();
         initNavigator();
 
         mCurrentMenuItem = R.id.menu_item_my_fridge;
         setNewRootFragment(FoodListFragment.newInstance());
-
     }
 
-
-    private void setupToolbar() {
+    private void initActionBarAndNavDrawer() {
         mToolbar = ButterKnife.findById(this, R.id.toolbar);
-        if(mToolbar == null) {
-            LogUtil.LOGD(this, "Didn't find a toolbar");
-            return;
-        }
         setSupportActionBar(mToolbar);
-        ActionBar actionBar = getSupportActionBar();
-        if(actionBar == null) return;
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setHomeButtonEnabled(true);
+
+        mDrawerToggle = new ActionBarDrawerToggle(
+                this, mDrawerLayout,
+                R.string.navigation_drawer_open,
+                R.string.navigation_drawer_close);
+
+        mDrawerToggle.setDrawerIndicatorEnabled(true);
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+
+        mDrawerToggle.syncState();
+        mNavigationView.setNavigationItemSelectedListener(this);
     }
 
     private void initNavigator() {
@@ -72,44 +75,9 @@ public class DrawerActivity extends AppCompatActivity implements DrawerLayout.Dr
     }
 
     private void setNewRootFragment(BaseFragment fragment){
-        if(fragment.hasCustomToolbar()){
-            hideActionBar();
-        }else {
-            showActionBar();
-        }
         mNavigator.setRootFragment(fragment);
+        getSupportActionBar().setTitle(fragment.getTitle());
         mDrawerLayout.closeDrawers();
-    }
-
-    private void hideActionBar(){
-        ActionBar actionBar = getSupportActionBar();
-        if(actionBar == null) return;
-        actionBar.hide();
-    }
-
-    private void showActionBar() {
-        ActionBar actionBar = getSupportActionBar();
-        if(actionBar == null) return;
-        actionBar.show();
-    }
-
-    private void setupNavDrawer() {
-        if(mDrawerLayout == null) {
-            LogUtil.LOGE(this, "mDrawerLayout is null - Can not setup the NavDrawer! Have " +
-                    "you set the android.support.v7.widget.DrawerLayout?");
-            return;
-        }
-        mDrawerLayout.setDrawerListener(this);
-        //TODO look at documantation => homepage do I really need like that?
-        mDrawerToggle = new ActionBarDrawerToggle(this
-                , mDrawerLayout
-                , mToolbar
-                , R.string.navigation_drawer_open
-                , R.string.navigation_drawer_close);
-
-        mDrawerToggle.syncState();
-        mNavigationView.setNavigationItemSelectedListener(this);
-        LogUtil.LOGD(this, "setup setupNavDrawer");
     }
 
     @Override
@@ -121,36 +89,19 @@ public class DrawerActivity extends AppCompatActivity implements DrawerLayout.Dr
 
 
     @Override
-    public void onDrawerSlide(View drawerView, float slideOffset) {
-        LogUtil.LOGD(this, "onDrawerSlide");
-
-        mDrawerToggle.onDrawerSlide(drawerView, slideOffset);
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
-    public void onDrawerOpened(View drawerView) {
-        LogUtil.LOGD(this, "onDrawerOpened");
-
-        mDrawerToggle.onDrawerOpened(drawerView);
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
-    public void openDrawer(){
-        LogUtil.LOGD(this, "openDrawer");
-
-        mDrawerLayout.openDrawer(Gravity.LEFT);
-    }
-
-    @Override
-    public void onDrawerClosed(View drawerView) {
-        LogUtil.LOGD(this, "onDrawerClosed");
-
-        mDrawerToggle.onDrawerClosed(drawerView);
-    }
-
-    @Override
-    public void onDrawerStateChanged(int newState) {
-        mDrawerToggle.onDrawerStateChanged(newState);
-    }
 
     @Override
     public boolean onNavigationItemSelected(MenuItem menuItem) {
@@ -181,5 +132,8 @@ public class DrawerActivity extends AppCompatActivity implements DrawerLayout.Dr
         super.finish();
     }
 
-
+    private void openFragment (BaseFragment fragment) {
+        mNavigator.goTo(fragment);
+        getSupportActionBar().setTitle(fragment.getTitle());
+    }
 }

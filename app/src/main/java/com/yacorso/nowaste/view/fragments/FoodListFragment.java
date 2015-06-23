@@ -127,7 +127,7 @@ public class FoodListFragment extends BaseFragment {
     private void initSwipeRefreshLayout() {
         mSwipeRefreshLayout = ButterKnife.findById(getActivity(), R.id.swipeRefreshFoodListLayout);
         mSwipeRefreshLayout.setColorSchemeResources(R.color.refresh_progress_1, R.color.refresh_progress_2);
-        mSwipeRefreshLayout.setProgressViewOffset(false, 150, 200);
+        //mSwipeRefreshLayout.setProgressViewOffset(false, 150, 200);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -166,8 +166,6 @@ public class FoodListFragment extends BaseFragment {
     }
 
     private void hideViews() {
-        mToolbar.animate().translationY(-mToolbar.getHeight())
-                .setInterpolator(new AccelerateInterpolator(2));
 
         CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) mFabButton.getLayoutParams();
         int fabBottomMargin = lp.bottomMargin;
@@ -176,7 +174,6 @@ public class FoodListFragment extends BaseFragment {
     }
 
     private void showViews() {
-        mToolbar.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2));
         mFabButton.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2)).start();
     }
 
@@ -211,13 +208,8 @@ public class FoodListFragment extends BaseFragment {
     }
 
     @Override
-    protected int getTitle() {
+    public int getTitle() {
         return R.string.menu_title_my_fridge;
-    }
-
-    @Override
-    public boolean hasCustomToolbar() {
-        return true;
     }
 
     @Override
