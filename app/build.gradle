@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
-apply plugin: 'org.robolectric'
 
 android {
     compileSdkVersion 22
@@ -26,7 +25,7 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    apt 'com.raizlabs.android:DBFlow-Compiler:2.0.0'
+    apt 'com.raizlabs.android:DBFlow-Compiler:2.1.0'
 
     compile 'com.android.support:appcompat-v7:22.2.0'
     compile 'com.android.support:recyclerview-v7:22.2.0'
@@ -37,8 +36,8 @@ dependencies {
     compile 'com.google.code.gson:gson:2.3.1'
     compile 'com.squareup.retrofit:retrofit:1.9.0'
     compile 'de.greenrobot:eventbus:2.4.0'
-    compile 'com.raizlabs.android:DBFlow-Core:2.0.0'
-    compile 'com.raizlabs.android:DBFlow:2.0.0'
+    compile 'com.raizlabs.android:DBFlow-Core:2.1.0'
+    compile 'com.raizlabs.android:DBFlow:2.1.0'
     compile 'com.google.android.gms:play-services:7.5.0'
     compile 'com.squareup.okhttp:okhttp:2.0.0'
 
