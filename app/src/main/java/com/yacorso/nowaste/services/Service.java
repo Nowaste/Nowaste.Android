@@ -2,6 +2,9 @@ package com.yacorso.nowaste.services;
 
 import android.content.Context;
 
+import com.squareup.otto.Bus;
+import com.yacorso.nowaste.webservice.NowasteApi;
+
 import java.util.List;
 
 /**
@@ -9,10 +12,19 @@ import java.util.List;
  */
 public abstract class Service<T, U> {
 
-    Context context;
+    Context mContext;
+    NowasteApi mApi;
+    Bus mBus;
 
-    public Service(Context context){
-        this.context = context;
+    public Service(Bus bus){
+        mBus= bus;
+        mApi = NowasteApi.ApiInstance.getInstance();
+    }
+
+    public Service(NowasteApi api, Bus bus)
+    {
+        mApi = api;
+        mBus = bus;
     }
 
     /**
@@ -20,14 +32,14 @@ public abstract class Service<T, U> {
      * @param item
      * @return
      */
-    public abstract long create(T item);
+    public abstract void create(T item);
 
     /**
      * Update item
      * @param item
      * @return
      */
-    public abstract long update(T item);
+    public abstract void update(T item);
 
     /**
      *  Delete item

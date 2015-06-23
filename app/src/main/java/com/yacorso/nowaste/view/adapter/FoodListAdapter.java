@@ -12,8 +12,7 @@ import android.widget.Toast;
 import java.util.List;
 
 import com.yacorso.nowaste.R;
-import com.yacorso.nowaste.model.Food;
-import com.yacorso.nowaste.model.FoodList;
+import com.yacorso.nowaste.models.Food;
 
 public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 

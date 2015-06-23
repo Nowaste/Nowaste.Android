@@ -17,9 +17,9 @@ import android.widget.NumberPicker;
 
 import com.raizlabs.android.dbflow.sql.language.Select;
 import com.yacorso.nowaste.R;
-import com.yacorso.nowaste.data.dao.FoodDao;
-import com.yacorso.nowaste.model.Food;
-import com.yacorso.nowaste.model.FoodFridge;
+import com.yacorso.nowaste.dao.FoodDao;
+import com.yacorso.nowaste.models.Food;
+import com.yacorso.nowaste.models.FoodFridge;
 
 import java.util.List;
 
