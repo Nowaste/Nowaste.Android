@@ -6,6 +6,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
@@ -84,7 +86,7 @@ public class FoodListFragment extends BaseFragment {
         super.onResume();
         LogUtil.LOGD(this, "OnResume");
 
-        EventBus.getDefault().post(new LoadFoodsEvent(new Fridge()));
+//        EventBus.getDefault().post(new LoadFoodsEvent(new Fridge()));
     }
 
     @Override
@@ -235,5 +237,11 @@ public class FoodListFragment extends BaseFragment {
         mCurrentFridge.addFood(food);
 
         mFridgeService.update(mCurrentFridge);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        LogUtil.LOGD(this,"onCreateOptionsMenu");
+        super.onCreateOptionsMenu(menu, inflater);
     }
 }

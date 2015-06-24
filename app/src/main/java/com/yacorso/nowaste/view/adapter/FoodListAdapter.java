@@ -34,7 +34,7 @@ public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         View view;
         Context context = parent.getContext();
-        RecyclerView.ViewHolder vh ;
+        RecyclerView.ViewHolder vh;
 
         view = LayoutInflater.from(context).inflate(R.layout.card_food_item, parent, false);
         vh = new FoodListViewHolder(view);
@@ -44,8 +44,10 @@ public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-            FoodListViewHolder holder = (FoodListViewHolder) viewHolder;
-            holder.name.setText(foods.get(position).getName());
+        FoodListViewHolder holder = (FoodListViewHolder) viewHolder;
+        Food food = foods.get(position);
+        holder.name.setText(food.getName());
+        holder.quantity.setText(Integer.toString(food.getFoodFridge().getQuantity()));
     }
 
     @Override
@@ -58,12 +60,13 @@ public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         CardView cv;
         TextView name;
-
+        TextView quantity;
 
         public FoodListViewHolder(View itemView) {
             super(itemView);
 //            cv = (CardView) itemView.findViewById(R.id.cv_food_item);
             name = (TextView) itemView.findViewById(R.id.txt_food_name);
+            quantity = (TextView) itemView.findViewById(R.id.txt_food_quantity);
 
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
