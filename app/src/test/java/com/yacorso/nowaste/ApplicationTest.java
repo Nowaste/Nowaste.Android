@@ -1,8 +1,12 @@
 package com.yacorso.nowaste;
 
+import android.content.Intent;
+import android.support.v4.app.FragmentActivity;
+import android.view.Menu;
 import android.widget.TextView;
 
-import com.yacorso.nowaste.view.MainActivity;
+import com.yacorso.nowaste.view.activities.DrawerActivity;
+import com.yacorso.nowaste.view.fragments.FoodListFragment;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -10,26 +14,33 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowToast;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.robolectric.Shadows.shadowOf;
 
-@Config(constants = BuildConfig.class, sdk = 21)
 @RunWith(RobolectricTestRunner.class)
+@Config(constants = BuildConfig.class, sdk = 21)
 public class ApplicationTest {
 
-    private MainActivity activity;
+    private DrawerActivity activity;
 
     @Before
     public void setup() throws Exception {
-        activity = Robolectric.setupActivity(MainActivity.class);
-        assertNotNull("MainActivity is not instantiated", activity);
+        activity = Robolectric.setupActivity(DrawerActivity.class);
+        assertNotNull("DrawerActivity is not instantiated", activity);
     }
 
     @Test
-    public void validateTextViewContent() throws Exception {
-        TextView tvHelloWorld = (TextView) activity.findViewById(R.id.tvHello);
-        assertNotNull("TextView could not be found", tvHelloWorld);
-        assertTrue("TextView contains incorrect text", "Hello world!".equals(tvHelloWorld.getText().toString()));
+    public void onCreate_shouldInflateLayout() throws Exception {
+        final Menu menu = shadowOf(activity).getOptionsMenu();
+        assertThat(menu.findItem(R.id.menu_item_my_fridge).getTitle()).isEqualTo(activity.getString(R.string.menu_title_my_fridge));
+    }
+
+    @Test
+    public void clickingLogin_shouldStartLoginActivity() {
+        Intent expectedIntent = new Intent(activity, FragmentActivity.class);
+        assertThat(shadowOf(activity).getNextStartedActivity()).isEqualTo(expectedIntent);
     }
 }
