@@ -9,4 +9,6 @@
 
     <color name="refresh_progress_1">@color/primary_dark</color>
     <color name="refresh_progress_2">#FFFF00</color>
+
+    <color name="navigation_bar_color">#000000</color>
 </resources>

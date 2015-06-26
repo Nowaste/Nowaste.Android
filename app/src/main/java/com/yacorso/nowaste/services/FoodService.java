@@ -166,18 +166,26 @@ public class FoodService extends Service<Food, Long> {
 
     public void onEvent(LoadFoodsEvent event){
 
-        mApi.getAllFridges(new Callback<List<Fridge>>() {
-            @Override
-            public void success(List<Fridge> fridges, Response response) {
-//                mBus.post(new FridgesLoadedEvent(fridges));
-                LogUtil.LOGD(this,"yay");
-            }
+        if( event.getFoodList() !=  null){
+            /**
+             * TODO: Récupérer en fonction de la foodlist en paramètre
+             */
+        }
 
-            @Override
-            public void failure(RetrofitError error) {
-                EventBus.getDefault().post(new ApiErrorEvent(error));
-            }
-        });
+//        mApi.getAllFridges(new Callback<List<Fridge>>() {
+//            @Override
+//            public void success(List<Fridge> fridges, Response response) {
+////                mBus.post(new FridgesLoadedEvent(fridges));
+//                LogUtil.LOGD(this,"yay");
+//            }
+//
+//            @Override
+//            public void failure(RetrofitError error) {
+//                EventBus.getDefault().post(new ApiErrorEvent(error));
+//            }
+//        });
+
+
     }
 
 

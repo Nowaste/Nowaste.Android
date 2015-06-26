@@ -18,7 +18,6 @@ import com.yacorso.nowaste.models.Food$Table;
 import com.yacorso.nowaste.models.FoodFridge;
 import com.yacorso.nowaste.models.FoodList;
 import com.yacorso.nowaste.models.Fridge;
-import com.yacorso.nowaste.models.Fridge$Table;
 import com.yacorso.nowaste.utils.LogUtil;
 
 import java.util.ArrayList;

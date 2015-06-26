@@ -13,7 +13,6 @@ import com.yacorso.nowaste.NowasteApplication;
 import com.yacorso.nowaste.events.CurrentFridgeChangedEvent;
 import com.yacorso.nowaste.events.FoodCreatedEvent;
 import com.yacorso.nowaste.models.Food;
-import com.yacorso.nowaste.models.Food$Table;
 import com.yacorso.nowaste.models.Fridge;
 import com.yacorso.nowaste.models.Fridge$Table;
 import com.yacorso.nowaste.models.User;

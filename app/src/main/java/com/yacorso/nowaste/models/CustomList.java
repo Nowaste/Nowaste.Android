@@ -6,7 +6,6 @@ import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
 import com.yacorso.nowaste.data.NowasteDatabase;
-import com.yacorso.nowaste.models.Food$Table;
 
 import java.util.List;
 
