@@ -19,20 +19,11 @@ public abstract class Service<T, U> {
 
     public Service(){
         mApi = NowasteApi.ApiInstance.getInstance();
-        /**
-         * Register all event on this service
-         */
-        EventBus.getDefault().register(this);
-
     }
 
     public Service(NowasteApi api)
     {
         mApi = api;
-        /**
-         * Register all event on this service
-         */
-        EventBus.getDefault().register(this);
     }
 
     /**

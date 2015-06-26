@@ -211,7 +211,7 @@ public class FoodListFragment extends BaseFragment {
 
     @Override
     public int getTitle() {
-        return R.string.menu_title_my_fridge;
+        return R.string.app_name;
     }
 
     @Override

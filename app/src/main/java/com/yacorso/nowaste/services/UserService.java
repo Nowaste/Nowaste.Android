@@ -105,8 +105,4 @@ public class UserService extends Service<User, Long> {
 
         return isCreatable;
     }
-
-    public void onEvent(){
-
-    }
 }

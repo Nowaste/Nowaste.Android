@@ -28,10 +28,18 @@ public class FoodService extends Service<Food, Long> {
 
     public FoodService() {
         super();
+        /**
+         * Register all event on this service
+         */
+        EventBus.getDefault().register(this);
     }
 
     public FoodService(NowasteApi api) {
         super(api);
+        /**
+         * Register all event on this service
+         */
+        EventBus.getDefault().register(this);
     }
 
     @Override

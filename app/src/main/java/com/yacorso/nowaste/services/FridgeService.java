@@ -25,9 +25,17 @@ public class FridgeService extends Service<Fridge, Long> {
 
     public FridgeService() {
         super();
+        /**
+         * Register all event on this service
+         */
+        EventBus.getDefault().register(this);
     }
     public FridgeService(NowasteApi api) {
         super(api);
+        /**
+         * Register all event on this service
+         */
+        EventBus.getDefault().register(this);
     }
 
     public void onEvent(LoadFridgesEvent event){
