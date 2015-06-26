@@ -1,4 +1,4 @@
-package com.yacorso.nowaste.webservice;
+package com.yacorso.nowaste.data;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -17,17 +17,30 @@ import retrofit.http.GET;
 import retrofit.http.Path;
 
 /**
- * Created by quentin on 20/06/15.
+ * Interface with all Api request available
  */
 public interface NowasteApi {
 
+    /**
+     * Api base url
+     */
 //    String BASE_URL = "http://nowaste.dev/api/";
     String BASE_URL = "http://92.222.216.226/api/";
+
+    /**
+     * Api version
+     */
     String VERSION = "v1";
 
+    /**
+     * Api end point
+     */
     String END_POINT = BASE_URL + VERSION;
 
 
+    /**
+     * All requests available
+     */
 
     @GET("/test")
     void getTest(Callback<ArrayList<String>> message);
@@ -53,6 +66,10 @@ public interface NowasteApi {
 
     class ApiInstance{
 
+        /**
+         * Get Api Retro fit instance builded
+         * @return NowasteApi
+         */
         public static NowasteApi getInstance(){
 
             Gson gson = new GsonBuilder()

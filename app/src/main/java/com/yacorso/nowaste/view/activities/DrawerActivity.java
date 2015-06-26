@@ -28,8 +28,8 @@ import butterknife.InjectView;
 import de.greenrobot.event.EventBus;
 
 public class DrawerActivity extends AppCompatActivity implements
-                                                NavigationView.OnNavigationItemSelectedListener,
-                                                NavigationDrawerFragment.FragmentDrawerListener {
+        NavigationView.OnNavigationItemSelectedListener,
+        NavigationDrawerFragment.FragmentDrawerListener {
 
     @InjectView(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
@@ -39,7 +39,7 @@ public class DrawerActivity extends AppCompatActivity implements
 
     NavigationDrawerFragment mDrawerFragment;
 
-//    private static NavigatorUtil mNavigator;
+    //    private static NavigatorUtil mNavigator;
     @InjectView(R.id.toolbar)
     Toolbar mToolbar;
 //    private ActionBarDrawerToggle mDrawerToggle;

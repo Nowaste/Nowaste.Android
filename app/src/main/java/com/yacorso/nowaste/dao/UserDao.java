@@ -1,7 +1,5 @@
 package com.yacorso.nowaste.dao;
 
-import android.util.Log;
-
 import com.raizlabs.android.dbflow.runtime.TransactionManager;
 import com.raizlabs.android.dbflow.runtime.transaction.BaseTransaction;
 import com.raizlabs.android.dbflow.runtime.transaction.TransactionListener;
@@ -12,10 +10,17 @@ import com.yacorso.nowaste.models.User;
 
 import java.util.List;
 
+
 /**
- * Created by quentin on 22/06/15.
+ * UserDao
+ * Relation with database
  */
 public class UserDao extends Dao<User, Long>{
+
+    /**
+     *  Create user in database
+     * @param item
+     */
     @Override
     public void create(User item) {
 
@@ -48,21 +53,39 @@ public class UserDao extends Dao<User, Long>{
 
     }
 
+    /**
+     *  Update user in database
+     * @param item
+     */
     @Override
     public void update(User item) {
 
     }
 
+    /**
+     *  Delete user in database
+     * @param item
+     */
     @Override
     public void delete(User item) {
 
     }
 
+    /**
+     * Get user from database
+     *
+     * @param id
+     * @return
+     */
     @Override
     public User get(Long id) {
         return null;
     }
 
+    /**
+     * Get all users from database
+     * @return
+     */
     @Override
     public List<User> all() {
 

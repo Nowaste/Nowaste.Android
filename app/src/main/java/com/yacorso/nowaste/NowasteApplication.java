@@ -10,7 +10,6 @@ import com.yacorso.nowaste.services.FoodService;
 import com.yacorso.nowaste.services.FridgeService;
 import com.yacorso.nowaste.services.UserService;
 import com.yacorso.nowaste.utils.LogUtil;
-import com.yacorso.nowaste.webservice.NowasteApi;
 
 import java.util.List;
 

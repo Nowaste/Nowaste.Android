@@ -1,20 +1,12 @@
 package com.yacorso.nowaste.services;
 
 import com.yacorso.nowaste.dao.UserDao;
-import com.yacorso.nowaste.events.ApiErrorEvent;
-import com.yacorso.nowaste.events.LoadFoodsEvent;
-import com.yacorso.nowaste.models.Fridge;
 import com.yacorso.nowaste.models.User;
 import com.yacorso.nowaste.utils.LogUtil;
-import com.yacorso.nowaste.webservice.NowasteApi;
+import com.yacorso.nowaste.data.NowasteApi;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import de.greenrobot.event.EventBus;
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
 
 public class UserService extends Service<User, Long> {
 

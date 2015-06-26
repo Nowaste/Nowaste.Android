@@ -33,11 +33,4 @@
         layout="@layout/nav_drawer_fragment"
         android:name="com.yacorso.nowaste.view.fragments.NavigationDrawerFragment"
         tools:layout="@layout/nav_drawer_fragment" />
-    <!--<android.support.design.widget.NavigationView-->
-        <!--android:id="@+id/navigation_view"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:layout_gravity="start"-->
-        <!--app:headerLayout="@layout/drawer_header"-->
-        <!--app:menu="@menu/menu_drawer" />-->
 </android.support.v4.widget.DrawerLayout>

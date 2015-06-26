@@ -2,24 +2,37 @@ package com.yacorso.nowaste.services;
 
 import android.content.Context;
 
-import com.yacorso.nowaste.webservice.NowasteApi;
+import com.yacorso.nowaste.data.NowasteApi;
 
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
 
+/**
+ * Abstract class Service
+ * @param <T> Object class
+ * @param <U> Id class
+ */
 public abstract class Service<T, U> {
 
-    Context mContext;
     NowasteApi mApi;
 
     public Service(){
         mApi = NowasteApi.ApiInstance.getInstance();
+        /**
+         * Register all event on this service
+         */
+        EventBus.getDefault().register(this);
+
     }
 
     public Service(NowasteApi api)
     {
         mApi = api;
+        /**
+         * Register all event on this service
+         */
+        EventBus.getDefault().register(this);
     }
 
     /**

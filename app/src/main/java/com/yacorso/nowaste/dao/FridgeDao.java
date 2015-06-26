@@ -6,31 +6,40 @@ import com.raizlabs.android.dbflow.runtime.transaction.TransactionListener;
 import com.raizlabs.android.dbflow.runtime.transaction.process.InsertModelTransaction;
 import com.raizlabs.android.dbflow.runtime.transaction.process.ProcessModelInfo;
 import com.raizlabs.android.dbflow.runtime.transaction.process.SaveModelTransaction;
-import com.raizlabs.android.dbflow.runtime.transaction.process.UpdateModelListTransaction;
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
-import com.yacorso.nowaste.NowasteApplication;
-import com.yacorso.nowaste.events.CurrentFridgeChangedEvent;
-import com.yacorso.nowaste.events.FoodCreatedEvent;
-import com.yacorso.nowaste.models.Food;
+
+import com.yacorso.nowaste.events.FridgeCreatedEvent;
+
 import com.yacorso.nowaste.models.Fridge;
 import com.yacorso.nowaste.models.Fridge$Table;
-import com.yacorso.nowaste.models.User;
-import com.yacorso.nowaste.webservice.NowasteApi;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import de.greenrobot.event.EventBus;
+
+
 /**
- * Created by quentin on 22/06/15.
+ * FridgeDao
+ * Relation with database
  */
 public class FridgeDao extends Dao<Fridge, Long> {
+
+    /**
+     * Create a fridge in database
+     *
+     * @param item
+     */
     @Override
     public void create(Fridge item) {
         TransactionListener resultReceiver = new TransactionListener() {
             @Override
             public void onResultReceived(Object o) {
-
+                /**
+                 * When food was created, push then FridgeCreatedEvent
+                 * For all listeners
+                 */
+                EventBus.getDefault().post(new FridgeCreatedEvent());
             }
 
             @Override
@@ -55,6 +64,11 @@ public class FridgeDao extends Dao<Fridge, Long> {
                 new SaveModelTransaction<>(processModelInfo));
     }
 
+    /**
+     * Update fridge in database
+     *
+     * @param item
+     */
     @Override
     public void update(final Fridge item) {
 
@@ -89,11 +103,22 @@ public class FridgeDao extends Dao<Fridge, Long> {
 
     }
 
+    /**
+     * Delete fridge in database
+     *
+     * @param item
+     */
     @Override
     public void delete(Fridge item) {
 
     }
 
+    /**
+     * Get a fridge from database
+     *
+     * @param id
+     * @return
+     */
     @Override
     public Fridge get(Long id) {
 
@@ -105,6 +130,11 @@ public class FridgeDao extends Dao<Fridge, Long> {
 
     }
 
+    /**
+     * Get all fridges from database
+     *
+     * @return
+     */
     @Override
     public List<Fridge> all() {
         return new Select().all().from(Fridge.class).queryList();

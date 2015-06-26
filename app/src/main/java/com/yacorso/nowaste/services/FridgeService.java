@@ -1,7 +1,5 @@
 package com.yacorso.nowaste.services;
 
-import android.content.Context;
-
 import com.yacorso.nowaste.NowasteApplication;
 import com.yacorso.nowaste.dao.FridgeDao;
 import com.yacorso.nowaste.events.ApiErrorEvent;
@@ -9,7 +7,7 @@ import com.yacorso.nowaste.events.FridgesLoadedEvent;
 import com.yacorso.nowaste.events.LoadFridgesEvent;
 import com.yacorso.nowaste.models.User;
 import com.yacorso.nowaste.utils.LogUtil;
-import com.yacorso.nowaste.webservice.NowasteApi;
+import com.yacorso.nowaste.data.NowasteApi;
 import com.yacorso.nowaste.models.Food;
 import com.yacorso.nowaste.models.Fridge;
 
@@ -27,11 +25,9 @@ public class FridgeService extends Service<Fridge, Long> {
 
     public FridgeService() {
         super();
-        EventBus.getDefault().register(this);
     }
     public FridgeService(NowasteApi api) {
         super(api);
-        EventBus.getDefault().register(this);
     }
 
     public void onEvent(LoadFridgesEvent event){

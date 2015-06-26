@@ -1,21 +1,11 @@
 package com.yacorso.nowaste.services;
 
-import android.content.Context;
-import android.util.Log;
-
-import com.yacorso.nowaste.NowasteApplication;
 import com.yacorso.nowaste.dao.FoodDao;
 import com.yacorso.nowaste.events.ApiErrorEvent;
-import com.yacorso.nowaste.events.FridgesLoadedEvent;
 import com.yacorso.nowaste.events.LoadFoodsEvent;
-import com.yacorso.nowaste.events.LoadFridgesEvent;
-import com.yacorso.nowaste.models.CustomList;
-import com.yacorso.nowaste.models.FoodFridge;
-import com.yacorso.nowaste.models.FoodList;
 import com.yacorso.nowaste.models.Fridge;
-import com.yacorso.nowaste.models.User;
 import com.yacorso.nowaste.utils.LogUtil;
-import com.yacorso.nowaste.webservice.NowasteApi;
+import com.yacorso.nowaste.data.NowasteApi;
 import com.yacorso.nowaste.models.Food;
 
 import java.util.ArrayList;
@@ -26,18 +16,22 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
+/**
+ * FoodService
+ */
 public class FoodService extends Service<Food, Long> {
 
+    /**
+     * Food dao
+     */
     FoodDao mFoodDao = new FoodDao();
 
     public FoodService() {
         super();
-        EventBus.getDefault().register(this);
     }
 
     public FoodService(NowasteApi api) {
         super(api);
-        EventBus.getDefault().register(this);
     }
 
     @Override
@@ -73,11 +67,12 @@ public class FoodService extends Service<Food, Long> {
             }
         }
     }
+
     @Override
     public void delete(Food item) {
-        if(true){
+        if (true) {
             mFoodDao.delete(item);
-        }else{
+        } else {
 
         }
     }
@@ -87,9 +82,9 @@ public class FoodService extends Service<Food, Long> {
 
         Food food = null;
 
-        if(true){
+        if (true) {
             food = mFoodDao.get(id);
-        }else{
+        } else {
 
 //            NowasteApi webservice = Nt WasteApi.ApiInstance.getInstance();
 //
@@ -114,9 +109,9 @@ public class FoodService extends Service<Food, Long> {
     public List<Food> all() {
         List<Food> foods = new ArrayList<Food>();
 
-        if(true){
+        if (true) {
             foods = mFoodDao.all();
-        }else{
+        } else {
 
 //        NowasteApi nowasteApi = NowasteApi.ApiInstance.getInstance();
 
@@ -134,11 +129,10 @@ public class FoodService extends Service<Food, Long> {
         }
 
 
-
         return foods;
     }
 
-    private boolean isCreatable(Food item){
+    private boolean isCreatable(Food item) {
         boolean isCreatable = false;
 
         if (!item.isEmpty()) {
@@ -164,9 +158,9 @@ public class FoodService extends Service<Food, Long> {
     }
 
 
-    public void onEvent(LoadFoodsEvent event){
+    public void onEvent(LoadFoodsEvent event) {
 
-        if( event.getFoodList() !=  null){
+        if (event.getFoodList() != null) {
             /**
              * TODO: Récupérer en fonction de la foodlist en paramètre
              */

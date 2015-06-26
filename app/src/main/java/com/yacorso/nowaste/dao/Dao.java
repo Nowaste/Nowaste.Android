@@ -3,9 +3,9 @@ package com.yacorso.nowaste.dao;
 import java.util.List;
 
 /**
- * Interface DAO
- * @param <T>
- * @param <U>
+ * Abstract class DAO
+ * @param <T> Class type
+ * @param <U> Id type
  */
 public abstract class Dao<T, U> {
 
