@@ -5,10 +5,8 @@ import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.raizlabs.android.dbflow.structure.ModelAdapter;
-import com.yacorso.nowaste.model.FoodList;
-import com.yacorso.nowaste.model.User;
-
-import java.util.List;
+import com.yacorso.nowaste.models.FoodList;
+import com.yacorso.nowaste.models.User;
 
 public class JSONParser {
 
