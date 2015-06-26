@@ -31,7 +31,7 @@ import de.greenrobot.event.EventBus;
 /**
  * Created by quentin on 24/06/15.
  */
-public class NavigationDrawerFragment extends Fragment{
+public class NavigationDrawerFragment extends Fragment {
 
     private static String TAG = NavigationDrawerFragment.class.getSimpleName();
 
@@ -57,7 +57,7 @@ public class NavigationDrawerFragment extends Fragment{
         User currentUser = NowasteApplication.getCurrentUser();
         List<Fridge> fridges = currentUser.getFridges();
 
-        for (Fridge fridge: fridges){
+        for (Fridge fridge : fridges) {
             mTitles.add(fridge.getName());
         }
 
@@ -116,7 +116,6 @@ public class NavigationDrawerFragment extends Fragment{
 
     public static List<NavigationDrawerItem> getData() {
         List<NavigationDrawerItem> data = new ArrayList<>();
-
 
         // preparing navigation drawer items
         for (int i = 0; i < mTitles.size(); i++) {
