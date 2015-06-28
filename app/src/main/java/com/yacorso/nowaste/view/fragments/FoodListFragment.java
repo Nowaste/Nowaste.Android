@@ -13,10 +13,12 @@ import android.view.animation.DecelerateInterpolator;
 import com.raizlabs.android.dbflow.sql.language.Select;
 import com.yacorso.nowaste.NowasteApplication;
 import com.yacorso.nowaste.R;
+import com.yacorso.nowaste.events.CancelSearchEvent;
 import com.yacorso.nowaste.events.CurrentFridgeChangedEvent;
 import com.yacorso.nowaste.events.FoodCreatedEvent;
 import com.yacorso.nowaste.events.FridgesLoadedEvent;
 import com.yacorso.nowaste.events.LoadFoodsEvent;
+import com.yacorso.nowaste.events.LaunchSearchEvent;
 import com.yacorso.nowaste.models.Food;
 import com.yacorso.nowaste.models.FoodFridge;
 import com.yacorso.nowaste.models.Fridge;
@@ -106,6 +108,15 @@ public class FoodListFragment extends BaseFragment {
 
     public void onEvent(FoodCreatedEvent event) {
         refreshItems();
+    }
+
+    public void onEvent(LaunchSearchEvent event) {
+        String search = event.getSearchQuery();
+        mFoodListAdapter.setFilter(search);
+    }
+
+    public void onEvent(CancelSearchEvent event) {
+        mFoodListAdapter.flushFilter();
     }
 
 
