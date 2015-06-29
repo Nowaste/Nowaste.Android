@@ -18,6 +18,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -58,8 +59,8 @@ public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         FoodListViewHolder holder = (FoodListViewHolder) viewHolder;
         Food food = foods.get(position);
-        holder.name.setText(food.getName());
-        holder.quantity.setText(Integer.toString(food.getFoodFridge().getQuantity()));
+        holder.tvName.setText(food.getName());
+        holder.btnQuantity.setText(Integer.toString(food.getFoodFridge().getQuantity()));
     }
 
     @Override
@@ -71,14 +72,39 @@ public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             implements View.OnClickListener, View.OnLongClickListener {
 
         CardView cv;
-        TextView name;
-        TextView quantity;
+        TextView tvName;
+        TextView btnQuantity;
+        Button btnFavoriteToggle;
+        Button btnOpenToggle;
 
         public FoodListViewHolder(View itemView) {
             super(itemView);
 //            cv = (CardView) itemView.findViewById(R.id.cv_food_item);
-            name = (TextView) itemView.findViewById(R.id.txt_food_name);
-            quantity = (TextView) itemView.findViewById(R.id.txt_food_quantity);
+            tvName = (TextView) itemView.findViewById(R.id.txt_food_name);
+            btnQuantity = (TextView) itemView.findViewById(R.id.btn_food_quantity);
+            btnFavoriteToggle = (Button) itemView.findViewById(R.id.btn_favorite_toggle);
+            btnOpenToggle = (Button) itemView.findViewById(R.id.btn_open_toggle);
+
+            btnFavoriteToggle.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(v.getContext(), "Favorite Toggle", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            btnOpenToggle.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(v.getContext(), "Open Toggle", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            btnQuantity.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(v.getContext(), "Quantity click", Toast.LENGTH_SHORT).show();
+                }
+            });
 
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
@@ -88,7 +114,7 @@ public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         public void onClick(View v) {
 
             Toast.makeText(v.getContext(), "OnClick",
-                    Toast.LENGTH_LONG).show();
+                    Toast.LENGTH_SHORT).show();
 
         }
 
@@ -96,7 +122,7 @@ public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         public boolean onLongClick(View v) {
 
             Toast.makeText(v.getContext(), "OnLongClick",
-                    Toast.LENGTH_LONG).show();
+                    Toast.LENGTH_SHORT).show();
 
 
             return false;
