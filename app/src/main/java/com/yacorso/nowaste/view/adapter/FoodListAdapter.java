@@ -18,9 +18,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.yacorso.nowaste.R;
@@ -28,17 +31,20 @@ import com.yacorso.nowaste.models.Food;
 
 public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    List<Food> foods;
+    List<Food> foodList;
+    List<Food> visibleFoods;
 
     public FoodListAdapter() {
     }
 
     public FoodListAdapter(List<Food> foods) {
-        this.foods = foods;
+        foodList = foods;
+        visibleFoods = foods;
     }
 
     public void setFoods(List<Food> foods) {
-        this.foods = foods;
+        foodList = foods;
+        visibleFoods = foods;
     }
 
     @Override
@@ -57,14 +63,31 @@ public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         FoodListViewHolder holder = (FoodListViewHolder) viewHolder;
-        Food food = foods.get(position);
+        Food food = visibleFoods.get(position);
         holder.name.setText(food.getName());
         holder.quantity.setText(Integer.toString(food.getFoodFridge().getQuantity()));
     }
 
     @Override
     public int getItemCount() {
-        return foods == null ? 0 : foods.size();
+        return visibleFoods == null ? 0 : visibleFoods.size();
+    }
+
+    public void flushFilter(){
+        visibleFoods=new ArrayList<>();
+        visibleFoods.addAll(foodList);
+        notifyDataSetChanged();
+    }
+
+    public void setFilter(String queryText) {
+
+        visibleFoods = new ArrayList<>();
+        //constraint = constraint.toString().toLowerCase();
+        for (Food food: foodList) {
+            if (food.getName().toLowerCase().contains(queryText))
+                visibleFoods.add(food);
+        }
+        notifyDataSetChanged();
     }
 
     public static class FoodListViewHolder extends RecyclerView.ViewHolder
