@@ -18,6 +18,7 @@ import com.raizlabs.android.dbflow.runtime.transaction.TransactionListener;
 import com.raizlabs.android.dbflow.runtime.transaction.process.InsertModelTransaction;
 import com.raizlabs.android.dbflow.runtime.transaction.process.ProcessModelInfo;
 import com.raizlabs.android.dbflow.runtime.transaction.process.SaveModelTransaction;
+import com.raizlabs.android.dbflow.runtime.transaction.process.UpdateModelListTransaction;
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
 
@@ -44,36 +45,7 @@ public class FridgeDao extends Dao<Fridge, Long> {
      */
     @Override
     public void create(Fridge item) {
-        TransactionListener resultReceiver = new TransactionListener() {
-            @Override
-            public void onResultReceived(Object o) {
-                /**
-                 * When food was created, push then FridgeCreatedEvent
-                 * For all listeners
-                 */
-                EventBus.getDefault().post(new FridgeCreatedEvent());
-            }
-
-            @Override
-            public boolean onReady(BaseTransaction baseTransaction) {
-                return baseTransaction.onReady();
-            }
-
-            @Override
-            public boolean hasResult(BaseTransaction baseTransaction, Object o) {
-                return true;
-            }
-        };
-
-
-        /**
-         * Set DBFlow Transaction
-         */
-        ProcessModelInfo<Fridge> processModelInfo =
-                ProcessModelInfo.withModels(item)
-                        .result(resultReceiver);
-        TransactionManager.getInstance().addTransaction(
-                new SaveModelTransaction<>(processModelInfo));
+        insert(item, TYPE_CREATE);
     }
 
     /**
@@ -83,12 +55,24 @@ public class FridgeDao extends Dao<Fridge, Long> {
      */
     @Override
     public void update(final Fridge item) {
+        insert(item, TYPE_UPDATE);
+    }
 
+    public void insert(final Fridge item, final int type) {
         TransactionListener resultReceiver = new TransactionListener() {
             @Override
             public void onResultReceived(Object o) {
                 FoodDao foodDao = new FoodDao();
                 foodDao.insert(item.getFoods());
+
+                if(type == TYPE_CREATE){
+
+                    /*
+                     * When food was created, push then FridgeCreatedEvent
+                     * For all listeners
+                     */
+                    EventBus.getDefault().post(new FridgeCreatedEvent());
+                }
             }
 
             @Override
@@ -103,16 +87,20 @@ public class FridgeDao extends Dao<Fridge, Long> {
         };
 
 
-        /**
+        /*
          * Set DBFlow Transaction
          */
         ProcessModelInfo<Fridge> processModelInfo =
                 ProcessModelInfo.withModels(item)
                         .result(resultReceiver);
 
-        TransactionManager.getInstance()
-                .addTransaction(new InsertModelTransaction<>(processModelInfo));
-
+        if(type == TYPE_CREATE){
+            TransactionManager.getInstance()
+                    .addTransaction(new InsertModelTransaction<>(processModelInfo));
+        }else if(type == TYPE_UPDATE){
+            TransactionManager.getInstance()
+                    .addTransaction(new UpdateModelListTransaction<>(processModelInfo));
+        }
     }
 
     /**

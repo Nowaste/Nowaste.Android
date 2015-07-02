@@ -15,9 +15,11 @@ package com.yacorso.nowaste.view.fragments;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
@@ -152,6 +154,43 @@ public class FoodListFragment extends BaseFragment {
 
     private void initRecyclerView() {
         mRecyclerView = ButterKnife.findById(getActivity(), R.id.rv_food_list);
+
+
+        ItemTouchHelper swipeToDismissTouchHelper = new ItemTouchHelper(
+                new ItemTouchHelper.SimpleCallback( ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT,
+                                                    ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                // callback for drag-n-drop, false to skip this feature
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+
+                final int position = viewHolder.getAdapterPosition();
+                final Food item = mFoodItems.get(position);
+
+                Snackbar.make(getView(), R.string.snackbar_confirm_food_delete, Snackbar.LENGTH_LONG)
+                        .setAction(R.string.snackbar_undo, new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                mFoodItems.add(position, item);
+                                mFoodListAdapter.notifyDataSetChanged();
+                            }
+                        })
+                        .show();
+
+
+                // callback for swipe to dismiss, removing item from data and adapter
+//                mFoodService.delete(item);
+                mFoodItems.remove(position);
+                mFoodListAdapter.notifyItemRemoved(position);
+            }
+        });
+
+        swipeToDismissTouchHelper.attachToRecyclerView(mRecyclerView);
+
         /**
          * Si on veut cacher la toolbar et le bouton lors du scroll
          * Déjà implété avec ces fonctions
@@ -237,10 +276,11 @@ public class FoodListFragment extends BaseFragment {
         FoodFridge foodFridge = food.getFoodFridge();
         foodFridge.setOutOfDate(new Date());
         foodFridge.setQuantity(5);
+        foodFridge.setOpen(false);
 
-        List<Fridge> fridgeList = new Select().from(Fridge.class).queryList();
-        List<FoodFridge> foodFridgeList = new Select().from(FoodFridge.class).queryList();
-        List<Food> foodList = new Select().from(Food.class).queryList();
+//        List<Fridge> fridgeList = new Select().from(Fridge.class).queryList();
+//        List<FoodFridge> foodFridgeList = new Select().from(FoodFridge.class).queryList();
+//        List<Food> foodList = new Select().from(Food.class).queryList();
         food.setFridge(mCurrentFridge);
 
         SecureRandom random = new SecureRandom();
