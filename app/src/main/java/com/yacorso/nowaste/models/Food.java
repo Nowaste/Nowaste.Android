@@ -163,7 +163,7 @@ public class Food extends BaseCacheableModel implements Parcelable {
 
 
     public void setFridge(Fridge fridge) {
-        if(! fridge.isEmpty()){
+        if (!fridge.isEmpty()) {
             this.fridge = new ForeignKeyContainer<>(Fridge.class);
             Map<String, Object> keys = new LinkedHashMap<>();
             keys.put(User$Table.ID, fridge.id);
@@ -195,6 +195,12 @@ public class Food extends BaseCacheableModel implements Parcelable {
 
     public void setUser(ForeignKeyContainer<User> user) {
         this.user = user;
+    }
+
+    public void toggleOpen() {
+        if(! foodFridge.isEmpty()){
+            foodFridge.toggleOpen();
+        }
     }
 
     public boolean isEmpty() {

@@ -125,6 +125,10 @@ public class FoodFridge extends BaseCacheableModel implements Parcelable {
         this.open = open;
     }
 
+    public void toggleOpen(){
+        setOpen(!open);
+    }
+
     public boolean isEmpty() {
         boolean isEmpty = true;
 

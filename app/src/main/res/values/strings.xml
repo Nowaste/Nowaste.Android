@@ -27,4 +27,12 @@
     <string name="not_title_set">No title set</string>
     <string name="name_hint">Nom de l\'aliment</string>
 
+    <string name="title_quantity_number_picker">Veuillez sélectionner la nouvelle quantité</string>
+    <string name="cancel">Annuler</string>
+    <string name="validate">OK</string>
+
+
+    <string name="snackbar_undo">Annuler</string>
+    <string name="snackbar_confirm_food_delete">Êtes-vous sûr de vouloir supprimer l\'aliment ?</string>
+
 </resources>

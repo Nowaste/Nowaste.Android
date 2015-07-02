@@ -227,7 +227,7 @@ public class DrawerActivity extends AppCompatActivity implements
             showKeyboard(searchQuery);
 
             //add the close icon
-            mSearchAction.setIcon(getResources().getDrawable(R.drawable.ic_clear));
+            mSearchAction.setIcon(getResources().getDrawable(R.drawable.abc_ic_clear_mtrl_alpha));
 
             isSearchOpened = true;
         }

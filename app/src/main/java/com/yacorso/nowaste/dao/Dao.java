@@ -21,7 +21,11 @@ import java.util.List;
  */
 public abstract class Dao<T, U> {
 
-     /**
+    static int TYPE_UPDATE = 1;
+    static int TYPE_CREATE = 2;
+
+
+    /**
      *  Insert item in database
      * @param item
      * @return
