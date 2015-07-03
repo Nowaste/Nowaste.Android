@@ -39,6 +39,7 @@ import android.widget.Toast;
 
 import com.yacorso.nowaste.R;
 import com.yacorso.nowaste.events.AddFoodEvent;
+import com.yacorso.nowaste.events.SetTitleEvent;
 import com.yacorso.nowaste.utils.LogUtil;
 import com.yacorso.nowaste.utils.MessageEvent;
 import com.yacorso.nowaste.events.CancelSearchEvent;
@@ -151,10 +152,11 @@ public class DrawerActivity extends AppCompatActivity implements
                 fragmentTransaction.addToBackStack(null);
             }
             fragmentTransaction.commit();
-
-            // set the toolbar title
-            getSupportActionBar().setTitle(fragment.getTitle());
         }
+    }
+
+    private void updateToolbarTitle (String title) {
+        getSupportActionBar().setTitle(title);
     }
 
     @Override
@@ -286,6 +288,11 @@ public class DrawerActivity extends AppCompatActivity implements
 
     public void onEvent(AddFoodEvent event){
         launchFragment(AddFoodFragment.newInstance(), true);
+
+    }
+
+    public void onEvent(SetTitleEvent event){
+        updateToolbarTitle(event.getTitleFragment());
 
     }
 }
