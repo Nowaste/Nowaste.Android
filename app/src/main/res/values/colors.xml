@@ -10,6 +10,10 @@
     <color name="refresh_progress_1">@color/primary_dark</color>
     <color name="refresh_progress_2">#FFFF00</color>
 
-    <color name="navigation_bar_color">#000000</color>
+    <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
+    <color name="red_circle">#F44336</color>
+
+    <color name="yellow_star">#FFEB3B</color>
+
 </resources>

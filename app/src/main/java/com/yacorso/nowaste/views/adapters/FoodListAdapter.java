@@ -15,6 +15,8 @@ package com.yacorso.nowaste.views.adapters;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.ColorStateList;
+import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -149,17 +151,14 @@ public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         TextView tvName;
         TextView btnQuantity;
         Button btnFavoriteToggle;
-        Button btnOpenToggle;
-
+        AppCompatButton btnOpenToggle;
 
         public FoodListViewHolder(View itemView) {
             super(itemView);
-//            cv = (CardView) itemView.findViewById(R.id.cv_food_item);
             tvName = (TextView) itemView.findViewById(R.id.txt_food_name);
             btnQuantity = (TextView) itemView.findViewById(R.id.btn_food_quantity);
             btnFavoriteToggle = (Button) itemView.findViewById(R.id.btn_favorite_toggle);
-            btnOpenToggle = (Button) itemView.findViewById(R.id.btn_open_toggle);
-
+            btnOpenToggle = (AppCompatButton) itemView.findViewById(R.id.btn_open_toggle);
 
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);

@@ -154,7 +154,7 @@ public class DrawerActivity extends AppCompatActivity implements
             hideKeyboard(this);
 
             //add the search icon in the action bar
-            mSearchAction.setIcon(getResources().getDrawable(R.drawable.ic_search_black_48dp));
+            mSearchAction.setIcon(getResources().getDrawable(R.drawable.abc_ic_search_api_mtrl_alpha));
 
             isSearchOpened = false;
         } else { //open the search entry

@@ -41,7 +41,14 @@
     </style>
 
     <style name="MySearchViewStyle" parent="Widget.AppCompat.SearchView">
-        <item name="queryBackground">@color/white</item>
+        <item name="queryBackground">@color/black</item>
+    </style>
+
+    <style name="Button" parent="Base.Widget.AppCompat.Button">
+    </style>
+
+    <style name="Button.Favorite" parent="Button">
+        <item name="colorButtonNormal">@color/yellow_star</item>
     </style>
 
 </resources>
