@@ -12,7 +12,11 @@
 
 package com.yacorso.nowaste.utils;
 
+import android.app.Activity;
+import android.content.Context;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.DatePicker;
+import android.widget.EditText;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -28,6 +32,24 @@ public class Utils {
         calendar.set(year, month, day);
 
         return calendar.getTime();
+    }
+
+    public static void resetDatePicker(DatePicker datePicker){
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        datePicker.updateDate(year, month, day);
+    }
+
+    public static void showKeyboard (EditText editText, Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
+    }
+
+    public static void hideKeyboard (Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
     }
 
 

@@ -12,11 +12,13 @@
 
 package com.yacorso.nowaste.view.activities;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -53,6 +55,9 @@ import com.yacorso.nowaste.view.fragments.NavigationDrawerFragment;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import de.greenrobot.event.EventBus;
+
+import static com.yacorso.nowaste.utils.Utils.hideKeyboard;
+import static com.yacorso.nowaste.utils.Utils.showKeyboard;
 
 public class DrawerActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener,
@@ -155,6 +160,10 @@ public class DrawerActivity extends AppCompatActivity implements
         }
     }
 
+    private void launchDialog (BaseFragment fragment) {
+        fragment.show(getSupportFragmentManager(), "dialog");
+    }
+
     private void updateToolbarTitle (String title) {
         getSupportActionBar().setTitle(title);
     }
@@ -187,7 +196,7 @@ public class DrawerActivity extends AppCompatActivity implements
             action.setDisplayShowCustomEnabled(false); //disable a custom view inside the actionbar
             action.setDisplayShowTitleEnabled(true); //show the title in the action bar
             cancelSearch();
-            hideKeyboard();
+            hideKeyboard(this);
 
             //add the search icon in the action bar
             mSearchAction.setIcon(getResources().getDrawable(R.drawable.ic_search_black_48dp));
@@ -206,7 +215,7 @@ public class DrawerActivity extends AppCompatActivity implements
                 @Override
                 public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                     if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                        hideKeyboard();
+                        hideKeyboard(getParent());
                         return true;
                     }
                     return false;
@@ -226,7 +235,7 @@ public class DrawerActivity extends AppCompatActivity implements
 
             searchQuery.requestFocus();
 
-            showKeyboard(searchQuery);
+            showKeyboard(searchQuery, this);
 
             //add the close icon
             mSearchAction.setIcon(getResources().getDrawable(R.drawable.abc_ic_clear_mtrl_alpha));
@@ -242,17 +251,6 @@ public class DrawerActivity extends AppCompatActivity implements
 
     private void cancelSearch() {
         EventBus.getDefault().post(new CancelSearchEvent());
-    }
-
-
-    private void showKeyboard (EditText editText) {
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
-    }
-
-    private void hideKeyboard () {
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
     }
 
     @Override
@@ -287,7 +285,7 @@ public class DrawerActivity extends AppCompatActivity implements
     }
 
     public void onEvent(AddFoodEvent event){
-        launchFragment(AddFoodFragment.newInstance(), true);
+        launchDialog(AddFoodFragment.newInstance());
 
     }
 

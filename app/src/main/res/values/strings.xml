@@ -15,7 +15,6 @@
     <string name="menu_title_settings">Paramètres</string>
     <string name="menu_title_my_fridge">Votre frigo</string>
     <string name="menu_title_add_food">Ajoutez un aliment</string>
-    <string name="button_validate">Validez</string>
 
 
     <string name="navigation_drawer_open" translatable="false"/>
@@ -30,6 +29,8 @@
     <string name="title_quantity_number_picker">Veuillez sélectionner la nouvelle quantité</string>
     <string name="cancel">Annuler</string>
     <string name="validate">OK</string>
+    <string name="add_another_element">Ajouter un autre</string>
+    <string name="add_one_element">Ajoutez</string>
 
 
     <string name="snackbar_undo">Annuler</string>

@@ -12,12 +12,14 @@
 
 package com.yacorso.nowaste.view.fragments;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.Toolbar;
+import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,7 +34,7 @@ import de.greenrobot.event.EventBus;
 /**
  * Created by quentin on 15/06/15.
  */
-public abstract class BaseFragment extends Fragment {
+public abstract class BaseFragment extends DialogFragment {
 
     public DrawerActivity getDrawerActivity() {
         return (DrawerActivity) super.getActivity();
