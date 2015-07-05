@@ -16,11 +16,13 @@ import android.app.Application;
 
 import com.raizlabs.android.dbflow.config.FlowManager;
 import com.yacorso.nowaste.events.ApiErrorEvent;
+import com.yacorso.nowaste.models.CustomList;
 import com.yacorso.nowaste.models.Fridge;
 import com.yacorso.nowaste.models.User;
-import com.yacorso.nowaste.services.FoodService;
-import com.yacorso.nowaste.services.FridgeService;
-import com.yacorso.nowaste.services.UserService;
+import com.yacorso.nowaste.providers.CustomListProvider;
+import com.yacorso.nowaste.providers.FoodProvider;
+import com.yacorso.nowaste.providers.FridgeProvider;
+import com.yacorso.nowaste.providers.UserProvider;
 import com.yacorso.nowaste.utils.LogUtil;
 
 import java.util.List;
@@ -30,11 +32,11 @@ import de.greenrobot.event.EventBus;
 
 public class NowasteApplication extends Application {
 
-    private FridgeService mFridgeService;
-    private FoodService mFoodService;
+    private FridgeProvider mFridgeProvider;
+    private FoodProvider mFoodProvider;
 
 
-    private static User sCurrentUser ;
+    private static User sCurrentUser;
 
     @Override
     public void onCreate() {
@@ -42,11 +44,11 @@ public class NowasteApplication extends Application {
 
         FlowManager.init(this);
 
-        mFridgeService = new FridgeService();
-        mFoodService = new FoodService();
+        mFridgeProvider = new FridgeProvider();
+        mFoodProvider = new FoodProvider();
         EventBus.getDefault().register(this);
 
-        UserService userService = new UserService();
+        UserProvider userService = new UserProvider();
         List<User> users = userService.all();
 
 
@@ -60,19 +62,30 @@ public class NowasteApplication extends Application {
             user.setFirstName("Toto");
             user.setLastName("Albert");
             userService.create(user);
-        }else{
+        } else {
             user = users.get(0);
         }
 
-        if(user.getFridges().size() == 0){
+        if (user.getFridges().size() == 0) {
             Fridge f = new Fridge();
 
             f.setName("Default fridge");
             f.setUser(user);
 
-            FridgeService fridgeService = new FridgeService();
-            fridgeService.create(f);
+            FridgeProvider fridgeProvider = new FridgeProvider();
+            fridgeProvider.create(f);
             user.addFridge(f);
+        }
+
+        if (user.getCustomLists().size() == 0) {
+            CustomList customList = new CustomList();
+
+            customList.setName("Ma liste");
+            customList.setUser(user);
+
+            CustomListProvider customListProvider = new CustomListProvider();
+            customListProvider.create(customList);
+            user.addCustomList(customList);
         }
         /***/
 
@@ -93,11 +106,11 @@ public class NowasteApplication extends Application {
         LogUtil.LOGD(this, "###API-FAIL### " + event.getErrorMessage());
     }
 
-    public static void setCurrentUser(User currentUser){
+    public static void setCurrentUser(User currentUser) {
         sCurrentUser = currentUser;
     }
 
-    public static User getCurrentUser(){
+    public static User getCurrentUser() {
         return sCurrentUser;
     }
 

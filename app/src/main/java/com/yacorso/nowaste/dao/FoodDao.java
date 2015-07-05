@@ -82,14 +82,16 @@ public class FoodDao extends Dao<Food, Long> {
      */
     @Override
     public void delete(Food item) {
-        if(item.hasFoodFridge()){
+        if (item.hasFoodFridge()) {
             new Delete().from(FoodFridge.class).where(
                     Condition.column(FoodFridge$Table.ID).is(item.getFoodFridge().getId())
             ).query();
         }
 
-        new Delete().from(Food.class).where(
-                Condition.column(Food$Table.ID).is(item.getId())).query();
+        new Delete()
+                .from(Food.class)
+                .where(Condition.column(Food$Table.ID).is(item.getId()))
+                .query();
     }
 
     /**
@@ -100,8 +102,10 @@ public class FoodDao extends Dao<Food, Long> {
      */
     @Override
     public Food get(Long id) {
-        return new Select().from(Food.class)
-                .where(Condition.column(Food$Table.ID).is(id)).querySingle();
+        return new Select()
+                .from(Food.class)
+                .where(Condition.column(Food$Table.ID).is(id))
+                .querySingle();
     }
 
 

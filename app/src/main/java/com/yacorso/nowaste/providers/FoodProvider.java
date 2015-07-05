@@ -10,35 +10,29 @@
  * NoWaste team
  */
 
-package com.yacorso.nowaste.services;
+package com.yacorso.nowaste.providers;
 
 import com.yacorso.nowaste.dao.FoodDao;
-import com.yacorso.nowaste.events.ApiErrorEvent;
 import com.yacorso.nowaste.events.LoadFoodsEvent;
-import com.yacorso.nowaste.models.Fridge;
 import com.yacorso.nowaste.utils.LogUtil;
 import com.yacorso.nowaste.data.NowasteApi;
 import com.yacorso.nowaste.models.Food;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
 
 /**
  * FoodService
  */
-public class FoodService extends Service<Food, Long> {
+public class FoodProvider extends Provider<Food, Long> {
 
     /**
      * Food dao
      */
     FoodDao mFoodDao = new FoodDao();
 
-    public FoodService() {
+    public FoodProvider() {
         super();
         /**
          * Register all event on this service
@@ -46,7 +40,7 @@ public class FoodService extends Service<Food, Long> {
         EventBus.getDefault().register(this);
     }
 
-    public FoodService(NowasteApi api) {
+    public FoodProvider(NowasteApi api) {
         super(api);
         /**
          * Register all event on this service
@@ -58,53 +52,26 @@ public class FoodService extends Service<Food, Long> {
     public void create(Food item) {
 
         if (isCreatable(item)) {
-            if (true) {
-                /**
-                 * Create Food to database
-                 */
-                mFoodDao.create(item);
-
-            } else {
-                /**
-                 * Create Food to webservice
-                 */
-            }
+            mFoodDao.create(item);
         }
     }
 
     @Override
     public void update(Food item) {
         if (isCreatable(item)) {
-            if (true) {
-                /**
-                 * Create Food to database
-                 */
-                mFoodDao.update(item);
-            } else {
-                /**
-                 * Create Food to webservice
-                 */
-            }
+            mFoodDao.update(item);
         }
     }
 
     @Override
     public void delete(Food item) {
-        if (true) {
-            mFoodDao.delete(item);
-        } else {
-
-        }
+        mFoodDao.delete(item);
     }
 
     @Override
     public Food get(Long id) {
 
-        Food food = null;
-
-        if (true) {
-            food = mFoodDao.get(id);
-        } else {
+        Food food = mFoodDao.get(id);
 
 //            NowasteApi webservice = Nt WasteApi.ApiInstance.getInstance();
 //
@@ -119,7 +86,6 @@ public class FoodService extends Service<Food, Long> {
 //
 //                }
 //            });
-        }
 
         return food;
 
@@ -127,11 +93,7 @@ public class FoodService extends Service<Food, Long> {
 
     @Override
     public List<Food> all() {
-        List<Food> foods = new ArrayList<Food>();
-
-        if (true) {
-            foods = mFoodDao.all();
-        } else {
+        List<Food> foods = mFoodDao.all();
 
 //        NowasteApi nowasteApi = NowasteApi.ApiInstance.getInstance();
 
@@ -146,8 +108,6 @@ public class FoodService extends Service<Food, Long> {
 //
 //            }
 //        });
-        }
-
 
         return foods;
     }

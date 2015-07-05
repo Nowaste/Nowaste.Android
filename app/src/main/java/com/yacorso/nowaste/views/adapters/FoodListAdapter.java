@@ -30,14 +30,14 @@ import java.util.List;
 
 import com.yacorso.nowaste.R;
 import com.yacorso.nowaste.models.Food;
-import com.yacorso.nowaste.services.FoodService;
+import com.yacorso.nowaste.providers.FoodProvider;
 
 public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
 
     List<Food> mVisibleFoods;
     List<Food> mFoods;
-    FoodService mFoodService;
+    FoodProvider mFoodProvider;
     Context mContext;
 
     public FoodListAdapter() {
@@ -57,7 +57,7 @@ public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         mContext = parent.getContext();
-        mFoodService = new FoodService();
+        mFoodProvider = new FoodProvider();
 
         View view = LayoutInflater.from(mContext).inflate(R.layout.card_food_item, parent, false);
         RecyclerView.ViewHolder vh = new FoodListViewHolder(view);
@@ -101,7 +101,7 @@ public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                          */
                         int selectedValue = numberPicker.getValue();
                         food.getFoodFridge().setQuantity(selectedValue);
-                        mFoodService.update(food);
+                        mFoodProvider.update(food);
                     }
                 });
 
@@ -115,7 +115,7 @@ public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             @Override
             public void onClick(View v) {
                 food.toggleOpen();
-                mFoodService.update(food);
+                mFoodProvider.update(food);
             }
         });
     }

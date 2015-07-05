@@ -22,8 +22,8 @@ import com.yacorso.nowaste.R;
 import com.yacorso.nowaste.models.Food;
 import com.yacorso.nowaste.models.FoodFridge;
 import com.yacorso.nowaste.models.Fridge;
-import com.yacorso.nowaste.services.FoodService;
-import com.yacorso.nowaste.services.FridgeService;
+import com.yacorso.nowaste.providers.FoodProvider;
+import com.yacorso.nowaste.providers.FridgeProvider;
 import com.yacorso.nowaste.utils.LogUtil;
 import com.yacorso.nowaste.utils.Utils;
 
@@ -46,8 +46,8 @@ public class AddFoodFragment extends BaseFragment {
     NumberPicker numberPicker;
 
     Fridge mCurrentFridge;
-    FoodService mFoodService;
-    FridgeService mFridgeService;
+    FoodProvider mFoodProvider;
+    FridgeProvider mFridgeProvider;
 
     public static AddFoodFragment newInstance() { return new AddFoodFragment(); }
 
@@ -56,8 +56,8 @@ public class AddFoodFragment extends BaseFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mFridgeService = new FridgeService();
-        mCurrentFridge = mFridgeService.getCurrentFridge();
+        mFridgeProvider = new FridgeProvider();
+        mCurrentFridge = mFridgeProvider.getCurrentFridge();
 
         //startVoiceRecognitionActivity();
     }
@@ -248,6 +248,6 @@ public class AddFoodFragment extends BaseFragment {
 
         mCurrentFridge.addFood(food);
 
-        mFridgeService.update(mCurrentFridge);
+        mFridgeProvider.update(mCurrentFridge);
     }
 }

@@ -20,10 +20,12 @@ import com.raizlabs.android.dbflow.runtime.transaction.process.ProcessModelInfo;
 import com.raizlabs.android.dbflow.runtime.transaction.process.SaveModelTransaction;
 import com.raizlabs.android.dbflow.runtime.transaction.process.UpdateModelListTransaction;
 import com.raizlabs.android.dbflow.sql.builder.Condition;
+import com.raizlabs.android.dbflow.sql.language.Delete;
 import com.raizlabs.android.dbflow.sql.language.Select;
 
 import com.yacorso.nowaste.events.FridgeCreatedEvent;
 
+import com.yacorso.nowaste.events.FridgeUpdatedEvent;
 import com.yacorso.nowaste.models.Fridge;
 import com.yacorso.nowaste.models.Fridge$Table;
 
@@ -62,16 +64,25 @@ public class FridgeDao extends Dao<Fridge, Long> {
         TransactionListener resultReceiver = new TransactionListener() {
             @Override
             public void onResultReceived(Object o) {
+                /*
+                 * Insert or update foods items
+                 */
                 FoodDao foodDao = new FoodDao();
                 foodDao.insert(item.getFoods());
 
-                if(type == TYPE_CREATE){
+                if (type == TYPE_CREATE) {
 
                     /*
-                     * When food was created, push then FridgeCreatedEvent
+                     * When fridge was created, push then FridgeCreatedEvent
                      * For all listeners
                      */
                     EventBus.getDefault().post(new FridgeCreatedEvent());
+                } else if (type == TYPE_UPDATE) {
+                    /*
+                     * When fridge was updated, push then FridgeUpdatedEvent
+                     * For all listeners
+                     */
+                    EventBus.getDefault().post(new FridgeUpdatedEvent());
                 }
             }
 
@@ -94,10 +105,10 @@ public class FridgeDao extends Dao<Fridge, Long> {
                 ProcessModelInfo.withModels(item)
                         .result(resultReceiver);
 
-        if(type == TYPE_CREATE){
+        if (type == TYPE_CREATE) {
             TransactionManager.getInstance()
                     .addTransaction(new InsertModelTransaction<>(processModelInfo));
-        }else if(type == TYPE_UPDATE){
+        } else if (type == TYPE_UPDATE) {
             TransactionManager.getInstance()
                     .addTransaction(new UpdateModelListTransaction<>(processModelInfo));
         }
@@ -110,7 +121,10 @@ public class FridgeDao extends Dao<Fridge, Long> {
      */
     @Override
     public void delete(Fridge item) {
-
+        new Delete()
+                .from(Fridge.class)
+                .where(Condition.column(Fridge$Table.ID).is(item.getId()))
+                .query();
     }
 
     /**

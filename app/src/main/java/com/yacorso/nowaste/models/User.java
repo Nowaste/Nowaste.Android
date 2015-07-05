@@ -69,13 +69,24 @@ public class User extends BaseCacheableModel {
     /**
      * Functions
      */
-    public User () { }
+    public User() {
+    }
 
-    public long getId() { return id; }
-    public void setId(long id) { this.id = id; }
+    public long getId() {
+        return id;
+    }
 
-    public String getFirstName() { return firstName; }
-    public void setFirstName(String firstName) { this.firstName = firstName; }
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
 
     public String getLastName() {
         return lastName;
@@ -96,22 +107,33 @@ public class User extends BaseCacheableModel {
     public String getEmail() {
         return email;
     }
-    public void setEmail(String email) { this.email = email; }
 
-    public boolean isEnabled() { return enabled; }
-    public void setEnabled(boolean enabled) { this.enabled = enabled; }
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
 
     public String getPassword() {
         return password;
     }
+
     public void setPassword(String password) {
         this.password = password;
     }
 
     public List<Fridge> getFridges() {
-        if(fridges == null){
-            fridges = new Select().from(Fridge.class)
-                    .where(Condition.column(Fridge$Table.USER_USER_ID).is(id)).queryList();
+        if (fridges == null) {
+            fridges = new Select()
+                        .from(Fridge.class)
+                        .where(Condition.column(Fridge$Table.USER_USER_ID).is(id))
+                        .queryList();
         }
 
         return fridges;
@@ -121,17 +143,30 @@ public class User extends BaseCacheableModel {
     /**
      * TODO: METHODE A RETIRER UNE FOIS LE DEVELOPPEMENT PASSÉ
      * UTILISÉ SEULEMENT DANS L'INITIALISATION DE L'APP
+     *
      * @param fridge
      */
-    public void addFridge(Fridge fridge){
+    public void addFridge(Fridge fridge) {
         fridges.add(fridge);
     }
 
+    public void addCustomList(CustomList customList) {
+        customLists.add(customList);
+    }
+
     public List<CustomList> getCustomLists() {
+        if (customLists == null) {
+            customLists = new Select()
+                            .from(CustomList.class)
+                            .where(Condition.column(CustomList$Table.USER_USER_ID).is(id))
+                            .queryList();
+        }
+
         return customLists;
     }
 
-    public boolean isEmpty(){
+
+    public boolean isEmpty() {
         return false;
     }
 

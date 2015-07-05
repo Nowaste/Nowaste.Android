@@ -29,6 +29,7 @@ import android.view.ViewGroup;
 
 import com.yacorso.nowaste.NowasteApplication;
 import com.yacorso.nowaste.R;
+import com.yacorso.nowaste.models.CustomList;
 import com.yacorso.nowaste.models.Fridge;
 import com.yacorso.nowaste.models.NavigationDrawerItem;
 import com.yacorso.nowaste.models.User;
@@ -70,6 +71,12 @@ public class NavigationDrawerFragment extends Fragment {
             mTitles.add(fridge.getName());
         }
 
+        List<CustomList> customLists = currentUser.getCustomLists();
+
+        for (CustomList customList : customLists) {
+            mTitles.add(customList.getName());
+        }
+
         mAdapter = new NavigationDrawerAdapter(getData());
 
         mRecyclerView.setAdapter(mAdapter);
@@ -94,7 +101,7 @@ public class NavigationDrawerFragment extends Fragment {
         mContainerView = getActivity().findViewById(fragmentId);
         mDrawerLayout = drawerLayout;
         mDrawerToggle = new ActionBarDrawerToggle(getActivity(), drawerLayout,
-                                            toolbar, R.string.drawer_open, R.string.drawer_close) {
+                toolbar, R.string.drawer_open, R.string.drawer_close) {
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
@@ -141,10 +148,10 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerListener = listener;
     }
 
-    public static interface ClickListener {
-        public void onClick(View view, int position);
+    interface ClickListener {
+        void onClick(View view, int position);
 
-        public void onLongClick(View view, int position);
+        void onLongClick(View view, int position);
     }
 
 

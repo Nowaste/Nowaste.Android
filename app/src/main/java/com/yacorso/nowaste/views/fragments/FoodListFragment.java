@@ -38,8 +38,8 @@ import com.yacorso.nowaste.models.Food;
 import com.yacorso.nowaste.models.FoodFridge;
 import com.yacorso.nowaste.models.Fridge;
 import com.yacorso.nowaste.models.User;
-import com.yacorso.nowaste.services.FoodService;
-import com.yacorso.nowaste.services.FridgeService;
+import com.yacorso.nowaste.providers.FoodProvider;
+import com.yacorso.nowaste.providers.FridgeProvider;
 import com.yacorso.nowaste.utils.LogUtil;
 import com.yacorso.nowaste.views.adapters.FoodListAdapter;
 
@@ -65,8 +65,8 @@ public class FoodListFragment extends BaseFragment {
     Fridge mCurrentFridge;
     List<Food> mFoodItems = new ArrayList<Food>();
 
-    FoodService mFoodService;
-    FridgeService mFridgeService;
+    FoodProvider mFoodProvider;
+    FridgeProvider mFridgeProvider;
 
     public static FoodListFragment newInstance() {
         return new FoodListFragment();
@@ -79,10 +79,10 @@ public class FoodListFragment extends BaseFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mFoodService = new FoodService();
-        mFridgeService = new FridgeService();
+        mFoodProvider = new FoodProvider();
+        mFridgeProvider = new FridgeProvider();
 
-        mCurrentFridge = mFridgeService.getCurrentFridge();
+        mCurrentFridge = mFridgeProvider.getCurrentFridge();
 
         setList();
         LogUtil.LOGD(this, "onActivityCreated");
@@ -298,7 +298,7 @@ public class FoodListFragment extends BaseFragment {
 
         mCurrentFridge.addFood(food);
 
-        mFridgeService.update(mCurrentFridge);
+        mFridgeProvider.update(mCurrentFridge);
     }
 
     @Override

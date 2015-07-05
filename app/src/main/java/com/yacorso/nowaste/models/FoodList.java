@@ -19,7 +19,6 @@ import com.raizlabs.android.dbflow.annotation.ForeignKeyReference;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.structure.cache.BaseCacheableModel;
 import com.raizlabs.android.dbflow.structure.container.ForeignKeyContainer;
-import com.yacorso.nowaste.services.FoodService;
 
 import java.util.LinkedHashMap;
 import java.util.List;

@@ -10,79 +10,48 @@
  * NoWaste team
  */
 
-package com.yacorso.nowaste.services;
+package com.yacorso.nowaste.providers;
 
 import com.yacorso.nowaste.dao.UserDao;
 import com.yacorso.nowaste.models.User;
 import com.yacorso.nowaste.utils.LogUtil;
 import com.yacorso.nowaste.data.NowasteApi;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class UserService extends Service<User, Long> {
+public class UserProvider extends Provider<User, Long> {
 
     UserDao mUserDao = new UserDao();
 
-    public UserService() {
+    public UserProvider() {
         super();
     }
-    public UserService(NowasteApi api) {
+    public UserProvider(NowasteApi api) {
         super(api);
     }
 
     @Override
     public void create(User item) {
         if(isCreatable(item)){
-
-            if(true){
-                /**
-                 * Create to database
-                 */
-                mUserDao.create(item);
-
-            }else{
-                /**
-                 * Create to webservice
-                 */
-            }
+            mUserDao.create(item);
         }
     }
 
     @Override
     public void update(User item) {
         if(isCreatable(item)){
-
-            if(true){
-                /**
-                 * Create to database
-                 */
-                mUserDao.update(item);
-
-            }else{
-                /**
-                 * Create to webservice
-                 */
-            }
+            mUserDao.update(item);
         }
     }
 
     @Override
     public void delete(User item) {
-        if(true){
-            mUserDao.delete(item);
-        }else{
-
-        }
+        mUserDao.delete(item);
     }
 
     @Override
     public User get(Long id) {
-        User user = null;
-
-        if(true){
-            mUserDao.get(id);
-        }
+        User user = mUserDao.get(id);
 
         return user;
     }
@@ -90,19 +59,8 @@ public class UserService extends Service<User, Long> {
     @Override
     public List<User> all() {
 
-        List<User> users = new ArrayList<User>();
+        List<User> users = mUserDao.all();
 
-        if(true){
-            /**
-             * Get all users from database
-             */
-            users = mUserDao.all();
-        }else{
-            /**
-             * Get all users from webservice
-             */
-
-        }
         return users;
     }
 

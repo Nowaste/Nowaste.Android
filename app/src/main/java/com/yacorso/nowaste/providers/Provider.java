@@ -10,30 +10,26 @@
  * NoWaste team
  */
 
-package com.yacorso.nowaste.services;
-
-import android.content.Context;
+package com.yacorso.nowaste.providers;
 
 import com.yacorso.nowaste.data.NowasteApi;
 
 import java.util.List;
-
-import de.greenrobot.event.EventBus;
 
 /**
  * Abstract class Service
  * @param <T> Object class
  * @param <U> Id class
  */
-public abstract class Service<T, U> {
+public abstract class Provider<T, U> {
 
     NowasteApi mApi;
 
-    public Service(){
+    public Provider(){
         mApi = NowasteApi.ApiInstance.getInstance();
     }
 
-    public Service(NowasteApi api)
+    public Provider(NowasteApi api)
     {
         mApi = api;
     }

@@ -15,57 +15,62 @@ package com.yacorso.nowaste.dao;
 import com.raizlabs.android.dbflow.runtime.TransactionManager;
 import com.raizlabs.android.dbflow.runtime.transaction.BaseTransaction;
 import com.raizlabs.android.dbflow.runtime.transaction.TransactionListener;
+import com.raizlabs.android.dbflow.runtime.transaction.process.InsertModelTransaction;
 import com.raizlabs.android.dbflow.runtime.transaction.process.ProcessModelInfo;
-import com.raizlabs.android.dbflow.runtime.transaction.process.SaveModelTransaction;
 import com.raizlabs.android.dbflow.runtime.transaction.process.UpdateModelListTransaction;
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Delete;
 import com.raizlabs.android.dbflow.sql.language.Select;
-import com.yacorso.nowaste.events.UserCreatedEvent;
-import com.yacorso.nowaste.events.UserUpdatedEvent;
-import com.yacorso.nowaste.models.User;
-import com.yacorso.nowaste.models.User$Table;
+import com.yacorso.nowaste.events.CustomListCreatedEvent;
+import com.yacorso.nowaste.events.CustomListUpdatedEvent;
+import com.yacorso.nowaste.events.FridgeCreatedEvent;
+import com.yacorso.nowaste.events.FridgeUpdatedEvent;
+import com.yacorso.nowaste.models.CustomList;
+import com.yacorso.nowaste.models.CustomList$Table;
+import com.yacorso.nowaste.models.Fridge;
 
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
 
-
 /**
- * UserDao
- * Relation with database
+ * Created by quentin on 05/07/15.
  */
-public class UserDao extends Dao<User, Long> {
+public class CustomListDao extends Dao<CustomList, Long> {
 
-    /**
-     * Create user in database
-     *
-     * @param item
-     */
     @Override
-    public void create(User item) {
+    public void create(CustomList item) {
         insert(item, TYPE_CREATE);
     }
 
-    /**
-     * Update user in database
-     *
-     * @param item
-     */
     @Override
-    public void update(User item) {
+    public void update(CustomList item) {
         insert(item, TYPE_UPDATE);
     }
 
-    public void insert(User item, final int type) {
-
+    public void insert(final CustomList item, final int type) {
         TransactionListener resultReceiver = new TransactionListener() {
             @Override
             public void onResultReceived(Object o) {
+                /*
+                 * Insert or update foods items
+                 */
+                FoodDao foodDao = new FoodDao();
+                foodDao.insert(item.getFoods());
+
                 if (type == TYPE_CREATE) {
-                    EventBus.getDefault().post(new UserCreatedEvent());
+
+                    /*
+                     * When CustomList was created, push then CustomListCreatedEvent
+                     * For all listeners
+                     */
+                    EventBus.getDefault().post(new CustomListCreatedEvent());
                 } else if (type == TYPE_UPDATE) {
-                    EventBus.getDefault().post(new UserUpdatedEvent());
+                    /*
+                     * When CustomList was updated, push then CustomListUpdatedEvent
+                     * For all listeners
+                     */
+                    EventBus.getDefault().post(new CustomListUpdatedEvent());
                 }
             }
 
@@ -81,60 +86,40 @@ public class UserDao extends Dao<User, Long> {
         };
 
 
-        /**
+        /*
          * Set DBFlow Transaction
          */
-        ProcessModelInfo<User> processModelInfo =
+        ProcessModelInfo<CustomList> processModelInfo =
                 ProcessModelInfo.withModels(item)
                         .result(resultReceiver);
-        if (type == TYPE_CREATE) {
-            TransactionManager.getInstance().addTransaction(
-                    new SaveModelTransaction<>(processModelInfo));
-        } else if (type == TYPE_UPDATE) {
-            TransactionManager.getInstance().addTransaction(
-                    new UpdateModelListTransaction<>(processModelInfo));
-        }
 
+        if (type == TYPE_CREATE) {
+            TransactionManager.getInstance()
+                    .addTransaction(new InsertModelTransaction<>(processModelInfo));
+        } else if (type == TYPE_UPDATE) {
+            TransactionManager.getInstance()
+                    .addTransaction(new UpdateModelListTransaction<>(processModelInfo));
+        }
     }
 
-    /**
-     * Delete user in database
-     *
-     * @param item
-     */
     @Override
-    public void delete(User item) {
+    public void delete(CustomList item) {
         new Delete()
-                .from(User.class)
-                .where(Condition.column(User$Table.ID).is(item.getId()))
+                .from(CustomList.class)
+                .where(Condition.column(CustomList$Table.ID).is(item.getId()))
                 .query();
     }
 
-    /**
-     * Get user from database
-     *
-     * @param id
-     * @return
-     */
     @Override
-    public User get(Long id) {
+    public CustomList get(Long id) {
         return new Select()
-                .from(User.class)
-                .where(Condition.column(User$Table.ID).is(id))
+                .from(CustomList.class)
+                .where(Condition.column(CustomList$Table.ID).is(id))
                 .querySingle();
     }
 
-    /**
-     * Get all users from database
-     *
-     * @return
-     */
     @Override
-    public List<User> all() {
-
-        List<User> users = new Select().from(User.class).queryList();
-
-        return users;
-
+    public List<CustomList> all() {
+        return new Select().from(CustomList.class).queryList();
     }
 }

@@ -73,16 +73,14 @@ public interface NowasteApi {
     void getFoodsFromFridge(@Path("fridgeId") int fridgeId, Callback<List<Food>> foods);
 
 
-
-
-
-    class ApiInstance{
+    class ApiInstance {
 
         /**
          * Get Api Retro fit instance builded
+         *
          * @return NowasteApi
          */
-        public static NowasteApi getInstance(){
+        public static NowasteApi getInstance() {
 
             Gson gson = new GsonBuilder()
                     .excludeFieldsWithoutExposeAnnotation()

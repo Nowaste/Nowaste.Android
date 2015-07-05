@@ -10,7 +10,7 @@
  * NoWaste team
  */
 
-package com.yacorso.nowaste.services;
+package com.yacorso.nowaste.providers;
 
 import com.yacorso.nowaste.NowasteApplication;
 import com.yacorso.nowaste.dao.FridgeDao;
@@ -23,7 +23,6 @@ import com.yacorso.nowaste.data.NowasteApi;
 import com.yacorso.nowaste.models.Food;
 import com.yacorso.nowaste.models.Fridge;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
@@ -31,18 +30,18 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class FridgeService extends Service<Fridge, Long> {
+public class FridgeProvider extends Provider<Fridge, Long> {
 
     FridgeDao mFridgeDao = new FridgeDao();
 
-    public FridgeService() {
+    public FridgeProvider() {
         super();
         /**
          * Register all event on this service
          */
         EventBus.getDefault().register(this);
     }
-    public FridgeService(NowasteApi api) {
+    public FridgeProvider(NowasteApi api) {
         super(api);
         /**
          * Register all event on this service
@@ -68,37 +67,25 @@ public class FridgeService extends Service<Fridge, Long> {
     @Override
     public void create(Fridge item) {
         if(isCreatable(item)){
-            if(true){
-                mFridgeDao.create(item);
-            }
+            mFridgeDao.create(item);
         }
     }
 
     @Override
     public void update(Fridge item) {
         if(isCreatable(item)){
-            if(true){
-                mFridgeDao.update(item);
-            }
+            mFridgeDao.update(item);
         }
     }
 
     @Override
     public void delete(Fridge item) {
-        if(true){
-            mFridgeDao.delete(item);
-        }
+        mFridgeDao.delete(item);
     }
 
     @Override
     public Fridge get(Long id) {
-        Fridge fridge = null;
-
-        if(true){
-            fridge = mFridgeDao.get(id);
-        }else{
-
-        }
+        Fridge fridge = mFridgeDao.get(id);
 
         return fridge;
     }
@@ -106,12 +93,7 @@ public class FridgeService extends Service<Fridge, Long> {
     @Override
     public List<Fridge> all() {
 
-        List<Fridge> fridges = new ArrayList<Fridge>();
-
-        if(true){
-
-            fridges = mFridgeDao.all();
-        }
+        List<Fridge> fridges = mFridgeDao.all();
 
         return fridges;
     }
