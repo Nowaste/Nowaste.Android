@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.yacorso.nowaste.view.activities.DrawerActivity">
+    tools:context="com.yacorso.nowaste.views.activities.DrawerActivity">
     <item
         android:title="search"
         android:id="@+id/action_search"

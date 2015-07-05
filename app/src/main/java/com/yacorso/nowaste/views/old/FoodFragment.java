@@ -10,7 +10,7 @@
  * NoWaste team
  */
 
-package com.yacorso.nowaste.view.old;
+package com.yacorso.nowaste.views.old;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -23,7 +23,6 @@ import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
-import com.yacorso.nowaste.R;
 /** test **/
 
 public class FoodFragment extends Fragment implements AbsListView.OnItemClickListener {

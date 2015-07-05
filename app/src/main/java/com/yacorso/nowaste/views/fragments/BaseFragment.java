@@ -10,14 +10,10 @@
  * NoWaste team
  */
 
-package com.yacorso.nowaste.view.fragments;
+package com.yacorso.nowaste.views.fragments;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.os.Bundle;
-import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
@@ -26,7 +22,7 @@ import android.view.ViewGroup;
 
 import com.yacorso.nowaste.R;
 import com.yacorso.nowaste.events.SetTitleEvent;
-import com.yacorso.nowaste.view.activities.DrawerActivity;
+import com.yacorso.nowaste.views.activities.DrawerActivity;
 
 import butterknife.ButterKnife;
 import de.greenrobot.event.EventBus;

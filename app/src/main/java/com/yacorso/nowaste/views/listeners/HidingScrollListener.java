@@ -10,7 +10,7 @@
  * NoWaste team
  */
 
-package com.yacorso.nowaste.view.listener;
+package com.yacorso.nowaste.views.listeners;
 
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;

@@ -10,7 +10,7 @@
  * NoWaste team
  */
 
-package com.yacorso.nowaste.view.fragments;
+package com.yacorso.nowaste.views.fragments;
 
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
@@ -26,7 +26,6 @@ import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 
-import com.raizlabs.android.dbflow.sql.language.Select;
 import com.yacorso.nowaste.NowasteApplication;
 import com.yacorso.nowaste.R;
 import com.yacorso.nowaste.events.AddFoodEvent;
@@ -34,7 +33,6 @@ import com.yacorso.nowaste.events.CancelSearchEvent;
 import com.yacorso.nowaste.events.CurrentFridgeChangedEvent;
 import com.yacorso.nowaste.events.FoodCreatedEvent;
 import com.yacorso.nowaste.events.FridgesLoadedEvent;
-import com.yacorso.nowaste.events.LoadFoodsEvent;
 import com.yacorso.nowaste.events.LaunchSearchEvent;
 import com.yacorso.nowaste.models.Food;
 import com.yacorso.nowaste.models.FoodFridge;
@@ -43,8 +41,7 @@ import com.yacorso.nowaste.models.User;
 import com.yacorso.nowaste.services.FoodService;
 import com.yacorso.nowaste.services.FridgeService;
 import com.yacorso.nowaste.utils.LogUtil;
-import com.yacorso.nowaste.utils.MessageEvent;
-import com.yacorso.nowaste.view.adapter.FoodListAdapter;
+import com.yacorso.nowaste.views.adapters.FoodListAdapter;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;

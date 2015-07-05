@@ -10,7 +10,7 @@
  * NoWaste team
  */
 
-package com.yacorso.nowaste.view.adapter;
+package com.yacorso.nowaste.views.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;

@@ -1,4 +1,4 @@
-package com.yacorso.nowaste.view.fragments;
+package com.yacorso.nowaste.views.fragments;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -37,7 +37,6 @@ import java.util.regex.Pattern;
 
 import butterknife.ButterKnife;
 
-import static com.yacorso.nowaste.utils.Utils.hideKeyboard;
 import static com.yacorso.nowaste.utils.Utils.resetDatePicker;
 
 public class AddFoodFragment extends BaseFragment {

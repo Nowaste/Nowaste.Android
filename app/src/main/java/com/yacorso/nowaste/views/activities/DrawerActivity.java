@@ -10,16 +10,11 @@
  * NoWaste team
  */
 
-package com.yacorso.nowaste.view.activities;
+package com.yacorso.nowaste.views.activities;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
@@ -34,23 +29,19 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.yacorso.nowaste.R;
 import com.yacorso.nowaste.events.AddFoodEvent;
 import com.yacorso.nowaste.events.SetTitleEvent;
-import com.yacorso.nowaste.utils.LogUtil;
-import com.yacorso.nowaste.utils.MessageEvent;
 import com.yacorso.nowaste.events.CancelSearchEvent;
 import com.yacorso.nowaste.events.LaunchSearchEvent;
 import com.yacorso.nowaste.utils.NavigatorUtil;
-import com.yacorso.nowaste.view.fragments.AddFoodFragment;
-import com.yacorso.nowaste.view.fragments.BaseFragment;
-import com.yacorso.nowaste.view.fragments.FoodListFragment;
-import com.yacorso.nowaste.view.fragments.NavigationDrawerFragment;
+import com.yacorso.nowaste.views.fragments.AddFoodFragment;
+import com.yacorso.nowaste.views.fragments.BaseFragment;
+import com.yacorso.nowaste.views.fragments.FoodListFragment;
+import com.yacorso.nowaste.views.fragments.NavigationDrawerFragment;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;

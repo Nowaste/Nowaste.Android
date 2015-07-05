@@ -10,7 +10,7 @@
  * NoWaste team
  */
 
-package com.yacorso.nowaste.view.fragments;
+package com.yacorso.nowaste.views.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -29,16 +29,13 @@ import android.view.ViewGroup;
 
 import com.yacorso.nowaste.NowasteApplication;
 import com.yacorso.nowaste.R;
-import com.yacorso.nowaste.events.UserLoadedEvent;
 import com.yacorso.nowaste.models.Fridge;
 import com.yacorso.nowaste.models.NavigationDrawerItem;
 import com.yacorso.nowaste.models.User;
-import com.yacorso.nowaste.view.adapter.NavigationDrawerAdapter;
+import com.yacorso.nowaste.views.adapters.NavigationDrawerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import de.greenrobot.event.EventBus;
 
 /**
  * Created by quentin on 24/06/15.
