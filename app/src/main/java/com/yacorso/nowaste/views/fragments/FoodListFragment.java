@@ -12,17 +12,21 @@
 
 package com.yacorso.nowaste.views.fragments;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 
@@ -34,8 +38,10 @@ import com.yacorso.nowaste.events.CurrentFridgeChangedEvent;
 import com.yacorso.nowaste.events.FoodCreatedEvent;
 import com.yacorso.nowaste.events.FridgesLoadedEvent;
 import com.yacorso.nowaste.events.LaunchSearchEvent;
+import com.yacorso.nowaste.models.CustomList;
 import com.yacorso.nowaste.models.Food;
 import com.yacorso.nowaste.models.FoodFridge;
+import com.yacorso.nowaste.models.FoodList;
 import com.yacorso.nowaste.models.Fridge;
 import com.yacorso.nowaste.models.User;
 import com.yacorso.nowaste.providers.FoodProvider;
@@ -63,30 +69,46 @@ public class FoodListFragment extends BaseFragment {
     FloatingActionButton mFabButton;
     SwipeRefreshLayout mSwipeRefreshLayout;
     Fridge mCurrentFridge;
+    CustomList mCurrentCustomList;
     List<Food> mFoodItems = new ArrayList<Food>();
 
     FoodProvider mFoodProvider;
     FridgeProvider mFridgeProvider;
 
+
     public static FoodListFragment newInstance() {
         return new FoodListFragment();
+    }
+    public static FoodListFragment newInstance(Fridge fridge) {
+
+        FoodListFragment fragment = new FoodListFragment();
+        fragment.mCurrentFridge = fridge;
+
+        return fragment;
+    }
+    public static FoodListFragment newInstance(CustomList customList) {
+
+        FoodListFragment fragment = new FoodListFragment();
+        fragment.mCurrentCustomList = customList;
+
+        return fragment;
     }
 
     public FoodListFragment() {
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        mRootView = super.onCreateView(inflater, container, savedInstanceState);
 
         mFoodProvider = new FoodProvider();
         mFridgeProvider = new FridgeProvider();
 
-        mCurrentFridge = mFridgeProvider.getCurrentFridge();
+//        mCurrentFridge = mFridgeProvider.getCurrentFridge();
 
         setList();
-        LogUtil.LOGD(this, "onActivityCreated");
 
+        return mRootView;
     }
 
     @Override
@@ -151,7 +173,8 @@ public class FoodListFragment extends BaseFragment {
     }
 
     private void initSwipeRefreshLayout() {
-        mSwipeRefreshLayout = ButterKnife.findById(getActivity(), R.id.swipeRefreshFoodListLayout);
+        Activity a = getActivity();
+        mSwipeRefreshLayout = ButterKnife.findById(mRootView, R.id.swipeRefreshFoodListLayout);
         mSwipeRefreshLayout.setColorSchemeResources(R.color.refresh_progress_1, R.color.refresh_progress_2);
 //        mSwipeRefreshLayout.setProgressViewOffset(false, 150, 200);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -163,7 +186,7 @@ public class FoodListFragment extends BaseFragment {
     }
 
     private void initRecyclerView() {
-        mRecyclerView = ButterKnife.findById(getActivity(), R.id.rv_food_list);
+        mRecyclerView = ButterKnife.findById(mRootView, R.id.rv_food_list);
 
 
         ItemTouchHelper swipeToDismissTouchHelper = new ItemTouchHelper(
@@ -220,7 +243,7 @@ public class FoodListFragment extends BaseFragment {
     }
 
     private void initFabButton() {
-        mFabButton = ButterKnife.findById(getDrawerActivity(), R.id.btnAddFood);
+        mFabButton = ButterKnife.findById(mRootView, R.id.btnAddFood);
         mFabButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 EventBus.getDefault().post(new AddFoodEvent());
@@ -241,19 +264,25 @@ public class FoodListFragment extends BaseFragment {
     }
 
     private void refreshItems() {
-
-//        // Load items
-//        mFoodItems = new Select().from(Food.class).queryList();
 //
-        User user = NowasteApplication.getCurrentUser();
-        if (user.exists() && user.getFridges().size() > 0) {
-            Fridge f = user.getFridges().get(0);
+////        // Load items
+////        mFoodItems = new Select().from(Food.class).queryList();
+////
+//        User user = NowasteApplication.getCurrentUser();
+//        if (user.exists() && user.getFridges().size() > 0) {
+//            Fridge f = user.getFridges().get(0);
+//
+////            mCurrentFridge = user.getFridges().get(0);
+//            mFoodItems = mCurrentFridge.getFoods();
+//        }
+////
+////        mFoodItems = mCurrentFridge.getFoodList();
 
-//            mCurrentFridge = user.getFridges().get(0);
+        if(mCurrentFridge != null && !mCurrentFridge.isEmpty()){
             mFoodItems = mCurrentFridge.getFoods();
+        }else if(mCurrentCustomList != null && !mCurrentCustomList.isEmpty()){
+            mFoodItems = mCurrentCustomList.getFoods();
         }
-//
-//        mFoodItems = mCurrentFridge.getFoodList();
 
 //        // Load complete
         onItemsLoadComplete();

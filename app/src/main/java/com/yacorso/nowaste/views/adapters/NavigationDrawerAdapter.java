@@ -17,6 +17,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.yacorso.nowaste.R;
@@ -55,6 +56,7 @@ public class NavigationDrawerAdapter extends RecyclerView.Adapter
     public void onBindViewHolder(NavigationDrawerViewHolder holder, int position) {
         NavigationDrawerItem item = mItems.get(position);
         holder.mTxtTitle.setText(item.getTitle());
+        holder.mImgIcon.setImageResource(item.getIcon());
     }
 
     @Override
@@ -69,12 +71,13 @@ public class NavigationDrawerAdapter extends RecyclerView.Adapter
     class NavigationDrawerViewHolder extends RecyclerView.ViewHolder {
 
         TextView mTxtTitle;
+        ImageView mImgIcon;
 
         public NavigationDrawerViewHolder(View itemView) {
             super(itemView);
 
             mTxtTitle = (TextView) itemView.findViewById(R.id.title);
-
+            mImgIcon = (ImageView) itemView.findViewById(R.id.list_item_left_icon);
         }
     }
 }

@@ -12,21 +12,25 @@
 
 package com.yacorso.nowaste.models;
 
+import com.yacorso.nowaste.views.fragments.BaseFragment;
+
 /**
  * Created by quentin on 24/06/15.
  */
 public class NavigationDrawerItem {
-    private boolean showNotify;
-    private String title;
-
+    protected boolean showNotify;
+    protected String title;
+    protected int icon;
+    protected BaseFragment fragment;
 
     public NavigationDrawerItem() {
 
     }
 
-    public NavigationDrawerItem(boolean showNotify, String title) {
-        this.showNotify = showNotify;
+    public NavigationDrawerItem(String title, int icon, BaseFragment fragment) {
         this.title = title;
+        this.icon = icon;
+        this.fragment = fragment;
     }
 
     public boolean isShowNotify() {
@@ -43,5 +47,21 @@ public class NavigationDrawerItem {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public int getIcon() {
+        return icon;
+    }
+
+    public void setIcon(int icon) {
+        this.icon = icon;
+    }
+
+    public BaseFragment getFragment() {
+        return fragment;
+    }
+
+    public void setFragment(BaseFragment fragment) {
+        this.fragment = fragment;
     }
 }

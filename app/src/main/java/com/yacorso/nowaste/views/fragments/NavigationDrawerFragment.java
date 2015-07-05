@@ -50,7 +50,7 @@ public class NavigationDrawerFragment extends Fragment {
     private DrawerLayout mDrawerLayout;
     private NavigationDrawerAdapter mAdapter;
     private View mContainerView;
-    private static List<String> mTitles = new ArrayList<String>();
+    private static List<NavigationDrawerItem> mMenuItems = new ArrayList<NavigationDrawerItem>();
     private FragmentDrawerListener mDrawerListener;
 
     public NavigationDrawerFragment() {
@@ -68,23 +68,41 @@ public class NavigationDrawerFragment extends Fragment {
         List<Fridge> fridges = currentUser.getFridges();
 
         for (Fridge fridge : fridges) {
-            mTitles.add(fridge.getName());
+            NavigationDrawerItem item = new NavigationDrawerItem();
+            item.setIcon(R.drawable.ic_fridge);
+            item.setTitle(fridge.getName());
+            item.setFragment(FoodListFragment.newInstance(fridge));
+
+            mMenuItems.add(item);
         }
 
         List<CustomList> customLists = currentUser.getCustomLists();
 
         for (CustomList customList : customLists) {
-            mTitles.add(customList.getName());
+            NavigationDrawerItem item = new NavigationDrawerItem();
+            item.setIcon(R.drawable.ic_folder);
+            item.setTitle(customList.getName());
+            item.setFragment(FoodListFragment.newInstance(customList));
+
+            mMenuItems.add(item);
+
         }
 
-        mAdapter = new NavigationDrawerAdapter(getData());
+        NavigationDrawerItem menuItemSettings = new NavigationDrawerItem();
+        menuItemSettings.setIcon(R.drawable.ic_setting_light);
+        menuItemSettings.setTitle(getResources().getString(R.string.menu_title_settings));
+        menuItemSettings.setFragment(SettingsFragment.newInstance());
+
+        mMenuItems.add(menuItemSettings);
+
+        mAdapter = new NavigationDrawerAdapter(mMenuItems);
 
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.addOnItemTouchListener(new RecyclerTouchListener(getActivity(), mRecyclerView, new ClickListener() {
             @Override
             public void onClick(View view, int position) {
-                mDrawerListener.onDrawerItemSelected(view, position);
+                mDrawerListener.onDrawerItemSelected(view, position, mMenuItems.get(position));
                 mDrawerLayout.closeDrawer(mContainerView);
             }
 
@@ -130,19 +148,6 @@ public class NavigationDrawerFragment extends Fragment {
         });
 
     }
-
-    public static List<NavigationDrawerItem> getData() {
-        List<NavigationDrawerItem> data = new ArrayList<>();
-
-        // preparing navigation drawer items
-        for (int i = 0; i < mTitles.size(); i++) {
-            NavigationDrawerItem navItem = new NavigationDrawerItem();
-            navItem.setTitle(mTitles.get(i));
-            data.add(navItem);
-        }
-        return data;
-    }
-
 
     public void setDrawerListener(FragmentDrawerListener listener) {
         mDrawerListener = listener;
@@ -198,6 +203,6 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     public interface FragmentDrawerListener {
-        public void onDrawerItemSelected(View view, int position);
+        public void onDrawerItemSelected(View view, int position, NavigationDrawerItem menuItem);
     }
 }

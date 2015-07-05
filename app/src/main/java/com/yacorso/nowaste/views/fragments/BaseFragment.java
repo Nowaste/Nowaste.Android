@@ -32,6 +32,8 @@ import de.greenrobot.event.EventBus;
  */
 public abstract class BaseFragment extends DialogFragment {
 
+    View mRootView ;
+
     public DrawerActivity getDrawerActivity() {
         return (DrawerActivity) super.getActivity();
     }
@@ -40,10 +42,10 @@ public abstract class BaseFragment extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        View view = inflater.inflate(getLayout(), container, false);
-        ButterKnife.inject(this, view);
+        mRootView = inflater.inflate(getLayout(), container, false);
+        ButterKnife.inject(this, mRootView);
 
-        return view;
+        return mRootView;
     }
 
     @Override

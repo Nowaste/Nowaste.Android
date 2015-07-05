@@ -32,16 +32,22 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.yacorso.nowaste.NowasteApplication;
 import com.yacorso.nowaste.R;
 import com.yacorso.nowaste.events.AddFoodEvent;
 import com.yacorso.nowaste.events.SetTitleEvent;
 import com.yacorso.nowaste.events.CancelSearchEvent;
 import com.yacorso.nowaste.events.LaunchSearchEvent;
+import com.yacorso.nowaste.models.Fridge;
+import com.yacorso.nowaste.models.NavigationDrawerItem;
+import com.yacorso.nowaste.models.User;
 import com.yacorso.nowaste.utils.NavigatorUtil;
 import com.yacorso.nowaste.views.fragments.AddFoodFragment;
 import com.yacorso.nowaste.views.fragments.BaseFragment;
 import com.yacorso.nowaste.views.fragments.FoodListFragment;
 import com.yacorso.nowaste.views.fragments.NavigationDrawerFragment;
+
+import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -51,25 +57,17 @@ import static com.yacorso.nowaste.utils.Utils.hideKeyboard;
 import static com.yacorso.nowaste.utils.Utils.showKeyboard;
 
 public class DrawerActivity extends AppCompatActivity implements
-        NavigationView.OnNavigationItemSelectedListener,
         NavigationDrawerFragment.FragmentDrawerListener {
 
     @InjectView(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
 
-//    @InjectView(R.id.navigation_view)
-//    NavigationView mNavigationView;
-
     NavigationDrawerFragment mDrawerFragment;
+    NavigatorUtil mNavigatorUtil;
 
-    //    private static NavigatorUtil mNavigator;
     @InjectView(R.id.toolbar)
     Toolbar mToolbar;
-//    private ActionBarDrawerToggle mDrawerToggle;
-//    private @IdRes int mCurrentMenuItem;
-    private static NavigatorUtil mNavigator;
-    private ActionBarDrawerToggle mDrawerToggle;
-    private @IdRes int mCurrentMenuItem;
+
     private MenuItem mSearchAction;
     private boolean isSearchOpened = false;
     private EditText searchQuery;
@@ -81,81 +79,47 @@ public class DrawerActivity extends AppCompatActivity implements
 
         ButterKnife.inject(this);
 
-//        mDrawerFragment = (NavigationDrawerFragment)
-//                    getSupportFragmentManager().findFragmentById(R.id.fragment_navigation_drawer);
+        mNavigatorUtil = new NavigatorUtil(getSupportFragmentManager(), R.id.container_body);
 
         initActionBarAndNavDrawer();
-//        initNavigator();
 
-//        mCurrentMenuItem = R.id.menu_item_my_fridge;
-//        setNewRootFragment(FoodListFragment.newInstance());
+        if(savedInstanceState == null)
+        {
+            /*
+             * If user has a fridge, display it
+             */
+            User currentUser = NowasteApplication.getCurrentUser();
+            List<Fridge> fridges = currentUser.getFridges();
+            if(fridges.size() > 0){
+                mNavigatorUtil.setRootFragment(FoodListFragment.newInstance(fridges.get(0)));
+            }
+            /*
+             * Then display speech recognizer
+             */
+            else{
+
+            }
+        }
     }
 
     private void initActionBarAndNavDrawer() {
-//        mToolbar = ButterKnife.findById(this, R.id.toolbar);
+
+        // Set toolbar as actionbar
         setSupportActionBar(mToolbar);
 
-//        mDrawerToggle = new ActionBarDrawerToggle(
-//                this, mDrawerLayout,
-//                R.string.navigation_drawer_open,
-//                R.string.navigation_drawer_close);
-//
-//        mDrawerToggle.setDrawerIndicatorEnabled(true);
-//        mDrawerLayout.setDrawerListener(mDrawerToggle);
-
+        // Display hamburger button, on the top left
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
-//        mDrawerToggle.syncState();
-//        mNavigationView.setNavigationItemSelectedListener(this);
-
+        // Set up drawer fragment
         mDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.fragment_navigation_drawer);
         mDrawerFragment.setUp(R.id.fragment_navigation_drawer, mDrawerLayout, mToolbar);
         mDrawerFragment.setDrawerListener(this);
-        displayView(0);
     }
 
-    private void displayView(int position) {
-        BaseFragment fragment = null;
-        String title = getString(R.string.app_name);
-        switch (position) {
-            case 0:
-                fragment = new FoodListFragment();
-                title = getString(R.string.app_name);
-                break;
-//            case 1:
-//                fragment = new FriendsFragment();
-//                title = getString(R.string.title_friends);
-//                break;
-//            case 2:
-//                fragment = new MessagesFragment();
-//                title = getString(R.string.title_messages);
-//                break;
-            default:
-                break;
-        }
 
-        launchFragment(fragment, false);
-    }
-
-    private void launchFragment (BaseFragment fragment, boolean addTobackStack) {
-        if (fragment != null) {
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.container_body, fragment);
-            if (addTobackStack) {
-                fragmentTransaction.addToBackStack(null);
-            }
-            fragmentTransaction.commit();
-        }
-    }
-
-    private void launchDialog (BaseFragment fragment) {
-        fragment.show(getSupportFragmentManager(), "dialog");
-    }
-
-    private void updateToolbarTitle (String title) {
+    private void updateToolbarTitle(String title) {
         getSupportActionBar().setTitle(title);
     }
 
@@ -179,10 +143,10 @@ public class DrawerActivity extends AppCompatActivity implements
         return super.onOptionsItemSelected(item);
     }
 
-    protected void handleMenuSearch(){
+    protected void handleMenuSearch() {
         ActionBar action = getSupportActionBar(); //get the actionbar
 
-        if(isSearchOpened){ //test if the search is open
+        if (isSearchOpened) { //test if the search is open
 
             action.setDisplayShowCustomEnabled(false); //disable a custom view inside the actionbar
             action.setDisplayShowTitleEnabled(true); //show the title in the action bar
@@ -200,7 +164,7 @@ public class DrawerActivity extends AppCompatActivity implements
             action.setCustomView(R.layout.searchbar);//add the custom view
             action.setDisplayShowTitleEnabled(false); //hide the title
 
-            searchQuery = (EditText)action.getCustomView().findViewById(R.id.edtSearch); //the text editor
+            searchQuery = (EditText) action.getCustomView().findViewById(R.id.edtSearch); //the text editor
             //this is a listener to do a search when the user clicks on search button
             searchQuery.setOnEditorActionListener(new TextView.OnEditorActionListener() {
                 @Override
@@ -218,10 +182,14 @@ public class DrawerActivity extends AppCompatActivity implements
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
                     doSearch(searchQuery.getText().toString());
                 }
+
                 @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
+
                 @Override
-                public void afterTextChanged(Editable s) { }
+                public void afterTextChanged(Editable s) {
+                }
             });
 
             searchQuery.requestFocus();
@@ -246,7 +214,7 @@ public class DrawerActivity extends AppCompatActivity implements
 
     @Override
     public void onBackPressed() {
-        if(isSearchOpened) {
+        if (isSearchOpened) {
             handleMenuSearch();
             return;
         }
@@ -254,13 +222,9 @@ public class DrawerActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onDrawerItemSelected(View view, int position) {
-
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(MenuItem menuItem) {
-        return false;
+    public void onDrawerItemSelected(View view, int position, NavigationDrawerItem menuItem) {
+        mNavigatorUtil.setRootFragment(menuItem.getFragment());
+        updateToolbarTitle(menuItem.getTitle());
     }
 
     @Override
@@ -275,13 +239,16 @@ public class DrawerActivity extends AppCompatActivity implements
         super.onStop();
     }
 
-    public void onEvent(AddFoodEvent event){
-        launchDialog(AddFoodFragment.newInstance());
-
-    }
-
-    public void onEvent(SetTitleEvent event){
+    public void onEvent(SetTitleEvent event) {
         updateToolbarTitle(event.getTitleFragment());
-
     }
+
+    private void launchDialog(BaseFragment fragment) {
+        fragment.show(getSupportFragmentManager(), "dialog");
+    }
+
+    public void onEvent(AddFoodEvent event) {
+        launchDialog(AddFoodFragment.newInstance());
+    }
+
 }
