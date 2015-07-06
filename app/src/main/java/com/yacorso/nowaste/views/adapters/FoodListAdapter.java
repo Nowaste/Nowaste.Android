@@ -28,11 +28,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.yacorso.nowaste.R;
 import com.yacorso.nowaste.models.Food;
 import com.yacorso.nowaste.providers.FoodProvider;
+
+import butterknife.ButterKnife;
+
+import static com.yacorso.nowaste.utils.Utils.getDateTextFromDate;
 
 public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -78,6 +83,8 @@ public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         holder.tvName.setText(food.getName());
         holder.btnQuantity.setText(Integer.toString(quantity));
+        Date outOfDate = food.getFoodFridge().getOutOfDate();
+        holder.outOfDate.setText(getDateTextFromDate(outOfDate));
 
 
         /*
@@ -151,14 +158,16 @@ public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         TextView tvName;
         TextView btnQuantity;
         Button btnFavoriteToggle;
-        AppCompatButton btnOpenToggle;
+        Button btnOpenToggle;
+        TextView outOfDate;
 
         public FoodListViewHolder(View itemView) {
             super(itemView);
-            tvName = (TextView) itemView.findViewById(R.id.txt_food_name);
-            btnQuantity = (TextView) itemView.findViewById(R.id.btn_food_quantity);
-            btnFavoriteToggle = (Button) itemView.findViewById(R.id.btn_favorite_toggle);
-            btnOpenToggle = (AppCompatButton) itemView.findViewById(R.id.btn_open_toggle);
+            tvName = ButterKnife.findById(itemView, R.id.txt_food_name);
+            btnQuantity = ButterKnife.findById(itemView, R.id.btn_food_quantity);
+            btnFavoriteToggle = ButterKnife.findById(itemView, R.id.btn_favorite_toggle);
+            btnOpenToggle = ButterKnife.findById(itemView, R.id.btn_open_toggle);
+            outOfDate = ButterKnife.findById(itemView, R.id.out_of_date_textview);
 
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);

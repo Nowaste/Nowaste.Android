@@ -18,8 +18,11 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.DatePicker;
 import android.widget.EditText;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 public class Utils {
 
@@ -32,6 +35,12 @@ public class Utils {
         calendar.set(year, month, day);
 
         return calendar.getTime();
+    }
+
+    public static String getDateTextFromDate(Date date){
+        String format = "dd/MM/yyyy";
+        SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.FRANCE);
+        return sdf.format(date);
     }
 
     public static void resetDatePicker(DatePicker datePicker){
