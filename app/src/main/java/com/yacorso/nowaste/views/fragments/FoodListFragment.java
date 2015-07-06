@@ -12,8 +12,10 @@
 
 package com.yacorso.nowaste.views.fragments;
 
-
 import android.os.Bundle;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -64,7 +66,6 @@ public class FoodListFragment extends BaseFragment {
     FridgeProvider mFridgeProvider;
     FoodProvider mFoodProvider;
     UserProvider mUserProvider;
-
 
     public static FoodListFragment newInstance() {
         return new FoodListFragment();
