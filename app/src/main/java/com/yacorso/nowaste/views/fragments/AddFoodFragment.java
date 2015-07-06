@@ -59,7 +59,7 @@ public class AddFoodFragment extends BaseFragment {
         mFridgeProvider = new FridgeProvider();
         mCurrentFridge = mFridgeProvider.getCurrentFridge();
 
-        //startVoiceRecognitionActivity();
+//        startVoiceRecognitionActivity();
     }
 
     @Override

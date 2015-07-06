@@ -12,6 +12,7 @@
 
 package com.yacorso.nowaste.views.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.design.widget.NavigationView;
@@ -46,6 +47,7 @@ import com.yacorso.nowaste.views.fragments.AddFoodFragment;
 import com.yacorso.nowaste.views.fragments.BaseFragment;
 import com.yacorso.nowaste.views.fragments.FoodListFragment;
 import com.yacorso.nowaste.views.fragments.NavigationDrawerFragment;
+import com.yacorso.nowaste.views.fragments.SpeechAddFoodFragment;
 
 import java.util.List;
 
@@ -90,14 +92,14 @@ public class DrawerActivity extends AppCompatActivity implements
              */
             User currentUser = NowasteApplication.getCurrentUser();
             List<Fridge> fridges = currentUser.getFridges();
-            if(fridges.size() > 0){
+            if(fridges.size() == 0){
                 mNavigatorUtil.setRootFragment(FoodListFragment.newInstance(fridges.get(0)));
             }
             /*
              * Then display speech recognizer
              */
             else{
-
+//                startActivity(new Intent(this, SpeechRecognitionActivity.class));
             }
         }
     }
@@ -248,7 +250,7 @@ public class DrawerActivity extends AppCompatActivity implements
     }
 
     public void onEvent(AddFoodEvent event) {
-        launchDialog(AddFoodFragment.newInstance());
+        launchDialog(SpeechAddFoodFragment.newInstance());
     }
 
 }
