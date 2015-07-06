@@ -12,11 +12,12 @@
 
 package com.yacorso.nowaste.views.adapters;
 
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.res.ColorStateList;
-import android.support.v7.widget.AppCompatButton;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -125,6 +126,28 @@ public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             public void onClick(View v) {
                 food.toggleOpen();
                 mFoodProvider.update(food);
+                Drawable icon;
+                if (food.getFoodFridge().isOpen()) {
+                    icon = mContext.getResources().getDrawable(R.drawable.food_started);
+                }
+                else {
+                    icon = mContext.getResources().getDrawable(R.drawable.food_not_started);
+                }
+
+                if(android.os.Build.VERSION.SDK_INT >= 16) {
+                    v.setBackground(icon);
+                }
+                else {
+                    v.setBackgroundDrawable(icon);
+                }
+            }
+
+        });
+
+        holder.textZone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO: Open AddFoodFragment with food informations
             }
         });
     }
@@ -160,6 +183,7 @@ public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         Button btnFavoriteToggle;
         Button btnOpenToggle;
         TextView outOfDate;
+        View textZone;
 
         public FoodListViewHolder(View itemView) {
             super(itemView);
@@ -168,6 +192,7 @@ public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             btnFavoriteToggle = ButterKnife.findById(itemView, R.id.btn_favorite_toggle);
             btnOpenToggle = ButterKnife.findById(itemView, R.id.btn_open_toggle);
             outOfDate = ButterKnife.findById(itemView, R.id.out_of_date_textview);
+            textZone = ButterKnife.findById(itemView, R.id.item_text_zone);
 
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
@@ -191,4 +216,5 @@ public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             return false;
         }
     }
+
 }

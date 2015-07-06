@@ -65,6 +65,12 @@ public class FoodFridge extends BaseCacheableModel implements Parcelable {
      */
 
     public FoodFridge() {
+        this.id = 0;
+        this.outOfDate = null;
+        this.consumedDate = null;
+        this.quantity = 1;
+        this.open = false;
+        this.visible = false;
     }
 
     public FoodFridge(long id, Date outOfDate, Date consumedDate, int quantity, Boolean open,
@@ -117,7 +123,7 @@ public class FoodFridge extends BaseCacheableModel implements Parcelable {
         this.visible = visible;
     }
 
-    public Boolean getOpen() {
+    public Boolean isOpen() {
         return open;
     }
 
@@ -126,6 +132,9 @@ public class FoodFridge extends BaseCacheableModel implements Parcelable {
     }
 
     public void toggleOpen(){
+        if (open == null) {
+            open = false;
+        }
         setOpen(!open);
     }
 
