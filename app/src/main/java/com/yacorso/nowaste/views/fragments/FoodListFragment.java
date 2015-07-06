@@ -13,6 +13,7 @@
 package com.yacorso.nowaste.views.fragments;
 
 import android.app.Activity;
+import android.app.usage.UsageEvents;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -181,6 +182,7 @@ public class FoodListFragment extends BaseFragment {
             @Override
             public void onRefresh() {
                 refreshItems();
+                EventBus.getDefault().post(new CancelSearchEvent());
             }
         });
     }

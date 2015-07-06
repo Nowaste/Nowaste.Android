@@ -251,4 +251,10 @@ public class DrawerActivity extends AppCompatActivity implements
         launchDialog(AddFoodFragment.newInstance());
     }
 
+    public void onEvent(CancelSearchEvent event) {
+        if (isSearchOpened) {
+            handleMenuSearch();
+        }
+    }
+
 }
