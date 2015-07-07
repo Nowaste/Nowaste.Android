@@ -205,24 +205,24 @@ public class FoodListFragment extends BaseFragment {
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
 
                 final int position = viewHolder.getAdapterPosition();
-                final Food item = mFoodItems.get(position);
+                final Food item = mFoodListAdapter.get(position);
 
                 Snackbar.make(getView(), R.string.snackbar_confirm_food_delete, Snackbar.LENGTH_LONG)
                         .setAction(R.string.snackbar_undo, new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                mFoodItems.add(position, item);
+                                mFoodItems.add(item);
                                 mFoodListAdapter.add(item);
-                                mFoodListAdapter.notifyDataSetChanged();
+                                //mFoodListAdapter.notifyItemInserted(0);
+                                //mFoodListAdapter.notifyDataSetChanged();
                             }
                         })
                         .show();
 
-
                 // callback for swipe to dismiss, removing item from data and adapter
-//                mFoodService.delete(item);
-                mFoodItems.remove(position);
-                mFoodListAdapter.notifyItemRemoved(position);
+                mFoodItems.remove(item);
+                mFoodListAdapter.remove(item);
+                //mFoodListAdapter.notifyItemRemoved(position);
             }
         });
 
