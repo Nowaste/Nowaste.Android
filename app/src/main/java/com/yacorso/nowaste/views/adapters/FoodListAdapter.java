@@ -12,12 +12,11 @@
 
 package com.yacorso.nowaste.views.adapters;
 
-import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
+import android.support.v7.util.SortedList;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -29,12 +28,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import com.yacorso.nowaste.R;
 import com.yacorso.nowaste.events.UpdateFoodEvent;
 import com.yacorso.nowaste.models.Food;
+import com.yacorso.nowaste.models.FoodList;
 import com.yacorso.nowaste.providers.FoodProvider;
 
 import butterknife.ButterKnife;
@@ -45,22 +46,48 @@ import static com.yacorso.nowaste.utils.Utils.getDateTextFromDate;
 public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
 
-    List<Food> mVisibleFoods;
-    List<Food> mFoods;
+    SortedList<Food> mFoods;
     FoodProvider mFoodProvider;
     Context mContext;
 
     public FoodListAdapter() {
-    }
+        mFoods = new SortedList<>(Food.class, new SortedList.Callback<Food>() {
+            @Override
+            public int compare(Food o1, Food o2) {
+                return o1.getFoodFridge().getOutOfDate().compareTo(o2.getFoodFridge().getOutOfDate());
+            }
 
-    public FoodListAdapter(List<Food> foods) {
-        mFoods = foods;
-        mVisibleFoods = foods;
-    }
+            @Override
+            public void onInserted(int position, int count) {
+                notifyItemRangeInserted(position, count);
+            }
 
-    public void setFoods(List<Food> foods) {
-        mFoods = foods;
-        mVisibleFoods = foods;
+            @Override
+            public void onRemoved(int position, int count) {
+                notifyItemRangeRemoved(position, count);
+            }
+
+            @Override
+            public void onMoved(int fromPosition, int toPosition) {
+                notifyItemMoved(fromPosition, toPosition);
+            }
+
+            @Override
+            public void onChanged(int position, int count) {
+                notifyItemRangeChanged(position, count);
+            }
+
+            @Override
+            public boolean areContentsTheSame(Food oldItem, Food newItem) {
+                // return whether the items' visual representations are the same or not.
+                return oldItem.getName().equals(newItem.getName());
+            }
+
+            @Override
+            public boolean areItemsTheSame(Food item1, Food item2) {
+                return item1.getId() == item2.getId();
+            }
+        });
     }
 
     @Override
@@ -79,9 +106,8 @@ public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         FoodListViewHolder holder = (FoodListViewHolder) viewHolder;
 
-        final Food food = mVisibleFoods.get(position);
+        final Food food = mFoods.get(position);
 
-//        final Food food = mFoods.get(position);
         final int quantity = food.getFoodFridge().getQuantity();
 
         holder.tvName.setText(food.getName());
@@ -158,32 +184,20 @@ public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
-    @Override
-    public int getItemCount() {
-        return mVisibleFoods == null ? 0 : mVisibleFoods.size();
-    }
-
-    public void flushFilter(){
-        mVisibleFoods=new ArrayList<>();
-        mVisibleFoods.addAll(mFoods);
-        notifyDataSetChanged();
-    }
-
-    public void setFilter(String queryText) {
-
-        mVisibleFoods = new ArrayList<>();
-        //constraint = constraint.toString().toLowerCase();
-        for (Food food: mFoods) {
-            if (food.getName().toLowerCase().contains(queryText))
-                mVisibleFoods.add(food);
+    public void setFilter(String queryText, List<Food> foodList) {
+        for (Food food: foodList) {
+            if (!food.getName().toLowerCase().contains(queryText)) {
+                remove(food);
+            }
+            else {
+                add(food);
+            }
         }
-        notifyDataSetChanged();
     }
 
     public static class FoodListViewHolder extends RecyclerView.ViewHolder
             implements View.OnClickListener, View.OnLongClickListener {
 
-        CardView cv;
         TextView tvName;
         TextView btnQuantity;
         Button btnFavoriteToggle;
@@ -206,21 +220,67 @@ public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         @Override
         public void onClick(View v) {
-
             Toast.makeText(v.getContext(), "OnClick",
                     Toast.LENGTH_SHORT).show();
-
         }
 
         @Override
         public boolean onLongClick(View v) {
-
             Toast.makeText(v.getContext(), "OnLongClick",
                     Toast.LENGTH_SHORT).show();
-
-
             return false;
         }
+    }
+
+    @Override
+    public int getItemCount() {
+        return mFoods == null ? 0 : mFoods.size();
+    }
+
+    // region PageList Helpers
+    public Food get(int position) {
+        return mFoods.get(position);
+    }
+
+    public int add(Food item) {
+        return mFoods.add(item);
+    }
+
+    public int indexOf(Food item) {
+        return mFoods.indexOf(item);
+    }
+
+    public void updateItemAt(int index, Food item) {
+        mFoods.updateItemAt(index, item);
+    }
+
+    public void addAll(List<Food> items) {
+        mFoods.beginBatchedUpdates();
+        for (Food item : items) {
+            mFoods.add(item);
+        }
+        mFoods.endBatchedUpdates();
+    }
+
+    public void addAll(Food[] items) {
+        addAll(Arrays.asList(items));
+    }
+
+    public boolean remove(Food item) {
+        return mFoods.remove(item);
+    }
+
+    public Food removeItemAt(int index) {
+        return mFoods.removeItemAt(index);
+    }
+
+    public void clear() {
+        mFoods.beginBatchedUpdates();
+        //remove items at end, to avoid unnecessary array shifting
+        while (mFoods.size() > 0) {
+            mFoods.removeItemAt(mFoods.size() - 1);
+        }
+        mFoods.endBatchedUpdates();
     }
 
 }

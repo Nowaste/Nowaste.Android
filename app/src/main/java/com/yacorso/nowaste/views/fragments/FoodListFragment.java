@@ -20,6 +20,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.util.SortedList;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -71,7 +72,7 @@ public class FoodListFragment extends BaseFragment {
     SwipeRefreshLayout mSwipeRefreshLayout;
     Fridge mCurrentFridge;
     CustomList mCurrentCustomList;
-    List<Food> mFoodItems = new ArrayList<Food>();
+    List<Food> mFoodItems;
 
     FoodProvider mFoodProvider;
     FridgeProvider mFridgeProvider;
@@ -150,11 +151,11 @@ public class FoodListFragment extends BaseFragment {
 
     public void onEvent(LaunchSearchEvent event) {
         String search = event.getSearchQuery();
-        mFoodListAdapter.setFilter(search);
+        mFoodListAdapter.setFilter(search, mFoodItems);
     }
 
     public void onEvent(CancelSearchEvent event) {
-        mFoodListAdapter.flushFilter();
+        onItemsLoadComplete();
     }
 
 
@@ -211,6 +212,7 @@ public class FoodListFragment extends BaseFragment {
                             @Override
                             public void onClick(View v) {
                                 mFoodItems.add(position, item);
+                                mFoodListAdapter.add(item);
                                 mFoodListAdapter.notifyDataSetChanged();
                             }
                         })
@@ -266,19 +268,6 @@ public class FoodListFragment extends BaseFragment {
     }
 
     private void refreshItems() {
-//
-////        // Load items
-////        mFoodItems = new Select().from(Food.class).queryList();
-////
-//        User user = NowasteApplication.getCurrentUser();
-//        if (user.exists() && user.getFridges().size() > 0) {
-//            Fridge f = user.getFridges().get(0);
-//
-////            mCurrentFridge = user.getFridges().get(0);
-//            mFoodItems = mCurrentFridge.getFoods();
-//        }
-////
-////        mFoodItems = mCurrentFridge.getFoodList();
 
         if(mCurrentFridge != null && !mCurrentFridge.isEmpty()){
             mFoodItems = mCurrentFridge.getFoods();
@@ -286,16 +275,12 @@ public class FoodListFragment extends BaseFragment {
             mFoodItems = mCurrentCustomList.getFoods();
         }
 
-//        // Load complete
         onItemsLoadComplete();
-
-
     }
 
     private void onItemsLoadComplete() {
         // Update the adapter and notify data set changed
-        mFoodListAdapter.setFoods(mFoodItems);
-        mFoodListAdapter.notifyDataSetChanged();
+        mFoodListAdapter.addAll(mFoodItems);
 
         // Stop refresh animation
         mSwipeRefreshLayout.setRefreshing(false);
@@ -309,27 +294,6 @@ public class FoodListFragment extends BaseFragment {
     @Override
     protected int getLayout() {
         return R.layout.fragment_food_list;
-    }
-
-    public void addFood() {
-
-        Food food = new Food();
-        FoodFridge foodFridge = food.getFoodFridge();
-        foodFridge.setOutOfDate(new Date());
-        foodFridge.setQuantity(5);
-        foodFridge.setOpen(false);
-
-//        List<Fridge> fridgeList = new Select().from(Fridge.class).queryList();
-//        List<FoodFridge> foodFridgeList = new Select().from(FoodFridge.class).queryList();
-//        List<Food> foodList = new Select().from(Food.class).queryList();
-        food.setFridge(mCurrentFridge);
-
-        SecureRandom random = new SecureRandom();
-        food.setName(new BigInteger(32, random).toString());
-
-        mCurrentFridge.addFood(food);
-
-        mFridgeProvider.update(mCurrentFridge);
     }
 
     @Override
