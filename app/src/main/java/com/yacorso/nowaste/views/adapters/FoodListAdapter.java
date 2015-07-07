@@ -16,8 +16,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.support.v7.util.SortedList;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,7 +27,6 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -35,13 +34,14 @@ import java.util.List;
 import com.yacorso.nowaste.R;
 import com.yacorso.nowaste.events.UpdateFoodEvent;
 import com.yacorso.nowaste.models.Food;
-import com.yacorso.nowaste.models.FoodList;
 import com.yacorso.nowaste.providers.FoodProvider;
 
 import butterknife.ButterKnife;
 import de.greenrobot.event.EventBus;
 
-import static com.yacorso.nowaste.utils.Utils.getDateTextFromDate;
+import static com.yacorso.nowaste.utils.DateUtils.getColorFromDate;
+import static com.yacorso.nowaste.utils.DateUtils.getDateTextFromDate;
+import static com.yacorso.nowaste.utils.DateUtils.setColorCircleFromDate;
 
 public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -103,8 +103,8 @@ public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-        FoodListViewHolder holder = (FoodListViewHolder) viewHolder;
+    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, final int position) {
+        final FoodListViewHolder holder = (FoodListViewHolder) viewHolder;
 
         final Food food = mFoods.get(position);
 
@@ -115,6 +115,8 @@ public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         Date outOfDate = food.getFoodFridge().getOutOfDate();
         holder.outOfDate.setText(getDateTextFromDate(outOfDate));
         setOpenIcon(holder.btnOpenToggle, food);
+
+        setColorCircleFromDate(holder.btnQuantity, outOfDate, mContext.getResources());
 
         /*
          *  Popup changement quantité
@@ -154,7 +156,10 @@ public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             public void onClick(View v) {
                 food.toggleOpen();
                 mFoodProvider.update(food);
+                updateItemAt(position, food);
                 setOpenIcon(v, food);
+                Date outOfDate = food.getFoodFridge().getOutOfDate();
+                setColorCircleFromDate(holder.btnQuantity, outOfDate, v.getResources());
             }
 
         });
@@ -182,6 +187,10 @@ public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         else {
             v.setBackgroundDrawable(icon);
         }
+    }
+
+    private int setColorCircle () {
+        return mContext.getResources().getColor(R.color.circle_long);
     }
 
     public void setFilter(String queryText, List<Food> foodList) {

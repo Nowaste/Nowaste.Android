@@ -15,67 +15,9 @@ package com.yacorso.nowaste.utils;
 import android.app.Activity;
 import android.content.Context;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.DatePicker;
 import android.widget.EditText;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
-
 public class Utils {
-
-    public static Date getDateFromDatePicker(DatePicker datePicker){
-        int day = datePicker.getDayOfMonth();
-        int month = datePicker.getMonth();
-        int year =  datePicker.getYear();
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(year, month, day);
-
-        return calendar.getTime();
-    }
-
-    public static String getDateTextFromDate(Date date){
-        String format = "dd/MM/yyyy";
-        SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.FRANCE);
-        return sdf.format(date);
-    }
-
-    public static Date addDaysToDate (Date date, int days) {
-        return addOrRemoveDaysToDate(date, days);
-    }
-    public static Date removeDaysToDate (Date date, int days) {
-        return addOrRemoveDaysToDate(date, -days);
-    }
-    private static Date addOrRemoveDaysToDate (Date date, int days) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        calendar.add(Calendar.DATE, days);
-
-        Calendar today = Calendar.getInstance();
-        today.setTime(new Date());
-
-        if (calendar.before(today)) {
-            return today.getTime();
-        }
-
-        return calendar.getTime();
-    }
-
-    public static void resetDatePicker(DatePicker datePicker){
-        setDatePicker(datePicker, new Date());
-    }
-
-    public static void setDatePicker(DatePicker datePicker, Date date){
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-        datePicker.updateDate(year, month, day);
-    }
 
     public static void showKeyboard (EditText editText, Activity activity) {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -86,7 +28,4 @@ public class Utils {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
     }
-
-
-
 }

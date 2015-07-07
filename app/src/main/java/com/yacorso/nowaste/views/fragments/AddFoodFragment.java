@@ -25,7 +25,7 @@ import com.yacorso.nowaste.models.Fridge;
 import com.yacorso.nowaste.providers.FoodProvider;
 import com.yacorso.nowaste.providers.FridgeProvider;
 import com.yacorso.nowaste.utils.LogUtil;
-import com.yacorso.nowaste.utils.Utils;
+import com.yacorso.nowaste.utils.DateUtils;
 
 import java.security.SecureRandom;
 import java.text.ParseException;
@@ -37,8 +37,8 @@ import java.util.regex.Pattern;
 
 import butterknife.ButterKnife;
 
-import static com.yacorso.nowaste.utils.Utils.resetDatePicker;
-import static com.yacorso.nowaste.utils.Utils.setDatePicker;
+import static com.yacorso.nowaste.utils.DateUtils.resetDatePicker;
+import static com.yacorso.nowaste.utils.DateUtils.setDatePicker;
 
 public class AddFoodFragment extends BaseFragment {
 
@@ -295,7 +295,7 @@ public class AddFoodFragment extends BaseFragment {
         Food food = new Food();
         FoodFridge foodFridge = food.getFoodFridge();
 
-        Date date = Utils.getDateFromDatePicker(datePicker);
+        Date date = DateUtils.getDateFromDatePicker(datePicker);
         foodFridge.setOutOfDate(date);
         foodFridge.setQuantity(numberPicker.getValue());
         food.setName(nameField.getText().toString());
@@ -308,7 +308,7 @@ public class AddFoodFragment extends BaseFragment {
     public void updateFood(Food food) {
         FoodFridge foodFridge = food.getFoodFridge();
 
-        Date date = Utils.getDateFromDatePicker(datePicker);
+        Date date = DateUtils.getDateFromDatePicker(datePicker);
         foodFridge.setOutOfDate(date);
         foodFridge.setQuantity(numberPicker.getValue());
         food.setName(nameField.getText().toString());

@@ -25,8 +25,8 @@ import com.yacorso.nowaste.data.NowasteDatabase;
 
 import java.util.Date;
 
-import static com.yacorso.nowaste.utils.Utils.addDaysToDate;
-import static com.yacorso.nowaste.utils.Utils.removeDaysToDate;
+import static com.yacorso.nowaste.utils.DateUtils.addDaysToDate;
+import static com.yacorso.nowaste.utils.DateUtils.removeDaysToDate;
 
 @ModelContainer
 @Table(databaseName = NowasteDatabase.NAME)

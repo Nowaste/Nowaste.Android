@@ -12,7 +12,10 @@
 
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
-    <color name="red_circle">#F44336</color>
+    <color name="circle_urgent">#F44336</color>
+    <color name="circle_soon">@android:color/holo_orange_light</color>
+    <color name="circle_ok">#FFFF00</color>
+    <color name="circle_long">#00C853</color>
 
     <color name="yellow_star">#FFEB3B</color>
 
