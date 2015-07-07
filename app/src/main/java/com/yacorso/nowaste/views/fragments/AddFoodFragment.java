@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -139,8 +140,9 @@ public class AddFoodFragment extends BaseFragment {
 
                         @Override
                         public void onClick(View view) {
-                            updateFood(food);
-                            dialog.dismiss();
+                            if (updateFood(food)) {
+                                dialog.dismiss();
+                            }
                         }
                     });
                     Button negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
@@ -164,8 +166,9 @@ public class AddFoodFragment extends BaseFragment {
 
                         @Override
                         public void onClick(View view) {
-                            addFood();
-                            dialog.dismiss();
+                            if (addFood()) {
+                                dialog.dismiss();
+                            }
                         }
                     });
                     Button neutralButton = dialog.getButton(AlertDialog.BUTTON_NEUTRAL);
@@ -173,8 +176,9 @@ public class AddFoodFragment extends BaseFragment {
 
                         @Override
                         public void onClick(View view) {
-                            addFood();
-                            resetFields();
+                            if (addFood()) {
+                                resetFields();
+                            }
                         }
                     });
                     Button negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
@@ -290,7 +294,9 @@ public class AddFoodFragment extends BaseFragment {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    public void addFood() {
+    public boolean addFood() {
+        String name = nameField.getText().toString();
+        if(checkIfInputEmpty(name)) { return false; }
 
         Food food = new Food();
         FoodFridge foodFridge = food.getFoodFridge();
@@ -298,22 +304,38 @@ public class AddFoodFragment extends BaseFragment {
         Date date = DateUtils.getDateFromDatePicker(datePicker);
         foodFridge.setOutOfDate(date);
         foodFridge.setQuantity(numberPicker.getValue());
-        food.setName(nameField.getText().toString());
+        food.setName(name);
         food.setFridge(mCurrentFridge);
 
         mCurrentFridge.addFood(food);
         mFridgeProvider.update(mCurrentFridge);
+        return true;
     }
 
-    public void updateFood(Food food) {
+    public boolean updateFood(Food food) {
+        String name = nameField.getText().toString();
+        if(checkIfInputEmpty(name)) { return false; }
+
         FoodFridge foodFridge = food.getFoodFridge();
 
         Date date = DateUtils.getDateFromDatePicker(datePicker);
         foodFridge.setOutOfDate(date);
         foodFridge.setQuantity(numberPicker.getValue());
-        food.setName(nameField.getText().toString());
+        food.setName(name);
 
         mFoodProvider.update(food);
         mFridgeProvider.update(mCurrentFridge);
+
+        return true;
+    }
+
+    private boolean checkIfInputEmpty (String name) {
+        TextInputLayout tIL = ButterKnife.findById(getDialog(), R.id.name_text_input_layout);
+        if (name.isEmpty()) {
+            tIL.setError(getResources().getString(R.string.name_mandatory));
+            return true;
+        }
+        tIL.setError("");
+        return false;
     }
 }
