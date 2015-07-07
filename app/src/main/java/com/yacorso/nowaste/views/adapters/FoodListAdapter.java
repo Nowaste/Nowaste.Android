@@ -86,7 +86,7 @@ public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         holder.btnQuantity.setText(Integer.toString(quantity));
         Date outOfDate = food.getFoodFridge().getOutOfDate();
         holder.outOfDate.setText(getDateTextFromDate(outOfDate));
-
+        setOpenIcon(holder.btnOpenToggle, food);
 
         /*
          *  Popup changement quantité
@@ -126,20 +126,7 @@ public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             public void onClick(View v) {
                 food.toggleOpen();
                 mFoodProvider.update(food);
-                Drawable icon;
-                if (food.getFoodFridge().isOpen()) {
-                    icon = mContext.getResources().getDrawable(R.drawable.food_started);
-                }
-                else {
-                    icon = mContext.getResources().getDrawable(R.drawable.food_not_started);
-                }
-
-                if(android.os.Build.VERSION.SDK_INT >= 16) {
-                    v.setBackground(icon);
-                }
-                else {
-                    v.setBackgroundDrawable(icon);
-                }
+                setOpenIcon(v, food);
             }
 
         });
@@ -150,6 +137,23 @@ public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 //TODO: Open AddFoodFragment with food informations
             }
         });
+    }
+
+    private void setOpenIcon (View v, Food food) {
+        Drawable icon;
+        if (food.getFoodFridge().isOpen()) {
+            icon = mContext.getResources().getDrawable(R.drawable.food_started);
+        }
+        else {
+            icon = mContext.getResources().getDrawable(R.drawable.food_not_started);
+        }
+
+        if(android.os.Build.VERSION.SDK_INT >= 16) {
+            v.setBackground(icon);
+        }
+        else {
+            v.setBackgroundDrawable(icon);
+        }
     }
 
     @Override

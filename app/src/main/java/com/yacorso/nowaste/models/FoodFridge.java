@@ -25,6 +25,9 @@ import com.yacorso.nowaste.data.NowasteDatabase;
 
 import java.util.Date;
 
+import static com.yacorso.nowaste.utils.Utils.addDaysToDate;
+import static com.yacorso.nowaste.utils.Utils.removeDaysToDate;
+
 @ModelContainer
 @Table(databaseName = NowasteDatabase.NAME)
 public class FoodFridge extends BaseCacheableModel implements Parcelable {
@@ -124,6 +127,9 @@ public class FoodFridge extends BaseCacheableModel implements Parcelable {
     }
 
     public Boolean isOpen() {
+        if (open == null) {
+            open = false;
+        }
         return open;
     }
 
@@ -132,10 +138,8 @@ public class FoodFridge extends BaseCacheableModel implements Parcelable {
     }
 
     public void toggleOpen(){
-        if (open == null) {
-            open = false;
-        }
-        setOpen(!open);
+        setOpen(!isOpen());
+        changeOutOfDate();
     }
 
     public boolean isEmpty() {
@@ -168,5 +172,19 @@ public class FoodFridge extends BaseCacheableModel implements Parcelable {
                 ", visible=" + visible +
                 ", open=" + open +
                 '}';
+    }
+
+    private void changeOutOfDate () {
+        //TODO: Fetch the number of days from preferences
+        Date newOutOfDate;
+        int days = 4;
+        if (open) {
+            newOutOfDate = removeDaysToDate(outOfDate, days);
+        }
+        else {
+            newOutOfDate = addDaysToDate(outOfDate, days);
+        }
+
+        setOutOfDate(newOutOfDate);
     }
 }

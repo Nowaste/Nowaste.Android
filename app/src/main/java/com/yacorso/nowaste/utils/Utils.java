@@ -43,6 +43,27 @@ public class Utils {
         return sdf.format(date);
     }
 
+    public static Date addDaysToDate (Date date, int days) {
+        return addOrRemoveDaysToDate(date, days);
+    }
+    public static Date removeDaysToDate (Date date, int days) {
+        return addOrRemoveDaysToDate(date, -days);
+    }
+    private static Date addOrRemoveDaysToDate (Date date, int days) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.DATE, days);
+
+        Calendar today = Calendar.getInstance();
+        today.setTime(new Date());
+
+        if (calendar.before(today)) {
+            return today.getTime();
+        }
+
+        return calendar.getTime();
+    }
+
     public static void resetDatePicker(DatePicker datePicker){
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
@@ -60,6 +81,7 @@ public class Utils {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
     }
+
 
 
 }
