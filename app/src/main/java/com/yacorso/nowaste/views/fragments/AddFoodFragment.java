@@ -38,6 +38,7 @@ import java.util.regex.Pattern;
 import butterknife.ButterKnife;
 
 import static com.yacorso.nowaste.utils.Utils.resetDatePicker;
+import static com.yacorso.nowaste.utils.Utils.setDatePicker;
 
 public class AddFoodFragment extends BaseFragment {
 
@@ -50,6 +51,15 @@ public class AddFoodFragment extends BaseFragment {
     FridgeProvider mFridgeProvider;
 
     public static AddFoodFragment newInstance() { return new AddFoodFragment(); }
+    public static AddFoodFragment newInstance(Food food) {
+        AddFoodFragment addFoodFragment = new AddFoodFragment();
+
+        Bundle args = new Bundle();
+        args.putParcelable("food", food);
+        addFoodFragment.setArguments(args);
+
+        return addFoodFragment;
+    }
 
     public AddFoodFragment() { }
 
@@ -57,6 +67,7 @@ public class AddFoodFragment extends BaseFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mFridgeProvider = new FridgeProvider();
+        mFoodProvider = new FoodProvider();
         mCurrentFridge = mFridgeProvider.getCurrentFridge();
 
         //startVoiceRecognitionActivity();
@@ -83,41 +94,13 @@ public class AddFoodFragment extends BaseFragment {
         builder.setPositiveButton(R.string.add_one_element, null);
         builder.setNeutralButton(R.string.add_another_element, null);
         builder.setNegativeButton(R.string.cancel, null);
-        final AlertDialog dialog = builder.create();
-        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
 
-            @Override
-            public void onShow(DialogInterface dI) {
+        Bundle arguments = getArguments();
+        if (arguments != null && arguments.containsKey("food")) {
+            addFoodInformationsToDialog(builder);
+        }
 
-                Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-                positiveButton.setOnClickListener(new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View view) {
-                        addFood();
-                        dialog.dismiss();
-                    }
-                });
-                Button neutralButton = dialog.getButton(AlertDialog.BUTTON_NEUTRAL);
-                neutralButton.setOnClickListener(new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View view) {
-                        addFood();
-                        resetFields();
-                    }
-                });
-                Button negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
-                negativeButton.setOnClickListener(new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View view) {
-                        dialog.dismiss();
-                    }
-                });
-
-            }
-        });
+        AlertDialog dialog = setButtonsListener(builder, arguments);
 
         nameField.requestFocus();
         dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
@@ -129,6 +112,82 @@ public class AddFoodFragment extends BaseFragment {
             }
         });
 
+        return dialog;
+    }
+
+    private void addFoodInformationsToDialog (AlertDialog.Builder builder) {
+        Food food = getArguments().getParcelable("food");
+        nameField.setText(food.getName());
+        setDatePicker(datePicker, food.getFoodFridge().getOutOfDate());
+        numberPicker.setValue(food.getFoodFridge().getQuantity());
+
+        builder.setPositiveButton(R.string.validate, null);
+        builder.setNeutralButton(null, null);
+        builder.setNegativeButton(R.string.cancel, null);
+    }
+
+    private AlertDialog setButtonsListener (AlertDialog.Builder builder, Bundle arguments) {
+        final AlertDialog dialog = builder.create();
+        if (arguments != null && arguments.containsKey("food")) {
+            final Food food = getArguments().getParcelable("food");
+            dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+
+                @Override
+                public void onShow(DialogInterface dI) {
+                    Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                    positiveButton.setOnClickListener(new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(View view) {
+                            updateFood(food);
+                            dialog.dismiss();
+                        }
+                    });
+                    Button negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+                    negativeButton.setOnClickListener(new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(View view) {
+                            dialog.dismiss();
+                        }
+                    });
+                }
+            });
+        }
+        else {
+            dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+
+                @Override
+                public void onShow(DialogInterface dI) {
+                    Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                    positiveButton.setOnClickListener(new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(View view) {
+                            addFood();
+                            dialog.dismiss();
+                        }
+                    });
+                    Button neutralButton = dialog.getButton(AlertDialog.BUTTON_NEUTRAL);
+                    neutralButton.setOnClickListener(new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(View view) {
+                            addFood();
+                            resetFields();
+                        }
+                    });
+                    Button negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+                    negativeButton.setOnClickListener(new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(View view) {
+                            dialog.dismiss();
+                        }
+                    });
+                }
+            });
+        }
 
         return dialog;
     }
@@ -235,19 +294,26 @@ public class AddFoodFragment extends BaseFragment {
 
         Food food = new Food();
         FoodFridge foodFridge = food.getFoodFridge();
+
         Date date = Utils.getDateFromDatePicker(datePicker);
         foodFridge.setOutOfDate(date);
         foodFridge.setQuantity(numberPicker.getValue());
-
-       /* List<Fridge> fridgeList = new Select().from(Fridge.class).queryList();
-        List<FoodFridge> foodFridgeList = new Select().from(FoodFridge.class).queryList();
-        List<Food> foodList = new Select().from(Food.class).queryList(); */
+        food.setName(nameField.getText().toString());
         food.setFridge(mCurrentFridge);
 
+        mCurrentFridge.addFood(food);
+        mFridgeProvider.update(mCurrentFridge);
+    }
+
+    public void updateFood(Food food) {
+        FoodFridge foodFridge = food.getFoodFridge();
+
+        Date date = Utils.getDateFromDatePicker(datePicker);
+        foodFridge.setOutOfDate(date);
+        foodFridge.setQuantity(numberPicker.getValue());
         food.setName(nameField.getText().toString());
 
-        mCurrentFridge.addFood(food);
-
+        mFoodProvider.update(food);
         mFridgeProvider.update(mCurrentFridge);
     }
 }

@@ -38,6 +38,7 @@ import com.yacorso.nowaste.events.AddFoodEvent;
 import com.yacorso.nowaste.events.SetTitleEvent;
 import com.yacorso.nowaste.events.CancelSearchEvent;
 import com.yacorso.nowaste.events.LaunchSearchEvent;
+import com.yacorso.nowaste.events.UpdateFoodEvent;
 import com.yacorso.nowaste.models.Fridge;
 import com.yacorso.nowaste.models.NavigationDrawerItem;
 import com.yacorso.nowaste.models.User;
@@ -249,6 +250,9 @@ public class DrawerActivity extends AppCompatActivity implements
 
     public void onEvent(AddFoodEvent event) {
         launchDialog(AddFoodFragment.newInstance());
+    }
+    public void onEvent(UpdateFoodEvent event) {
+        launchDialog(AddFoodFragment.newInstance(event.getFood()));
     }
 
     public void onEvent(CancelSearchEvent event) {

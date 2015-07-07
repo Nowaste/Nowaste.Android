@@ -33,10 +33,12 @@ import java.util.Date;
 import java.util.List;
 
 import com.yacorso.nowaste.R;
+import com.yacorso.nowaste.events.UpdateFoodEvent;
 import com.yacorso.nowaste.models.Food;
 import com.yacorso.nowaste.providers.FoodProvider;
 
 import butterknife.ButterKnife;
+import de.greenrobot.event.EventBus;
 
 import static com.yacorso.nowaste.utils.Utils.getDateTextFromDate;
 
@@ -134,7 +136,7 @@ public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         holder.textZone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: Open AddFoodFragment with food informations
+                EventBus.getDefault().post(new UpdateFoodEvent(food));
             }
         });
     }
