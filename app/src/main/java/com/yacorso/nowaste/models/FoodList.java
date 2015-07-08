@@ -112,4 +112,14 @@ public abstract class FoodList extends BaseCacheableModel {
         this.foods.add(food);
     }
 
+    public void updateFood(Food food){
+        this.foods.set(foods.indexOf(food), food);
+    }
+
+    public void removeFood(Food food){
+        this.foods.remove(food);
+    }
+
+    public abstract List<Food> getFoods();
+
 }

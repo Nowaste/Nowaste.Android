@@ -12,15 +12,11 @@
 
 package com.yacorso.nowaste.views.fragments;
 
-import android.app.Activity;
-import android.app.usage.UsageEvents;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.util.SortedList;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -32,30 +28,20 @@ import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 
-import com.yacorso.nowaste.NowasteApplication;
 import com.yacorso.nowaste.R;
-import com.yacorso.nowaste.events.AddFoodEvent;
+import com.yacorso.nowaste.events.CallAddFoodEvent;
 import com.yacorso.nowaste.events.CancelSearchEvent;
 import com.yacorso.nowaste.events.CurrentFridgeChangedEvent;
 import com.yacorso.nowaste.events.FoodCreatedEvent;
+import com.yacorso.nowaste.events.FoodUpdatedEvent;
 import com.yacorso.nowaste.events.FridgesLoadedEvent;
 import com.yacorso.nowaste.events.LaunchSearchEvent;
-import com.yacorso.nowaste.models.CustomList;
 import com.yacorso.nowaste.models.Food;
-import com.yacorso.nowaste.models.FoodFridge;
 import com.yacorso.nowaste.models.FoodList;
 import com.yacorso.nowaste.models.Fridge;
-import com.yacorso.nowaste.models.User;
-import com.yacorso.nowaste.providers.FoodProvider;
 import com.yacorso.nowaste.providers.FridgeProvider;
 import com.yacorso.nowaste.utils.LogUtil;
 import com.yacorso.nowaste.views.adapters.FoodListAdapter;
-
-import java.math.BigInteger;
-import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 import butterknife.ButterKnife;
 import de.greenrobot.event.EventBus;
@@ -67,31 +53,20 @@ public class FoodListFragment extends BaseFragment {
 
     RecyclerView mRecyclerView;
     LinearLayoutManager mLayoutManager;
-    FoodListAdapter mFoodListAdapter;
     FloatingActionButton mFabButton;
     SwipeRefreshLayout mSwipeRefreshLayout;
-    Fridge mCurrentFridge;
-    CustomList mCurrentCustomList;
-    List<Food> mFoodItems;
-
-    FoodProvider mFoodProvider;
+    FoodListAdapter mAdapter;
+    FoodList mFoodList;
     FridgeProvider mFridgeProvider;
-
 
     public static FoodListFragment newInstance() {
         return new FoodListFragment();
     }
-    public static FoodListFragment newInstance(Fridge fridge) {
+
+    public static FoodListFragment newInstance(FoodList foodList) {
 
         FoodListFragment fragment = new FoodListFragment();
-        fragment.mCurrentFridge = fridge;
-
-        return fragment;
-    }
-    public static FoodListFragment newInstance(CustomList customList) {
-
-        FoodListFragment fragment = new FoodListFragment();
-        fragment.mCurrentCustomList = customList;
+        fragment.mFoodList = foodList;
 
         return fragment;
     }
@@ -103,10 +78,7 @@ public class FoodListFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mRootView = super.onCreateView(inflater, container, savedInstanceState);
 
-        mFoodProvider = new FoodProvider();
         mFridgeProvider = new FridgeProvider();
-
-//        mCurrentFridge = mFridgeProvider.getCurrentFridge();
 
         setList();
 
@@ -141,21 +113,46 @@ public class FoodListFragment extends BaseFragment {
     }
 
     public void onEvent(CurrentFridgeChangedEvent event) {
-        mFoodItems = event.getFridge().getFoods();
-        refreshItems();
+        mFoodList = event.getFridge();
+        displayFoodList();
     }
 
     public void onEvent(FoodCreatedEvent event) {
-        refreshItems();
+        Food food = event.getFood();
+        addFood(food);
+    }
+
+    private void addFood (Food food) {
+        mAdapter.add(food);
+        mFoodList.addFood(food);
+        mFridgeProvider.update((Fridge) mFoodList);
+    }
+
+    public void onEvent(FoodUpdatedEvent event) {
+        Food food = event.getFood();
+        updateFood(food);
+    }
+
+    private void updateFood (Food food) {
+        int test = mAdapter.indexOf(food);
+        mAdapter.updateItemAt(mAdapter.indexOf(food), food);
+        mFoodList.updateFood(food);
+        mFridgeProvider.update((Fridge)mFoodList);
+    }
+
+    private void removeFood(Food food) {
+        mAdapter.remove(food);
+        mFoodList.removeFood(food);
+        mFridgeProvider.update((Fridge)mFoodList);
     }
 
     public void onEvent(LaunchSearchEvent event) {
         String search = event.getSearchQuery();
-        mFoodListAdapter.setFilter(search, mFoodItems);
+        mAdapter.setFilter(search, mFoodList.getFoods());
     }
 
     public void onEvent(CancelSearchEvent event) {
-        onItemsLoadComplete();
+        displayFoodList();
     }
 
 
@@ -167,22 +164,19 @@ public class FoodListFragment extends BaseFragment {
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        mFoodListAdapter = new FoodListAdapter();
-        mRecyclerView.setAdapter(mFoodListAdapter);
+        mAdapter = new FoodListAdapter();
+        mRecyclerView.setAdapter(mAdapter);
 
-        refreshItems();
-
+        displayFoodList();
     }
 
     private void initSwipeRefreshLayout() {
-        Activity a = getActivity();
         mSwipeRefreshLayout = ButterKnife.findById(mRootView, R.id.swipeRefreshFoodListLayout);
         mSwipeRefreshLayout.setColorSchemeResources(R.color.refresh_progress_1, R.color.refresh_progress_2);
-//        mSwipeRefreshLayout.setProgressViewOffset(false, 150, 200);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                refreshItems();
+                displayFoodList();
                 EventBus.getDefault().post(new CancelSearchEvent());
             }
         });
@@ -205,24 +199,19 @@ public class FoodListFragment extends BaseFragment {
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
 
                 final int position = viewHolder.getAdapterPosition();
-                final Food item = mFoodListAdapter.get(position);
+                final Food item = mAdapter.get(position);
 
                 Snackbar.make(getView(), R.string.snackbar_confirm_food_delete, Snackbar.LENGTH_LONG)
                         .setAction(R.string.snackbar_undo, new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                mFoodItems.add(item);
-                                mFoodListAdapter.add(item);
-                                //mFoodListAdapter.notifyItemInserted(0);
-                                //mFoodListAdapter.notifyDataSetChanged();
+                                addFood(item);
                             }
                         })
                         .show();
 
                 // callback for swipe to dismiss, removing item from data and adapter
-                mFoodItems.remove(item);
-                mFoodListAdapter.remove(item);
-                //mFoodListAdapter.notifyItemRemoved(position);
+                removeFood(item);
             }
         });
 
@@ -250,7 +239,7 @@ public class FoodListFragment extends BaseFragment {
         mFabButton = ButterKnife.findById(mRootView, R.id.btnAddFood);
         mFabButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                EventBus.getDefault().post(new AddFoodEvent());
+                EventBus.getDefault().post(new CallAddFoodEvent());
             }
         });
     }
@@ -267,20 +256,10 @@ public class FoodListFragment extends BaseFragment {
         mFabButton.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2)).start();
     }
 
-    private void refreshItems() {
-
-        if(mCurrentFridge != null && !mCurrentFridge.isEmpty()){
-            mFoodItems = mCurrentFridge.getFoods();
-        }else if(mCurrentCustomList != null && !mCurrentCustomList.isEmpty()){
-            mFoodItems = mCurrentCustomList.getFoods();
-        }
-
-        onItemsLoadComplete();
-    }
-
-    private void onItemsLoadComplete() {
+    private void displayFoodList() {
         // Update the adapter and notify data set changed
-        mFoodListAdapter.addAll(mFoodItems);
+        mAdapter.clear();
+        mAdapter.addAll(mFoodList.getFoods());
 
         // Stop refresh animation
         mSwipeRefreshLayout.setRefreshing(false);

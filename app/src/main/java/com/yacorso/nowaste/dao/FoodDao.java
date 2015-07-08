@@ -16,7 +16,6 @@ package com.yacorso.nowaste.dao;
 import com.raizlabs.android.dbflow.runtime.TransactionManager;
 import com.raizlabs.android.dbflow.runtime.transaction.BaseTransaction;
 import com.raizlabs.android.dbflow.runtime.transaction.TransactionListener;
-import com.raizlabs.android.dbflow.runtime.transaction.UpdateTransaction;
 import com.raizlabs.android.dbflow.runtime.transaction.process.InsertModelTransaction;
 import com.raizlabs.android.dbflow.runtime.transaction.process.ProcessModelInfo;
 import com.raizlabs.android.dbflow.runtime.transaction.process.SaveModelTransaction;
@@ -24,7 +23,6 @@ import com.raizlabs.android.dbflow.runtime.transaction.process.UpdateModelListTr
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Delete;
 import com.raizlabs.android.dbflow.sql.language.Select;
-import com.yacorso.nowaste.events.FoodCreatedEvent;
 import com.yacorso.nowaste.models.Food;
 import com.yacorso.nowaste.models.Food$Table;
 import com.yacorso.nowaste.models.FoodFridge;
@@ -35,8 +33,6 @@ import com.yacorso.nowaste.utils.LogUtil;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import de.greenrobot.event.EventBus;
 
 /**
  * FoodDao
@@ -174,7 +170,6 @@ public class FoodDao extends Dao<Food, Long> {
 
             @Override
             public void onResultReceived(Object o) {
-                EventBus.getDefault().post(new FoodCreatedEvent());
                 LogUtil.LOGD(this, "onResultReceived -- Food");
             }
 

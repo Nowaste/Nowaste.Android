@@ -16,7 +16,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
 import android.support.v7.util.SortedList;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -32,14 +31,14 @@ import java.util.Date;
 import java.util.List;
 
 import com.yacorso.nowaste.R;
-import com.yacorso.nowaste.events.UpdateFoodEvent;
+import com.yacorso.nowaste.events.CallUpdateFoodEvent;
+import com.yacorso.nowaste.events.FoodUpdatedEvent;
 import com.yacorso.nowaste.models.Food;
 import com.yacorso.nowaste.providers.FoodProvider;
 
 import butterknife.ButterKnife;
 import de.greenrobot.event.EventBus;
 
-import static com.yacorso.nowaste.utils.DateUtils.getColorFromDate;
 import static com.yacorso.nowaste.utils.DateUtils.getDateTextFromDate;
 import static com.yacorso.nowaste.utils.DateUtils.setColorCircleFromDate;
 
@@ -47,7 +46,6 @@ public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
 
     SortedList<Food> mFoods;
-    FoodProvider mFoodProvider;
     Context mContext;
 
     public FoodListAdapter() {
@@ -94,7 +92,6 @@ public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         mContext = parent.getContext();
-        mFoodProvider = new FoodProvider();
 
         View view = LayoutInflater.from(mContext).inflate(R.layout.card_food_item, parent, false);
         RecyclerView.ViewHolder vh = new FoodListViewHolder(view);
@@ -141,7 +138,7 @@ public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                          */
                         int selectedValue = numberPicker.getValue();
                         food.getFoodFridge().setQuantity(selectedValue);
-                        mFoodProvider.update(food);
+                        EventBus.getDefault().post(new FoodUpdatedEvent(food));
                     }
                 });
 
@@ -155,11 +152,10 @@ public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             @Override
             public void onClick(View v) {
                 food.toggleOpen();
-                mFoodProvider.update(food);
-                updateItemAt(position, food);
                 setOpenIcon(v, food);
                 Date outOfDate = food.getFoodFridge().getOutOfDate();
                 setColorCircleFromDate(holder.btnQuantity, outOfDate, v.getResources());
+                EventBus.getDefault().post(new FoodUpdatedEvent(food));
             }
 
         });
@@ -167,7 +163,7 @@ public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         holder.textZone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EventBus.getDefault().post(new UpdateFoodEvent(food));
+                EventBus.getDefault().post(new CallUpdateFoodEvent(food));
             }
         });
     }

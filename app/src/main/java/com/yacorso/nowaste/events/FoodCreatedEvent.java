@@ -12,8 +12,16 @@
 
 package com.yacorso.nowaste.events;
 
-/**
- * Created by quentin on 22/06/15.
- */
+import com.yacorso.nowaste.models.Food;
+
 public class FoodCreatedEvent {
+    Food food;
+
+    public FoodCreatedEvent (Food foodElement) {
+        food = foodElement;
+    }
+
+    public Food getFood() {
+        return food;
+    }
 }

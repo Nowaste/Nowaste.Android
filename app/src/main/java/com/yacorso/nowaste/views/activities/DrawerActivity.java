@@ -29,11 +29,11 @@ import android.widget.TextView;
 
 import com.yacorso.nowaste.NowasteApplication;
 import com.yacorso.nowaste.R;
-import com.yacorso.nowaste.events.AddFoodEvent;
+import com.yacorso.nowaste.events.CallAddFoodEvent;
 import com.yacorso.nowaste.events.SetTitleEvent;
 import com.yacorso.nowaste.events.CancelSearchEvent;
 import com.yacorso.nowaste.events.LaunchSearchEvent;
-import com.yacorso.nowaste.events.UpdateFoodEvent;
+import com.yacorso.nowaste.events.CallUpdateFoodEvent;
 import com.yacorso.nowaste.models.Fridge;
 import com.yacorso.nowaste.models.NavigationDrawerItem;
 import com.yacorso.nowaste.models.User;
@@ -243,10 +243,10 @@ public class DrawerActivity extends AppCompatActivity implements
         fragment.show(getSupportFragmentManager(), "dialog");
     }
 
-    public void onEvent(AddFoodEvent event) {
+    public void onEvent(CallAddFoodEvent event) {
         launchDialog(AddFoodFragment.newInstance());
     }
-    public void onEvent(UpdateFoodEvent event) {
+    public void onEvent(CallUpdateFoodEvent event) {
         launchDialog(AddFoodFragment.newInstance(event.getFood()));
     }
 

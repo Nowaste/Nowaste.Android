@@ -20,6 +20,8 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import com.yacorso.nowaste.R;
+import com.yacorso.nowaste.events.FoodCreatedEvent;
+import com.yacorso.nowaste.events.FoodUpdatedEvent;
 import com.yacorso.nowaste.models.Food;
 import com.yacorso.nowaste.models.FoodFridge;
 import com.yacorso.nowaste.models.Fridge;
@@ -37,6 +39,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import butterknife.ButterKnife;
+import de.greenrobot.event.EventBus;
 
 import static com.yacorso.nowaste.utils.DateUtils.resetDatePicker;
 import static com.yacorso.nowaste.utils.DateUtils.setDatePicker;
@@ -307,8 +310,9 @@ public class AddFoodFragment extends BaseFragment {
         food.setName(name);
         food.setFridge(mCurrentFridge);
 
-        mCurrentFridge.addFood(food);
-        mFridgeProvider.update(mCurrentFridge);
+        EventBus.getDefault().post(new FoodCreatedEvent(food));
+        //mCurrentFridge.addFood(food);
+        //mFridgeProvider.update(mCurrentFridge);
         return true;
     }
 
@@ -323,8 +327,9 @@ public class AddFoodFragment extends BaseFragment {
         foodFridge.setQuantity(numberPicker.getValue());
         food.setName(name);
 
-        mFoodProvider.update(food);
-        mFridgeProvider.update(mCurrentFridge);
+        EventBus.getDefault().post(new FoodUpdatedEvent(food));
+        //mFoodProvider.update(food);
+        //mFridgeProvider.update(mCurrentFridge);
 
         return true;
     }
