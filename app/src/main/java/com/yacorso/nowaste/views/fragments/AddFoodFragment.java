@@ -74,7 +74,6 @@ public class AddFoodFragment extends BaseFragment {
         mFoodProvider = new FoodProvider();
         mCurrentFridge = mFridgeProvider.getCurrentFridge();
 
-        //startVoiceRecognitionActivity();
     }
 
     @Override
@@ -213,88 +212,6 @@ public class AddFoodFragment extends BaseFragment {
         nameField.setText("");
         resetDatePicker(datePicker);
         numberPicker.setValue(1);
-    }
-
-    private void startVoiceRecognitionActivity() {
-        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Voice recognition Demo...");
-        startActivityForResult(intent, 1234);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 1234 && resultCode == getActivity().RESULT_OK)
-        {
-            // Populate the wordsList with the String values the recognition engine thought it heard
-            ArrayList<String> matches = data.getStringArrayListExtra(
-                    RecognizerIntent.EXTRA_RESULTS);
-
-            String regex = "(.+)"// N'importe quel charactères
-                    + "\\s" // Un espace
-                    + "([0-9]{1,2})" // Le jour
-                    + "\\s" // Un espace
-                    + "(janvier|"
-                    + "février|fevrier|"
-                    + "mars|avril|mai|juin|juillet|"
-                    + "aout|août|"
-                    + "septembre|octobre|novembre|"
-                    + "décembre|decembre)" // Le mois
-                    + "\\s?" // Un espace
-                    + "([0-9]{2,4})?"; // L'année
-
-            Pattern p = Pattern.compile(regex);
-
-
-            Log.e("regex", regex);
-            ArrayList<String> realMatches = new ArrayList<String>();
-            for (String matchStr : matches) {
-                Log.e(matchStr, String.valueOf(matchStr.matches(regex)));
-                Matcher matcher = p.matcher(matchStr);
-                if(matcher.find()){
-                    Log.e("Ca match ! ", matcher.group(1));
-                    realMatches.add(matchStr);
-
-                    if(matcher.groupCount() >= 3){
-                        String product = matcher.group(1);
-                        int day = Integer.valueOf(matcher.group(2));
-                        String month = matcher.group(3);
-                        String year = "";
-
-
-
-                        if(matcher.groupCount() == 4){
-                            year = matcher.group(4);
-                            SecureRandom random = new SecureRandom();
-                            Food food = new Food();
-                            food.setName(product);
-                            FoodFridge foodFridge = food.getFoodFridge();
-                            String date = year + "/" + month + "/" + Integer.toString(day);
-                            SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
-                            Date utilDate = null;
-                            try {
-                                utilDate = formatter.parse(date);
-                            } catch (ParseException e) {
-                                e.printStackTrace();
-                            }
-                            foodFridge.setOutOfDate(utilDate);
-
-                            food.save();
-
-                            LogUtil.LOGD("product ", product);
-                            LogUtil.LOGD("day ", Integer.toString(day));
-                            LogUtil.LOGD("month ", month);
-                            LogUtil.LOGD("year ", year);
-
-                            //finish();
-
-                        }
-                    }
-                }
-            }
-        }
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
     public boolean addFood() {

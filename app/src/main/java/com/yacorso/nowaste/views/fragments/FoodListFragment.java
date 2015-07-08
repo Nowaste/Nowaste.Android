@@ -12,7 +12,13 @@
 
 package com.yacorso.nowaste.views.fragments;
 
+
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -240,6 +246,10 @@ public class FoodListFragment extends BaseFragment {
         mFabButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 EventBus.getDefault().post(new CallAddFoodEvent());
+//                EventBus.getDefault().post(new AddFoodEvent());
+//                mSpeechRecognizer.stopListening();
+//                SpeechAddFoodFragment fragment = SpeechAddFoodFragment.newInstance();
+//                fragment.show(getSupportFragmentManager(), "dialog");
             }
         });
     }

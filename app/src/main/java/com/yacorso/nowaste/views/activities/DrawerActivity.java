@@ -12,6 +12,7 @@
 
 package com.yacorso.nowaste.views.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -42,6 +43,7 @@ import com.yacorso.nowaste.views.fragments.AddFoodFragment;
 import com.yacorso.nowaste.views.fragments.BaseFragment;
 import com.yacorso.nowaste.views.fragments.FoodListFragment;
 import com.yacorso.nowaste.views.fragments.NavigationDrawerFragment;
+import com.yacorso.nowaste.views.fragments.SpeechAddFoodFragment;
 
 import java.util.List;
 
@@ -93,7 +95,7 @@ public class DrawerActivity extends AppCompatActivity implements
              * Then display speech recognizer
              */
             else{
-
+                
             }
         }
     }
@@ -243,8 +245,10 @@ public class DrawerActivity extends AppCompatActivity implements
         fragment.show(getSupportFragmentManager(), "dialog");
     }
 
+
     public void onEvent(CallAddFoodEvent event) {
-        launchDialog(AddFoodFragment.newInstance());
+//        launchDialog(AddFoodFragment.newInstance());
+        launchDialog(SpeechAddFoodFragment.newInstance());
     }
     public void onEvent(CallUpdateFoodEvent event) {
         launchDialog(AddFoodFragment.newInstance(event.getFood()));
