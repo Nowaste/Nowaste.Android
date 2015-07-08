@@ -37,8 +37,10 @@
     <string name="speech_speak_now">Parlez maintenant !</string>
     <string name="speech_click_for_stop">Appuyer pour interrompre.</string>
     <string name="speech_push_for_call">Appuyer pour parler.</string>
-    <string name="speech_error">Une erreur est survenue. \n Appuyer pour parler à nouveau.</string>
-
+    <string name="speech_error_default">Une erreur est survenue. \n Appuyer pour parler à nouveau.</string>
+    <string name="speech_error_audio">Un problème lié au son est survenu. \n Appuyer pour parler à nouveau.</string>
+    <string name="speech_error_no_match">J\'ai mal compris. \n Appuyer pour parler à nouveau.</string>
+    <string name="speech_no_found">J\'ai mal compris.\n Essayer sous la forme : 6 tomates 15 juillet.\n Appuyer pour parler à nouveau.</string>
 
     <string name="snackbar_undo">Annuler</string>
     <string name="snackbar_confirm_food_delete">Êtes-vous sûr de vouloir supprimer l\'aliment ?</string>

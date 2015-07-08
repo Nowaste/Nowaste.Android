@@ -131,20 +131,14 @@ public class SpeechAddFoodFragment extends BaseFragment {
             public void onRmsChanged(float rmsdB) {
                 LogUtil.LOGD("SpeechAddFoodFragment", "onRmsChanged");
                 LogUtil.LOGD("SpeechAddFoodFragment", String.valueOf(rmsdB));
-
             }
 
             @Override
             public void onBufferReceived(byte[] buffer) {
-
-                LogUtil.LOGD("SpeechAddFoodFragment", "onBufferReceived");
-                LogUtil.LOGD("SpeechAddFoodFragment", String.valueOf(buffer));
             }
 
             @Override
             public void onEndOfSpeech() {
-                LogUtil.LOGD("SpeechAddFoodFragment", "onEndOfSpeech");
-//                mIsListening = false;
             }
 
             @Override
@@ -152,7 +146,19 @@ public class SpeechAddFoodFragment extends BaseFragment {
 
                 LogUtil.LOGD("SpeechAddFoodFragment", "onError");
                 LogUtil.LOGD("SpeechAddFoodFragment", String.valueOf(error));
-                txtInfos.setText(R.string.speech_error);
+
+                int textError = R.string.speech_error_default;
+
+                switch (error){
+                    case SpeechRecognizer.ERROR_AUDIO:
+                        textError = R.string.speech_error_audio;
+                        break;
+                    case SpeechRecognizer.ERROR_NO_MATCH:
+                        textError = R.string.speech_error_no_match;
+                        break;
+                }
+
+                txtInfos.setText(textError);
 
                 mIsListening = false;
             }
@@ -160,10 +166,7 @@ public class SpeechAddFoodFragment extends BaseFragment {
             @Override
             public void onResults(Bundle results) {
 
-                LogUtil.LOGD("SpeechAddFoodFragment", "onResults");
-
                 ArrayList<String> resultats = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-                LogUtil.LOGD("SpeechAddFoodFragment", resultats.toString());
 
                 txtInfos.setText(R.string.speech_please_waiting);
 
@@ -228,12 +231,9 @@ public class SpeechAddFoodFragment extends BaseFragment {
 
                             LogUtil.LOGD("SpeechAddFoodFragment", String.valueOf(quantity));
                             LogUtil.LOGD("SpeechAddFoodFragment", product);
-                            LogUtil.LOGD("SpeechAddFoodFragment", String.valueOf(day));
+                            LogUtil.LOGD("SpeechAddFoodFragment", day);
                             LogUtil.LOGD("SpeechAddFoodFragment", month);
                             LogUtil.LOGD("SpeechAddFoodFragment", year);
-
-
-
 
                             foodMatche = new Food();
                             foodMatche.setName(product);
@@ -254,8 +254,6 @@ public class SpeechAddFoodFragment extends BaseFragment {
                     }
                 }
 
-                txtInfos.setText("C'est terminé");
-
                 mIsListening = false;
 
 
@@ -263,26 +261,18 @@ public class SpeechAddFoodFragment extends BaseFragment {
                     LogUtil.LOGD("SpeechAddFoodFragment", foodMatche.toString());
                     EventBus.getDefault().post(new SpeechFoodMatcheEvent(foodMatche));
                     getDialog().dismiss();
+                }else{
+                    txtInfos.setText(R.string.speech_no_found);
                 }
 
             }
 
             @Override
             public void onPartialResults(Bundle partialResults) {
-
-                LogUtil.LOGD("SpeechAddFoodFragment", "onPartialResults");
-
-                ArrayList<String> resultats = partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-
-                LogUtil.LOGD("SpeechAddFoodFragment", resultats.toString());
             }
 
             @Override
             public void onEvent(int eventType, Bundle params) {
-
-                LogUtil.LOGD("SpeechAddFoodFragment", "onEvent");
-                LogUtil.LOGD("SpeechAddFoodFragment", String.valueOf(eventType));
-                LogUtil.LOGD("SpeechAddFoodFragment", params.toString());
             }
         };
 
