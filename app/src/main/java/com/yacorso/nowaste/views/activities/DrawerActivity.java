@@ -35,6 +35,7 @@ import com.yacorso.nowaste.events.SetTitleEvent;
 import com.yacorso.nowaste.events.CancelSearchEvent;
 import com.yacorso.nowaste.events.LaunchSearchEvent;
 import com.yacorso.nowaste.events.CallUpdateFoodEvent;
+import com.yacorso.nowaste.events.SpeechFoodMatcheEvent;
 import com.yacorso.nowaste.models.Fridge;
 import com.yacorso.nowaste.models.NavigationDrawerItem;
 import com.yacorso.nowaste.models.User;
@@ -95,7 +96,7 @@ public class DrawerActivity extends AppCompatActivity implements
              * Then display speech recognizer
              */
             else{
-                
+
             }
         }
     }
@@ -251,7 +252,11 @@ public class DrawerActivity extends AppCompatActivity implements
         launchDialog(SpeechAddFoodFragment.newInstance());
     }
     public void onEvent(CallUpdateFoodEvent event) {
-        launchDialog(AddFoodFragment.newInstance(event.getFood()));
+        launchDialog(AddFoodFragment.newInstance(event.getFood(), AddFoodFragment.TYPE_UPDATE));
+    }
+
+    public void onEvent(SpeechFoodMatcheEvent event) {
+        launchDialog(AddFoodFragment.newInstance(event.getFood(), AddFoodFragment.TYPE_CREATE));
     }
 
     public void onEvent(CancelSearchEvent event) {

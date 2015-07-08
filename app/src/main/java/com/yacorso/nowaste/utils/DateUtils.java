@@ -23,6 +23,8 @@ import android.widget.EditText;
 
 import com.yacorso.nowaste.R;
 
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -32,10 +34,10 @@ import java.util.TimeZone;
 
 public class DateUtils {
 
-    public static Date getDateFromDatePicker(DatePicker datePicker){
+    public static Date getDateFromDatePicker(DatePicker datePicker) {
         int day = datePicker.getDayOfMonth();
         int month = datePicker.getMonth();
-        int year =  datePicker.getYear();
+        int year = datePicker.getYear();
 
         Calendar calendar = Calendar.getInstance();
         calendar.set(year, month, day);
@@ -43,19 +45,34 @@ public class DateUtils {
         return calendar.getTime();
     }
 
-    public static String getDateTextFromDate(Date date){
+
+    public static Date getDateFromText(String dateString) {
+
+        DateFormat format = new SimpleDateFormat("d MMMM yyyy",Locale.FRANCE);
+        Date date = new Date();
+        try {
+            date = format.parse(dateString);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return date;
+    }
+
+    public static String getDateTextFromDate(Date date) {
         String format = "dd/MM/yyyy";
         SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.FRANCE);
         return sdf.format(date);
     }
 
-    public static Date addDaysToDate (Date date, int days) {
+    public static Date addDaysToDate(Date date, int days) {
         return addOrRemoveDaysToDate(date, days);
     }
-    public static Date removeDaysToDate (Date date, int days) {
+
+    public static Date removeDaysToDate(Date date, int days) {
         return addOrRemoveDaysToDate(date, -days);
     }
-    private static Date addOrRemoveDaysToDate (Date date, int days) {
+
+    private static Date addOrRemoveDaysToDate(Date date, int days) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         calendar.add(Calendar.DATE, days);
@@ -70,11 +87,11 @@ public class DateUtils {
         return calendar.getTime();
     }
 
-    public static void resetDatePicker(DatePicker datePicker){
+    public static void resetDatePicker(DatePicker datePicker) {
         setDatePicker(datePicker, new Date());
     }
 
-    public static void setDatePicker(DatePicker datePicker, Date date){
+    public static void setDatePicker(DatePicker datePicker, Date date) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         int year = calendar.get(Calendar.YEAR);
@@ -83,8 +100,8 @@ public class DateUtils {
         datePicker.updateDate(year, month, day);
     }
 
-    public static void setColorCircleFromDate (View view, Date date, Resources res) {
-        GradientDrawable bgShape = (GradientDrawable)view.getBackground();
+    public static void setColorCircleFromDate(View view, Date date, Resources res) {
+        GradientDrawable bgShape = (GradientDrawable) view.getBackground();
         int color = getColorFromDate(date, res);
         bgShape.setColor(color);
     }
@@ -103,7 +120,7 @@ public class DateUtils {
                 res.getColor(R.color.circle_long)
         };
 
-        for (int color: colors) {
+        for (int color : colors) {
             definedDate.add(Calendar.DATE, 5);
             if (dateOfElement.before(definedDate)) {
                 return color;
@@ -111,8 +128,6 @@ public class DateUtils {
         }
         return colors[3];
     }
-
-
 
 
 }

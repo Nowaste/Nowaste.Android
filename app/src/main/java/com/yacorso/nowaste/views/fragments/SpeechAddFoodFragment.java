@@ -30,14 +30,21 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.yacorso.nowaste.R;
+import com.yacorso.nowaste.events.SpeechFoodMatcheEvent;
+import com.yacorso.nowaste.models.Food;
+import com.yacorso.nowaste.models.FoodFridge;
+import com.yacorso.nowaste.utils.DateUtils;
 import com.yacorso.nowaste.utils.LogUtil;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import butterknife.ButterKnife;
+import de.greenrobot.event.EventBus;
 
 /**
  * Created by quentin on 06/07/15.
@@ -54,11 +61,11 @@ public class SpeechAddFoodFragment extends BaseFragment {
     Button btnAction;
 
 
-    public SpeechAddFoodFragment(){
+    public SpeechAddFoodFragment() {
 
     }
 
-    public static SpeechAddFoodFragment newInstance(){
+    public static SpeechAddFoodFragment newInstance() {
         return new SpeechAddFoodFragment();
     }
 
@@ -103,7 +110,7 @@ public class SpeechAddFoodFragment extends BaseFragment {
         return view;
     }
 
-    private void startSpeechRecognizer(){
+    private void startSpeechRecognizer() {
 
         RecognitionListener listener = new RecognitionListener() {
             @Override
@@ -162,19 +169,19 @@ public class SpeechAddFoodFragment extends BaseFragment {
 
                 String regex =
                         "([0-9]*)"
-                        + "\\s*"
-                        + "(.+)"// N'importe quel charactères
-                        + "\\s" // Un espace
-                        + "([0-9]{1,2})" // Le jour
-                        + "\\s" // Un espace
-                        + "(janvier|"
-                        + "février|fevrier|"
-                        + "mars|avril|mai|juin|juillet|"
-                        + "aout|août|"
-                        + "septembre|octobre|novembre|"
-                        + "décembre|decembre)" // Le mois
-                        + "\\s?" // Un espace
-                        + "([0-9]{2,4})?"; // L'année
+                                + "\\s*"
+                                + "(.+)"// N'importe quel charactères
+                                + "\\s" // Un espace
+                                + "([0-9]{1,2})" // Le jour
+                                + "\\s" // Un espace
+                                + "(janvier|"
+                                + "février|fevrier|"
+                                + "mars|avril|mai|juin|juillet|"
+                                + "aout|août|"
+                                + "septembre|octobre|novembre|"
+                                + "décembre|decembre)" // Le mois
+                                + "\\s?" // Un espace
+                                + "([0-9]{2,4})?"; // L'année
 
                 LogUtil.LOGD("SpeechAddFoodFragment", "regex : " + regex);
 
@@ -183,36 +190,40 @@ public class SpeechAddFoodFragment extends BaseFragment {
                 ArrayList<String> realMatches = new ArrayList<String>();
 
 
+                Food foodMatche = null;
+
                 for (String matchStr : resultats) {
                     LogUtil.LOGD(this, matchStr + "  ### " + String.valueOf(matchStr.matches(regex)));
                     Matcher matcher = p.matcher(matchStr);
-                    if(matcher.find()){
+                    if (matcher.find()) {
                         Log.e("Ca match ! ", matcher.group(1));
                         int count = matcher.groupCount();
                         ArrayList<String> groups = new ArrayList<String>();
-                        for (int i = 0; i <= count; i++)
-                        {
+                        for (int i = 0; i <= count; i++) {
                             groups.add(matcher.group(i));
                         }
 
                         realMatches.add(matchStr);
 
-                        if(matcher.groupCount() >= 4){
-                            int quantity=1;
+                        if (matcher.groupCount() >= 4) {
+                            int quantity = 1;
 
-                            if(! matcher.group(1).isEmpty()){
+                            if (!matcher.group(1).isEmpty()) {
                                 quantity = Integer.valueOf(matcher.group(1));
                             }
 
                             String product = matcher.group(2);
-                            int day = Integer.valueOf(matcher.group(3));
+                            String day = matcher.group(3);
                             String month = matcher.group(4);
                             String year = "";
 
 
-
-                            if(matcher.groupCount() == 5){
+                            if (matcher.groupCount() == 5) {
                                 year = matcher.group(5);
+                            }
+
+                            if (year == null || year.isEmpty()) {
+                                year = String.valueOf(Calendar.getInstance().get(Calendar.YEAR));
                             }
 
                             LogUtil.LOGD("SpeechAddFoodFragment", String.valueOf(quantity));
@@ -221,22 +232,38 @@ public class SpeechAddFoodFragment extends BaseFragment {
                             LogUtil.LOGD("SpeechAddFoodFragment", month);
                             LogUtil.LOGD("SpeechAddFoodFragment", year);
 
-//						Log.i("produit",product);
-//						Log.i("day", String.valueOf(day));
-//						Log.i("month",month);
-//						Log.i("year", year);
+
+
+
+                            foodMatche = new Food();
+                            foodMatche.setName(product);
+
+                            FoodFridge foodFridgeMatche = new FoodFridge();
+                            foodFridgeMatche.setOpen(false);
+                            foodFridgeMatche.setQuantity(quantity);
+
+                            String dateString = day + " " + month + " " + year;
+                            Date date = DateUtils.getDateFromText(dateString);
+
+                            foodFridgeMatche.setOutOfDate(date);
+
+                            foodMatche.setFoodFridge(foodFridgeMatche);
+
                             break;
                         }
                     }
                 }
 
-
-                LogUtil.LOGD("SpeechAddFoodFragment", realMatches.toString());
                 txtInfos.setText("C'est terminé");
 
                 mIsListening = false;
 
 
+                if(foodMatche != null){
+                    LogUtil.LOGD("SpeechAddFoodFragment", foodMatche.toString());
+                    EventBus.getDefault().post(new SpeechFoodMatcheEvent(foodMatche));
+                    getDialog().dismiss();
+                }
 
             }
 
@@ -269,7 +296,6 @@ public class SpeechAddFoodFragment extends BaseFragment {
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
         mSpeechRecognizer.destroy();
-
     }
 
     @Override
