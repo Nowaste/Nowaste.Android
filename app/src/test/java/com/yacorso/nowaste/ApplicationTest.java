@@ -17,6 +17,7 @@ import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.widget.Button;
+import android.widget.NumberPicker;
 
 import com.yacorso.nowaste.views.activities.DrawerActivity;
 import com.yacorso.nowaste.views.fragments.AddFoodFragment;
@@ -59,48 +60,64 @@ public class ApplicationTest {
         Intent expectedIntent = new Intent(activity, FragmentActivity.class);
         assertThat(shadowOf(activity).getNextStartedActivity()).isEqualTo(expectedIntent);
     }
-//    @Test
-//    public void clickingButton_shouldChangeResultsViewText() throws Exception {
-//        Activity activity = Robolectric.setupActivity(MyActivity.class);
-//
-//        Button pressMeButton = (Button) activity.findViewById(R.id.press_me_button);
-//        TextView results = (TextView) activity.findViewById(R.id.results_text_view);
-//
-//        pressMeButton.performClick();
-//        String resultsText = results.getText().toString();
-//        assertThat(resultsText, equalTo("Testing Android Rocks!"));
-//    }
+
+    /** btn_food_quantity **/
+
+    //a tester avec une boucle for de plusieurs tests
     @Test
-    public void clickingMike_shouldOpenBoxAddFood() throws Exception {
-        setup();
-
-        /**
-        protected void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            setContentView(R.layout.welcome_activity);
-
-            final View button = findViewById(R.id.login);
-            button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    startActivity(new Intent(WelcomeActivity.this, LoginActivity.class));
-                }
-            });
-        }
-
-         @Test
-         public void clickingLogin_shouldStartLoginActivity() {
-             WelcomeActivity activity = Robolectric.setupActivity(WelcomeActivity.class);
-             activity.findViewById(R.id.login).performClick();
-
-             Intent expectedIntent = new Intent(activity, WelcomeActivity.class);
-             assertThat(shadowOf(activity).getNextStartedActivity()).isEqualTo(expectedIntent);
-         }
-    **/
-        //ButterKnife mFabButton = (ButterKnife) ButterKnife.findViewById(R.id.btnAddFood);
-
-        activity.findViewById(R.id.btnAddFood).performClick();
-        Intent expectedIntent = new Intent(activity, FragmentActivity.class);
-        assertThat(shadowOf(activity).getNextStartedActivity()).isEqualTo(expectedIntent);
+    public void btn_food_quantity_should_match(){
+        int max = 99;
+        int min = 1;
+        int random = (int)Math.random() * (max - min) + min;
+        // Given
+        NumberPicker numberPicker = (NumberPicker) findViewById(R.id.btn_food_quantity);
+        // When
+        boolean result = numberPicker.matches(random);
+        // Then
+        assertThat(result).isTrue();
     }
+
+    @Test
+    public void btn_food_quantity_should_not_match_null(){
+        //Given
+        NumberPicker numberPicker = (NumberPicker) findViewById(R.id.btn_food_quantity);
+        // When
+        boolean result = numberPicker.matches(null);
+        // Then
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    public void btn_food_quantity_should_not_match_empty(){
+        //Given
+        NumberPicker numberPicker = (NumberPicker) findViewById(R.id.btn_food_quantity);
+        // When
+        boolean result = numberPicker.matches("");
+        // Then
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    public void btn_food_quantity_should_not_match_zero(){
+        //Given
+        NumberPicker numberPicker = (NumberPicker) findViewById(R.id.btn_food_quantity);
+        // When
+        boolean result = numberPicker.matches(0);
+        // Then
+        assertThat(result).isFalse();
+    }
+
+    //a tester avec une boucle for de plusieurs tests
+    @Test
+    public void btn_food_quantity_should_not_match_more_than_hundred(){
+        int min = 100;
+        int max = 999999999;
+        //Given
+        NumberPicker numberPicker = (NumberPicker) findViewById(R.id.btn_food_quantity);
+        // When
+        boolean result = numberPicker.matches(Math.random() * (max - min) + min);
+        // Then
+        assertThat(result).isFalse();
+    }
+
 }
