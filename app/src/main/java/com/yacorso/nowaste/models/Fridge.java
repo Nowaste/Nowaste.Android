@@ -16,14 +16,12 @@ import com.raizlabs.android.dbflow.annotation.ModelContainer;
 import com.raizlabs.android.dbflow.annotation.OneToMany;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.sql.builder.Condition;
+import com.raizlabs.android.dbflow.sql.language.ColumnAlias;
+import com.raizlabs.android.dbflow.sql.language.Join;
 import com.raizlabs.android.dbflow.sql.language.Select;
 import com.yacorso.nowaste.data.NowasteDatabase;
 
 import java.util.List;
-
-/**
- * Created by quentin on 21/06/15.
- */
 
 @ModelContainer
 @Table(databaseName = NowasteDatabase.NAME)
@@ -31,7 +29,7 @@ public class Fridge extends FoodList {
 
     public Fridge(){}
 
-    @OneToMany(methods = {OneToMany.Method.ALL})
+    @OneToMany(methods = {OneToMany.Method.LOAD}, variableName = "foods")
     public List<Food> getFoods() {
         if(foods == null) {
             foods = new Select()

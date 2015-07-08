@@ -15,13 +15,19 @@ package com.yacorso.nowaste.dao;
 import com.raizlabs.android.dbflow.runtime.TransactionManager;
 import com.raizlabs.android.dbflow.runtime.transaction.BaseTransaction;
 import com.raizlabs.android.dbflow.runtime.transaction.TransactionListener;
+import com.raizlabs.android.dbflow.runtime.transaction.TransactionListenerAdapter;
+import com.raizlabs.android.dbflow.runtime.transaction.process.DeleteModelListTransaction;
 import com.raizlabs.android.dbflow.runtime.transaction.process.ProcessModelInfo;
+import com.raizlabs.android.dbflow.runtime.transaction.process.ProcessModelTransaction;
 import com.raizlabs.android.dbflow.runtime.transaction.process.SaveModelTransaction;
 import com.raizlabs.android.dbflow.runtime.transaction.process.UpdateModelListTransaction;
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Delete;
 import com.raizlabs.android.dbflow.sql.language.Select;
+import com.raizlabs.android.dbflow.structure.AsyncModel;
+import com.raizlabs.android.dbflow.structure.Model;
 import com.yacorso.nowaste.events.UserCreatedEvent;
+import com.yacorso.nowaste.events.UserDeletedEvent;
 import com.yacorso.nowaste.events.UserUpdatedEvent;
 import com.yacorso.nowaste.models.User;
 import com.yacorso.nowaste.models.User$Table;
@@ -37,78 +43,63 @@ import de.greenrobot.event.EventBus;
  */
 public class UserDao extends Dao<User, Long> {
 
+    public UserDao() {}
     /**
-     * Create user in database
+     * Insert item in database
      *
      * @param item
+     * @return
      */
-    @Override
-    public void create(User item) {
-        insert(item, TYPE_CREATE);
+    public void create(final User item) {
+        transact(item, TYPE_CREATE);
     }
 
+
     /**
-     * Update user in database
+     * Update item in database
      *
      * @param item
+     * @return
      */
-    @Override
     public void update(User item) {
-        insert(item, TYPE_UPDATE);
+        transact(item, TYPE_UPDATE);
     }
 
-    public void insert(User item, final int type) {
+    /**
+     * Delete item in database
+     *
+     * @param item
+     */
+    public void delete(User item) {
+        transact(item, TYPE_DELETE);
+    }
 
-        TransactionListener resultReceiver = new TransactionListener() {
+    public void transact(final User item, final int type) {
+        final AsyncModel.OnModelChangedListener resultUser = new AsyncModel.OnModelChangedListener() {
             @Override
-            public void onResultReceived(Object o) {
+            public void onModelChanged(Model model) {
+                User user = (User) model;
                 if (type == TYPE_CREATE) {
-                    EventBus.getDefault().post(new UserCreatedEvent());
+                    EventBus.getDefault().post(new UserCreatedEvent(user));
                 } else if (type == TYPE_UPDATE) {
-                    EventBus.getDefault().post(new UserUpdatedEvent());
+                    EventBus.getDefault().post(new UserUpdatedEvent(user));
+                } else if (type == TYPE_DELETE) {
+                    EventBus.getDefault().post(new UserDeletedEvent(user));
                 }
-            }
-
-            @Override
-            public boolean onReady(BaseTransaction baseTransaction) {
-                return baseTransaction.onReady();
-            }
-
-            @Override
-            public boolean hasResult(BaseTransaction baseTransaction, Object o) {
-                return true;
             }
         };
 
-
-        /**
-         * Set DBFlow Transaction
-         */
-        ProcessModelInfo<User> processModelInfo =
-                ProcessModelInfo.withModels(item)
-                        .result(resultReceiver);
         if (type == TYPE_CREATE) {
-            TransactionManager.getInstance().addTransaction(
-                    new SaveModelTransaction<>(processModelInfo));
-        } else if (type == TYPE_UPDATE) {
-            TransactionManager.getInstance().addTransaction(
-                    new UpdateModelListTransaction<>(processModelInfo));
+            item.async().withListener(resultUser).save();
         }
+        else if (type == TYPE_UPDATE) {
+            item.async().withListener(resultUser).update();
+        }
+        else if (type == TYPE_DELETE) {
+            item.async().withListener(resultUser).delete();
+        }
+    };
 
-    }
-
-    /**
-     * Delete user in database
-     *
-     * @param item
-     */
-    @Override
-    public void delete(User item) {
-        new Delete()
-                .from(User.class)
-                .where(Condition.column(User$Table.ID).is(item.getId()))
-                .query();
-    }
 
     /**
      * Get user from database
@@ -131,10 +122,6 @@ public class UserDao extends Dao<User, Long> {
      */
     @Override
     public List<User> all() {
-
-        List<User> users = new Select().from(User.class).queryList();
-
-        return users;
-
+        return new Select().from(User.class).queryList();
     }
 }

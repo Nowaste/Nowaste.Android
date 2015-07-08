@@ -15,19 +15,24 @@ package com.yacorso.nowaste.dao;
 import com.raizlabs.android.dbflow.runtime.TransactionManager;
 import com.raizlabs.android.dbflow.runtime.transaction.BaseTransaction;
 import com.raizlabs.android.dbflow.runtime.transaction.TransactionListener;
+import com.raizlabs.android.dbflow.runtime.transaction.TransactionListenerAdapter;
 import com.raizlabs.android.dbflow.runtime.transaction.process.InsertModelTransaction;
 import com.raizlabs.android.dbflow.runtime.transaction.process.ProcessModelInfo;
+import com.raizlabs.android.dbflow.runtime.transaction.process.ProcessModelTransaction;
 import com.raizlabs.android.dbflow.runtime.transaction.process.UpdateModelListTransaction;
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Delete;
 import com.raizlabs.android.dbflow.sql.language.Select;
+import com.raizlabs.android.dbflow.structure.AsyncModel;
+import com.raizlabs.android.dbflow.structure.Model;
 import com.yacorso.nowaste.events.CustomListCreatedEvent;
+import com.yacorso.nowaste.events.CustomListDeletedEvent;
 import com.yacorso.nowaste.events.CustomListUpdatedEvent;
-import com.yacorso.nowaste.events.FridgeCreatedEvent;
-import com.yacorso.nowaste.events.FridgeUpdatedEvent;
 import com.yacorso.nowaste.models.CustomList;
 import com.yacorso.nowaste.models.CustomList$Table;
+import com.yacorso.nowaste.models.Food;
 import com.yacorso.nowaste.models.Fridge;
+import com.yacorso.nowaste.models.User;
 
 import java.util.List;
 
@@ -38,76 +43,89 @@ import de.greenrobot.event.EventBus;
  */
 public class CustomListDao extends Dao<CustomList, Long> {
 
-    @Override
-    public void create(CustomList item) {
-        insert(item, TYPE_CREATE);
+    int type;
+
+    /**
+     * Insert item in database
+     *
+     * @param item
+     * @return
+     */
+    public void create(final CustomList item) {
+        type= TYPE_CREATE;
+        transact(item);
     }
 
-    @Override
+    /**
+     * Update item in database
+     *
+     * @param item
+     * @return
+     */
     public void update(CustomList item) {
-        insert(item, TYPE_UPDATE);
+        type = TYPE_UPDATE;
+        transact(item);
     }
 
-    public void insert(final CustomList item, final int type) {
-        TransactionListener resultReceiver = new TransactionListener() {
+    public void transact(final CustomList item) {
+        final AsyncModel.OnModelChangedListener resultCustomList = new AsyncModel.OnModelChangedListener() {
             @Override
-            public void onResultReceived(Object o) {
-                /*
-                 * Insert or update foods items
-                 */
-                FoodDao foodDao = new FoodDao();
-                foodDao.insert(item.getFoods());
+            public void onModelChanged(Model model) {
+                CustomList customList = (CustomList) model;
+
+                User user = customList.getUser();
+                if (type == TYPE_CREATE) {
+                    user.addCustomList(customList);
+                }
+                user.async().update();
 
                 if (type == TYPE_CREATE) {
-
-                    /*
-                     * When CustomList was created, push then CustomListCreatedEvent
-                     * For all listeners
-                     */
-                    EventBus.getDefault().post(new CustomListCreatedEvent());
+                    EventBus.getDefault().post(new CustomListCreatedEvent(customList));
                 } else if (type == TYPE_UPDATE) {
-                    /*
-                     * When CustomList was updated, push then CustomListUpdatedEvent
-                     * For all listeners
-                     */
-                    EventBus.getDefault().post(new CustomListUpdatedEvent());
+                    EventBus.getDefault().post(new CustomListUpdatedEvent(customList));
                 }
-            }
-
-            @Override
-            public boolean onReady(BaseTransaction baseTransaction) {
-                return baseTransaction.onReady();
-            }
-
-            @Override
-            public boolean hasResult(BaseTransaction baseTransaction, Object o) {
-                return true;
             }
         };
 
-
-        /*
-         * Set DBFlow Transaction
-         */
-        ProcessModelInfo<CustomList> processModelInfo =
-                ProcessModelInfo.withModels(item)
-                        .result(resultReceiver);
-
         if (type == TYPE_CREATE) {
-            TransactionManager.getInstance()
-                    .addTransaction(new InsertModelTransaction<>(processModelInfo));
-        } else if (type == TYPE_UPDATE) {
-            TransactionManager.getInstance()
-                    .addTransaction(new UpdateModelListTransaction<>(processModelInfo));
+            item.async().withListener(resultCustomList).save();
+        }
+        else if (type == TYPE_UPDATE){
+            TransactionListenerAdapter resultFoods = new TransactionListenerAdapter() {
+                @Override
+                public void onResultReceived(Object o) {
+                    item.async().withListener(resultCustomList).update();
+                }
+            };
+            updateFood(item.getFoods(), resultFoods);
         }
     }
 
-    @Override
+    private void updateFood(final List<Food> foods, final TransactionListenerAdapter result) {
+        ProcessModelInfo processModelInfo = ProcessModelInfo.withModels(foods).result(result);
+        ProcessModelTransaction transaction = new UpdateModelListTransaction(processModelInfo);
+        TransactionManager.getInstance().addTransaction(transaction);
+    }
+
+    /**
+     * Delete item in database
+     *
+     * @param item
+     */
     public void delete(CustomList item) {
-        new Delete()
-                .from(CustomList.class)
-                .where(Condition.column(CustomList$Table.ID).is(item.getId()))
-                .query();
+        type = TYPE_DELETE;
+        User user = item.getUser();
+        user.removeCustomList(item);
+        user.async().update();
+
+        final AsyncModel.OnModelChangedListener callback = new AsyncModel.OnModelChangedListener() {
+            @Override
+            public void onModelChanged(Model model) {
+                EventBus.getDefault().post(new CustomListDeletedEvent());
+            }
+        };
+
+        item.async().withListener(callback).delete();
     }
 
     @Override

@@ -18,7 +18,7 @@ import com.raizlabs.android.dbflow.annotation.Database;
 /**
  * DBFlow database configuration
  */
-@Database(name = NowasteDatabase.NAME, version = NowasteDatabase.VERSION)
+@Database(name = NowasteDatabase.NAME, version = NowasteDatabase.VERSION, foreignKeysSupported = true)
 public class NowasteDatabase {
     /**
      * Database name

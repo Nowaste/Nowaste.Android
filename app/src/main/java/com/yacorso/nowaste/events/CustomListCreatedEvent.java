@@ -12,8 +12,19 @@
 
 package com.yacorso.nowaste.events;
 
+import com.yacorso.nowaste.models.CustomList;
+
 /**
  * Created by quentin on 05/07/15.
  */
 public class CustomListCreatedEvent {
+    CustomList customList;
+
+    public CustomListCreatedEvent (CustomList customListElement) {
+        customList = customListElement;
+    }
+
+    public CustomList getCustomList() {
+        return customList;
+    }
 }

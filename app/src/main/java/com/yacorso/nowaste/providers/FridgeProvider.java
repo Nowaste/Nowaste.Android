@@ -17,6 +17,7 @@ import com.yacorso.nowaste.dao.FridgeDao;
 import com.yacorso.nowaste.events.ApiErrorEvent;
 import com.yacorso.nowaste.events.FridgesLoadedEvent;
 import com.yacorso.nowaste.events.LoadFridgesEvent;
+import com.yacorso.nowaste.models.FoodList;
 import com.yacorso.nowaste.models.User;
 import com.yacorso.nowaste.utils.LogUtil;
 import com.yacorso.nowaste.data.NowasteApi;
@@ -99,18 +100,22 @@ public class FridgeProvider extends Provider<Fridge, Long> {
     }
 
 
-    public Fridge getCurrentFridge(){
-        User currentUser = NowasteApplication.getCurrentUser();
+    public Fridge getCurrentFridge(User user){
         Fridge fridge=null;
-        if( currentUser != null){
-            if( currentUser.getFridges().size() > 0){
-                fridge = currentUser.getFridges().get(0);
+        if( user != null){
+            if( user.getFridges().size() > 0){
+                fridge = user.getFridges().get(0);
             }
         }
 
         return fridge;
     }
 
+    public List<Food> getFoods(long fridgeId){
+
+        FoodList foodList = mFridgeDao.get(fridgeId);
+        return foodList.getFoods();
+    }
 
     public List<Food> getFoods(int fridgeId){
         List<Food> foods = null;

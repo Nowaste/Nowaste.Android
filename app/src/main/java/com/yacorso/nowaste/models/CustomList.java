@@ -26,7 +26,7 @@ import java.util.List;
 public class CustomList extends FoodList {
     public CustomList () { }
 
-    @OneToMany(methods = {OneToMany.Method.ALL})
+    @OneToMany(methods = {OneToMany.Method.LOAD}, variableName = "foods")
     public List<Food> getFoods() {
         if(foods == null) {
             foods = new Select()

@@ -13,26 +13,23 @@
 package com.yacorso.nowaste.dao;
 
 
-import com.raizlabs.android.dbflow.runtime.TransactionManager;
-import com.raizlabs.android.dbflow.runtime.transaction.BaseTransaction;
-import com.raizlabs.android.dbflow.runtime.transaction.TransactionListener;
-import com.raizlabs.android.dbflow.runtime.transaction.process.InsertModelTransaction;
-import com.raizlabs.android.dbflow.runtime.transaction.process.ProcessModelInfo;
-import com.raizlabs.android.dbflow.runtime.transaction.process.SaveModelTransaction;
-import com.raizlabs.android.dbflow.runtime.transaction.process.UpdateModelListTransaction;
 import com.raizlabs.android.dbflow.sql.builder.Condition;
-import com.raizlabs.android.dbflow.sql.language.Delete;
 import com.raizlabs.android.dbflow.sql.language.Select;
+import com.raizlabs.android.dbflow.structure.AsyncModel;
+import com.raizlabs.android.dbflow.structure.Model;
+import com.yacorso.nowaste.events.FoodCreatedEvent;
+import com.yacorso.nowaste.events.FoodDeletedEvent;
+import com.yacorso.nowaste.events.FoodUpdatedEvent;
+import com.yacorso.nowaste.models.CustomList;
 import com.yacorso.nowaste.models.Food;
 import com.yacorso.nowaste.models.Food$Table;
 import com.yacorso.nowaste.models.FoodFridge;
-import com.yacorso.nowaste.models.FoodFridge$Table;
 import com.yacorso.nowaste.models.FoodList;
+import com.yacorso.nowaste.models.Fridge;
 
-import com.yacorso.nowaste.utils.LogUtil;
-
-import java.util.ArrayList;
 import java.util.List;
+
+import de.greenrobot.event.EventBus;
 
 /**
  * FoodDao
@@ -40,54 +37,119 @@ import java.util.List;
  */
 public class FoodDao extends Dao<Food, Long> {
 
-    /**
-     * Transaction listener for FoodFridge
-     */
-    TransactionListener mResultReceiverFoodFridge;
+    int type;
 
     /**
-     * Transaction listener for Food
-     */
-    TransactionListener mResultReceiverFood;
-
-
-    /**
-     * Create a food in database
+     * Create item in database
      *
      * @param item
      */
-    @Override
     public void create(final Food item) {
-        insert(item, TYPE_CREATE);
+        type = TYPE_CREATE;
+        transact(item);
     }
 
     /**
-     * Update food in database
+     * Update item in database
      *
      * @param item
      */
-    @Override
     public void update(Food item) {
-        this.insert(item, TYPE_UPDATE);
+        type = TYPE_UPDATE;
+        transact(item);
     }
 
-    /**
-     * Delete food in database
-     *
-     * @param item
-     */
-    @Override
-    public void delete(Food item) {
+    public void transact(final Food item) {
+        final AsyncModel.OnModelChangedListener callback = new AsyncModel.OnModelChangedListener() {
+            @Override
+            public void onModelChanged(Model model) {
+                FoodFridge foodFridge = (FoodFridge) model;
+                transactFood(item, foodFridge);
+            }
+        };
+
         if (item.hasFoodFridge()) {
-            new Delete().from(FoodFridge.class).where(
-                    Condition.column(FoodFridge$Table.ID).is(item.getFoodFridge().getId())
-            ).query();
+            FoodFridge foodFridge = item.getFoodFridge();
+            if (type == TYPE_CREATE) {
+                foodFridge.async().withListener(callback).save();
+            }
+            else if (type == TYPE_UPDATE) {
+                foodFridge.async().withListener(callback).update();
+            }
+        }
+        else {
+            transactFood(item, null);
+        }
+    }
+
+    private void transactFood (final Food item, FoodFridge foodFridge) {
+        final AsyncModel.OnModelChangedListener callback = new AsyncModel.OnModelChangedListener() {
+            @Override
+            public void onModelChanged(Model model) {
+                Food food = (Food) model;
+                transactFoodList(food);
+            }
+        };
+
+        if (type == TYPE_CREATE) {
+            item.setFoodFridge(foodFridge);
+            item.async().withListener(callback).save();
+        }
+        else if (type == TYPE_UPDATE) {
+            item.setFoodFridge(foodFridge);
+            item.async().withListener(callback).update();
+        }
+    }
+
+    private void transactFoodList (Food food) {
+        if (food.hasFridge()) {
+            Fridge fridge = food.getFridge();
+            if (type == TYPE_CREATE) {
+                fridge.addFood(food);
+            }
+            fridge.async().update();
+        }
+        if (food.hasCustomList()) {
+            CustomList customList = food.getCustomList();
+            if (type == TYPE_CREATE) {
+                customList.addFood(food);
+            }
+            customList.async().update();
         }
 
-        new Delete()
-                .from(Food.class)
-                .where(Condition.column(Food$Table.ID).is(item.getId()))
-                .query();
+        if (type == TYPE_CREATE) {
+            EventBus.getDefault().post(new FoodCreatedEvent(food));
+        } else if (type == TYPE_UPDATE) {
+            EventBus.getDefault().post(new FoodUpdatedEvent(food));
+        }
+    }
+
+    /**
+     * Delete item in database
+     *
+     * @param item
+     */
+    public void delete(Food item) {
+        type = TYPE_DELETE;
+        if (item.hasFridge()) {
+            Fridge fridge = item.getFridge();
+            fridge.removeFood(item);
+            fridge.async().update();
+        }
+        if (item.hasCustomList()) {
+            CustomList customList = item.getCustomList();
+            customList.removeFood(item);
+            customList.async().update();
+        }
+
+        final AsyncModel.OnModelChangedListener callback = new AsyncModel.OnModelChangedListener() {
+            @Override
+            public void onModelChanged(Model model) {
+                EventBus.getDefault().post(new FoodDeletedEvent());
+            }
+        };
+
+        item.async().withListener(callback).delete();
     }
 
     /**
@@ -98,6 +160,10 @@ public class FoodDao extends Dao<Food, Long> {
      */
     @Override
     public Food get(Long id) {
+        /**
+         * This query is done without transactionManager
+         * because you can't return the value
+         */
         return new Select()
                 .from(Food.class)
                 .where(Condition.column(Food$Table.ID).is(id))
@@ -112,127 +178,6 @@ public class FoodDao extends Dao<Food, Long> {
      */
     @Override
     public List<Food> all() {
-        return new Select().all().from(Food.class).queryList();
-    }
-
-
-    /**
-     * Insert food in database
-     * If food object already exists, update this
-     * Else food object is created
-     *
-     * @param item
-     */
-    public void insert(final Food item, final int type) {
-        mResultReceiverFoodFridge = new TransactionListener() {
-            @Override
-            public void onResultReceived(Object o) {
-
-                ArrayList<FoodList> result = (ArrayList<FoodList>) o;
-
-                if (!result.isEmpty()) {
-                    o = result.get(0);
-
-                    if (o.getClass() == FoodFridge.class && !((FoodFridge) o).isEmpty()) {
-
-                        item.setFoodFridge((FoodFridge) o);
-                        ProcessModelInfo<Food> processModelInfoFood =
-                                ProcessModelInfo.withModels(item)
-                                        .result(mResultReceiverFood);
-
-                        if (type == TYPE_CREATE) {
-                            TransactionManager.getInstance().addTransaction(
-                                    new SaveModelTransaction<>(processModelInfoFood));
-                        } else if (type == TYPE_UPDATE) {
-                            TransactionManager.getInstance().addTransaction(
-                                    new UpdateModelListTransaction<>(processModelInfoFood));
-                        }
-
-                    }
-                    LogUtil.LOGD(this, "onResultReceived -- FoodFridge");
-                }
-
-            }
-
-            @Override
-            public boolean onReady(BaseTransaction baseTransaction) {
-                return baseTransaction.onReady();
-            }
-
-            @Override
-            public boolean hasResult(BaseTransaction baseTransaction, Object o) {
-                return true;
-            }
-        };
-
-
-        mResultReceiverFood = new TransactionListener() {
-
-            @Override
-            public void onResultReceived(Object o) {
-                LogUtil.LOGD(this, "onResultReceived -- Food");
-            }
-
-            @Override
-            public boolean onReady(BaseTransaction baseTransaction) {
-                return baseTransaction.onReady();
-            }
-
-            @Override
-            public boolean hasResult(BaseTransaction baseTransaction, Object o) {
-                return true;
-            }
-        };
-
-
-        if (item.hasFridge() && item.hasFoodFridge()) {
-
-            /**
-             * Save Food Fridge
-             */
-            LogUtil.LOGD(this, "HasFoodFridge");
-
-            /**
-             * Set DBFlow Transaction
-             */
-            ProcessModelInfo<FoodFridge> processModelInfoFoodFridge =
-                    ProcessModelInfo.withModels(item.getFoodFridge())
-                            .result(mResultReceiverFoodFridge);
-
-
-            if (type == TYPE_CREATE) {
-                TransactionManager.getInstance().addTransaction(
-                        new SaveModelTransaction<>(processModelInfoFoodFridge));
-            } else if (type == TYPE_UPDATE) {
-                TransactionManager.getInstance().addTransaction(
-                        new UpdateModelListTransaction<>(processModelInfoFoodFridge));
-            }
-
-        } else if (item.hasCustomList()) {
-            ProcessModelInfo<Food> processModelInfoFood =
-                    ProcessModelInfo.withModels(item)
-                            .result(mResultReceiverFood);
-            TransactionManager.getInstance().addTransaction(
-                    new InsertModelTransaction<>(processModelInfoFood));
-        } else {
-            LogUtil.LOGE(this, item.getName() + " hasn't Fridge and Custom List !");
-        }
-    }
-
-    /**
-     * Insert foods with list of food
-     *
-     * @param foods
-     */
-    public void insert(List<Food> foods) {
-        for (Food food : foods) {
-            int type = TYPE_CREATE;
-
-            if (food.getId() > 0) {
-                type = TYPE_UPDATE;
-            }
-
-            insert(food, type);
-        }
+        return new Select().from(Food.class).queryList();
     }
 }

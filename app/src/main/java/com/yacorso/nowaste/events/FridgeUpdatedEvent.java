@@ -12,8 +12,18 @@
 
 package com.yacorso.nowaste.events;
 
+import com.yacorso.nowaste.models.Fridge;
+
 /**
  * Created by quentin on 05/07/15.
  */
 public class FridgeUpdatedEvent {
+    Fridge fridge;
+    public FridgeUpdatedEvent (Fridge fridge) {
+        this.fridge = fridge;
+    }
+
+    public Fridge getFridge() {
+        return fridge;
+    }
 }

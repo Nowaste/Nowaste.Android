@@ -12,8 +12,19 @@
 
 package com.yacorso.nowaste.events;
 
+import com.yacorso.nowaste.models.User;
+
 /**
  * Created by quentin on 05/07/15.
  */
 public class UserUpdatedEvent {
+    User user;
+
+    public UserUpdatedEvent (User userElement) {
+        user = userElement;
+    }
+
+    public User getUser() {
+        return user;
+    }
 }

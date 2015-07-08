@@ -12,8 +12,16 @@
 
 package com.yacorso.nowaste.events;
 
-/**
- * Created by quentin on 05/07/15.
- */
+import com.yacorso.nowaste.models.User;
+
 public class UserCreatedEvent {
+    User user;
+
+    public UserCreatedEvent (User userElement) {
+        user = userElement;
+    }
+
+    public User getUser() {
+        return user;
+    }
 }

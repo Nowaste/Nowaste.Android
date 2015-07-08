@@ -22,7 +22,11 @@ import com.raizlabs.android.dbflow.annotation.ForeignKeyReference;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.structure.cache.BaseCacheableModel;
+import com.raizlabs.android.dbflow.structure.container.ForeignKeyContainer;
 import com.yacorso.nowaste.data.NowasteDatabase;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 
 @Table(databaseName = NowasteDatabase.NAME)
@@ -55,10 +59,10 @@ public class Configuration extends BaseCacheableModel implements Parcelable {
             references = {@ForeignKeyReference(
                             columnName = "user_id",
                             columnType = Long.class,
-                            foreignColumnName = "id"
-                        )}
+                            foreignColumnName = "id")},
+            saveForeignKeyModel = false
     )
-    protected User user;
+    protected ForeignKeyContainer<User> user;
 
     /**
      * Functions
@@ -104,10 +108,16 @@ public class Configuration extends BaseCacheableModel implements Parcelable {
     }
 
     public User getUser() {
-        return user;
+        return user.toModel();
     }
     public void setUser(User user) {
-        this.user = user;
+        if (!user.isEmpty()) {
+            this.user = new ForeignKeyContainer<>(User.class);
+            Map<String, Object> keys = new LinkedHashMap<>();
+            keys.put(User$Table.ID, user.id);
+            this.user.setData(keys);
+            this.user.setModel(user);
+        }
     }
 
     @Override

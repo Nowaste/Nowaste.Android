@@ -22,15 +22,20 @@ public class NavigationDrawerItem {
     protected String title;
     protected int icon;
     protected BaseFragment fragment;
+    protected long id;
+    protected Class type;
 
     public NavigationDrawerItem() {
 
     }
 
-    public NavigationDrawerItem(String title, int icon, BaseFragment fragment) {
+    public NavigationDrawerItem(String title, int icon, BaseFragment fragment, long id, Class type) {
         this.title = title;
         this.icon = icon;
         this.fragment = fragment;
+        this.id = id;
+        this.type = type;
+
     }
 
     public boolean isShowNotify() {
@@ -63,5 +68,21 @@ public class NavigationDrawerItem {
 
     public void setFragment(BaseFragment fragment) {
         this.fragment = fragment;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public Class getType() {
+        return type;
+    }
+
+    public void setType(Class type) {
+        this.type = type;
     }
 }

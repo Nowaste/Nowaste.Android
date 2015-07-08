@@ -31,6 +31,7 @@ import android.widget.TextView;
 import com.yacorso.nowaste.NowasteApplication;
 import com.yacorso.nowaste.R;
 import com.yacorso.nowaste.events.CallAddFoodEvent;
+import com.yacorso.nowaste.events.DatabaseReadyEvent;
 import com.yacorso.nowaste.events.SetTitleEvent;
 import com.yacorso.nowaste.events.CancelSearchEvent;
 import com.yacorso.nowaste.events.LaunchSearchEvent;
@@ -39,6 +40,7 @@ import com.yacorso.nowaste.events.SpeechFoodMatcheEvent;
 import com.yacorso.nowaste.models.Fridge;
 import com.yacorso.nowaste.models.NavigationDrawerItem;
 import com.yacorso.nowaste.models.User;
+import com.yacorso.nowaste.providers.UserProvider;
 import com.yacorso.nowaste.utils.NavigatorUtil;
 import com.yacorso.nowaste.views.fragments.AddFoodFragment;
 import com.yacorso.nowaste.views.fragments.BaseFragment;
@@ -71,6 +73,8 @@ public class DrawerActivity extends AppCompatActivity implements
     private boolean isSearchOpened = false;
     private EditText searchQuery;
 
+    User user;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,28 +84,9 @@ public class DrawerActivity extends AppCompatActivity implements
 
         mNavigatorUtil = new NavigatorUtil(getSupportFragmentManager(), R.id.container_body);
 
-        initActionBarAndNavDrawer();
-
-        if(savedInstanceState == null)
-        {
-            /*
-             * If user has a fridge, display it
-             */
-            User currentUser = NowasteApplication.getCurrentUser();
-            List<Fridge> fridges = currentUser.getFridges();
-            if(fridges.size() > 0){
-                mNavigatorUtil.setRootFragment(FoodListFragment.newInstance(fridges.get(0)));
-            }
-            /*
-             * Then display speech recognizer
-             */
-            else{
-
-            }
-        }
     }
 
-    private void initActionBarAndNavDrawer() {
+    private void initActionBarAndNavDrawer(User user) {
 
         // Set toolbar as actionbar
         setSupportActionBar(mToolbar);
@@ -113,7 +98,7 @@ public class DrawerActivity extends AppCompatActivity implements
         // Set up drawer fragment
         mDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.fragment_navigation_drawer);
-        mDrawerFragment.setUp(R.id.fragment_navigation_drawer, mDrawerLayout, mToolbar);
+        mDrawerFragment.setUp(user, R.id.fragment_navigation_drawer, mDrawerLayout, mToolbar);
         mDrawerFragment.setDrawerListener(this);
     }
 
@@ -229,7 +214,8 @@ public class DrawerActivity extends AppCompatActivity implements
     @Override
     public void onStart() {
         super.onStart();
-        EventBus.getDefault().register(this);
+        //EventBus.getDefault().register(this);
+        EventBus.getDefault().registerSticky(this);
     }
 
     @Override
@@ -252,16 +238,26 @@ public class DrawerActivity extends AppCompatActivity implements
         launchDialog(SpeechAddFoodFragment.newInstance());
     }
     public void onEvent(CallUpdateFoodEvent event) {
-        launchDialog(AddFoodFragment.newInstance(event.getFood(), AddFoodFragment.TYPE_UPDATE));
+        launchDialog(AddFoodFragment.newInstance(user, event.getFood(), AddFoodFragment.TYPE_UPDATE));
     }
 
     public void onEvent(SpeechFoodMatcheEvent event) {
-        launchDialog(AddFoodFragment.newInstance(event.getFood(), AddFoodFragment.TYPE_CREATE));
+        launchDialog(AddFoodFragment.newInstance(user, event.getFood(), AddFoodFragment.TYPE_CREATE));
     }
 
     public void onEvent(CancelSearchEvent event) {
         if (isSearchOpened) {
             handleMenuSearch();
+        }
+    }
+
+    public void onEvent(DatabaseReadyEvent event) {
+        user = event.getUser();
+        initActionBarAndNavDrawer(user);
+        List<Fridge> fridges = user.getFridges();
+        if(fridges.size() > 0){
+            mNavigatorUtil.setRootFragment(FoodListFragment.newInstance(fridges.get(0)));
+            updateToolbarTitle(fridges.get(0).getName());
         }
     }
 

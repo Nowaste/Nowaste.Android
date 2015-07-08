@@ -31,26 +31,26 @@ public abstract class FoodList extends BaseCacheableModel {
      */
 
     @Column
-    @PrimaryKey(autoincrement = true)
     @Expose
-    protected long id;
+    @PrimaryKey(autoincrement = true)
+    long id;
 
     @Column
     @Expose
-    protected String name;
+    String name;
 
-    protected List<Food> foods;
-
+    List<Food> foods;
 
     @Column
     @ForeignKey(
-            references = {@ForeignKeyReference(columnName = "user_id",
+            references = {@ForeignKeyReference(
+                    columnName = "user_id",
                     columnType = Long.class,
                     foreignColumnName = "id")},
             saveForeignKeyModel = false
     )
     @Expose
-    protected ForeignKeyContainer<User> user;
+    ForeignKeyContainer<User> user;
 
 
     /**
@@ -75,16 +75,18 @@ public abstract class FoodList extends BaseCacheableModel {
         this.name = name;
     }
 
-    public ForeignKeyContainer<User> getUser() {
-        return user;
+    public User getUser() {
+        return user.toModel();
     }
 
     public void setUser(User user) {
-        this.user = new ForeignKeyContainer<>(User.class);
-        Map<String, Object> keys = new LinkedHashMap<>();
-        keys.put(User$Table.ID, user.id);
-        this.user.setData(keys);
-        this.user.setModel(user);
+        if (!user.isEmpty()) {
+            this.user = new ForeignKeyContainer<>(User.class);
+            Map<String, Object> keys = new LinkedHashMap<>();
+            keys.put(User$Table.ID, user.id);
+            this.user.setData(keys);
+            this.user.setModel(user);
+        }
     }
 
     @Override
@@ -110,10 +112,6 @@ public abstract class FoodList extends BaseCacheableModel {
 
     public void addFood(Food food){
         this.foods.add(food);
-    }
-
-    public void updateFood(Food food){
-        this.foods.set(foods.indexOf(food), food);
     }
 
     public void removeFood(Food food){

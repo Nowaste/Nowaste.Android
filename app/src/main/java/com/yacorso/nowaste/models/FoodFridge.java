@@ -17,6 +17,8 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.Expose;
 import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.ForeignKey;
+import com.raizlabs.android.dbflow.annotation.ForeignKeyReference;
 import com.raizlabs.android.dbflow.annotation.ModelContainer;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
@@ -40,27 +42,27 @@ public class FoodFridge extends BaseCacheableModel implements Parcelable {
     @Column
     @Expose
     @PrimaryKey(autoincrement = true)
-    protected long id;
+    long id;
 
     @Column
     @Expose
-    protected Date outOfDate;
+    Date outOfDate;
 
     @Column
     @Expose
-    protected Date consumedDate;
+    Date consumedDate;
 
     @Column
     @Expose
-    protected int quantity;
+    int quantity;
 
     @Column
     @Expose
-    protected Boolean visible;
+    Boolean visible;
 
     @Column
     @Expose
-    protected Boolean open;
+    Boolean open;
 
 
     /**

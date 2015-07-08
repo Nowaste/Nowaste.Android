@@ -12,17 +12,16 @@
 
 package com.yacorso.nowaste.events;
 
-import com.yacorso.nowaste.models.Food;
-import com.yacorso.nowaste.models.Fridge;
+import com.yacorso.nowaste.models.User;
 
-public class FoodCreatedEvent {
-    Food food;
+public class UserDeletedEvent {
+    User user;
 
-    public FoodCreatedEvent (Food foodElement) {
-        food = foodElement;
+    public UserDeletedEvent(User userElement) {
+        user = userElement;
     }
 
-    public Food getFood() {
-        return food;
+    public User getUser() {
+        return user;
     }
 }

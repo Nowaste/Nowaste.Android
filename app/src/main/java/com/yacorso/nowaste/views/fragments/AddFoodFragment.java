@@ -27,6 +27,7 @@ import com.yacorso.nowaste.events.SpeechAddFoodEvent;
 import com.yacorso.nowaste.models.Food;
 import com.yacorso.nowaste.models.FoodFridge;
 import com.yacorso.nowaste.models.Fridge;
+import com.yacorso.nowaste.models.User;
 import com.yacorso.nowaste.providers.FoodProvider;
 import com.yacorso.nowaste.providers.FridgeProvider;
 import com.yacorso.nowaste.utils.LogUtil;
@@ -59,15 +60,15 @@ public class AddFoodFragment extends BaseFragment {
     FoodProvider mFoodProvider;
     FridgeProvider mFridgeProvider;
 
-
     public static AddFoodFragment newInstance() {
         return new AddFoodFragment();
     }
 
-    public static AddFoodFragment newInstance(Food food, int type) {
+    public static AddFoodFragment newInstance(User user, Food food, int type) {
         AddFoodFragment addFoodFragment = new AddFoodFragment();
 
         Bundle args = new Bundle();
+        args.putParcelable("user", user);
         args.putParcelable("food", food);
         args.putInt("type", type);
         addFoodFragment.setArguments(args);
@@ -81,9 +82,14 @@ public class AddFoodFragment extends BaseFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        Bundle arguments = getArguments();
+        User user = null;
+        if (arguments != null && arguments.containsKey("user")) {
+            user = getArguments().getParcelable("user");
+        }
         mFridgeProvider = new FridgeProvider();
         mFoodProvider = new FoodProvider();
-        mCurrentFridge = mFridgeProvider.getCurrentFridge();
+        mCurrentFridge = mFridgeProvider.getCurrentFridge(user);
 
     }
 
@@ -305,11 +311,9 @@ public class AddFoodFragment extends BaseFragment {
         foodFridge.setOutOfDate(date);
         foodFridge.setQuantity(numberPicker.getValue());
         food.setName(name);
-        food.setFridge(mCurrentFridge);
+        food.setFoodList(mCurrentFridge);
 
-        EventBus.getDefault().post(new FoodCreatedEvent(food));
-        //mCurrentFridge.addFood(food);
-        //mFridgeProvider.update(mCurrentFridge);
+        mFoodProvider.create(food);
         return true;
     }
 
@@ -326,10 +330,8 @@ public class AddFoodFragment extends BaseFragment {
         foodFridge.setQuantity(numberPicker.getValue());
         food.setName(name);
 
-        EventBus.getDefault().post(new FoodUpdatedEvent(food));
-        //mFoodProvider.update(food);
-        //mFridgeProvider.update(mCurrentFridge);
-
+        mFoodProvider.update(food);
+        
         return true;
     }
 

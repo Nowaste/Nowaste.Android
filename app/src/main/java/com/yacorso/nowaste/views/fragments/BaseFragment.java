@@ -44,18 +44,17 @@ public abstract class BaseFragment extends DialogFragment {
 
         mRootView = inflater.inflate(getLayout(), container, false);
         ButterKnife.inject(this, mRootView);
-
+        EventBus.getDefault().post(new SetTitleEvent(getResources().getString(getTitle())));
         return mRootView;
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        EventBus.getDefault().post(new SetTitleEvent(getResources().getString(getTitle())));
         super.onViewCreated(view, savedInstanceState);
     }
 
     public @StringRes int getTitle(){
-        return R.string.not_title_set;
+        return R.string.app_name;
     }
 
     protected abstract @LayoutRes int getLayout();

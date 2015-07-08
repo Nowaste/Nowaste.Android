@@ -16,7 +16,12 @@ import android.app.Application;
 
 import com.raizlabs.android.dbflow.config.FlowManager;
 import com.yacorso.nowaste.events.ApiErrorEvent;
+import com.yacorso.nowaste.events.CustomListCreatedEvent;
+import com.yacorso.nowaste.events.DatabaseReadyEvent;
+import com.yacorso.nowaste.events.FridgeCreatedEvent;
+import com.yacorso.nowaste.events.UserCreatedEvent;
 import com.yacorso.nowaste.models.CustomList;
+import com.yacorso.nowaste.models.Food;
 import com.yacorso.nowaste.models.Fridge;
 import com.yacorso.nowaste.models.User;
 import com.yacorso.nowaste.providers.CustomListProvider;
@@ -48,9 +53,8 @@ public class NowasteApplication extends Application {
         mFoodProvider = new FoodProvider();
         EventBus.getDefault().register(this);
 
-        UserProvider userService = new UserProvider();
-        List<User> users = userService.all();
-
+        UserProvider userProvider = new UserProvider();
+        List<User> users = userProvider.all();
 
         /**
          * Testing part when data is empty
@@ -61,37 +65,61 @@ public class NowasteApplication extends Application {
             user.setEmail("toto.albert@nowaste.fr");
             user.setFirstName("Toto");
             user.setLastName("Albert");
-            userService.create(user);
+            userProvider.create(user);
+            //Will throw UserCreatedEvent
         } else {
             user = users.get(0);
+            addFridgeToUserIfNone(user);
         }
+    }
 
+    public void onEvent(UserCreatedEvent event) {
+        User user = event.getUser();
+        addFridgeToUserIfNone(user);
+    }
+
+    private void addFridgeToUserIfNone (User user) {
         if (user.getFridges().size() == 0) {
+            FridgeProvider fridgeProvider = new FridgeProvider();
             Fridge f = new Fridge();
 
             f.setName("Default fridge");
             f.setUser(user);
-
-            FridgeProvider fridgeProvider = new FridgeProvider();
             fridgeProvider.create(f);
-            user.addFridge(f);
+            //Will throw FridgeCreatedEvent
         }
+        else {
+            addCustomListToUserIfNone(user);
+        }
+    }
 
+    public void onEvent(FridgeCreatedEvent event) {
+        User user = event.getFridge().getUser();
+        addCustomListToUserIfNone(user);
+    }
+
+    private void addCustomListToUserIfNone (User user) {
         if (user.getCustomLists().size() == 0) {
+            CustomListProvider customListProvider = new CustomListProvider();
             CustomList customList = new CustomList();
 
             customList.setName("Ma liste");
             customList.setUser(user);
-
-            CustomListProvider customListProvider = new CustomListProvider();
             customListProvider.create(customList);
-            user.addCustomList(customList);
+            //Will throw CustomListCreatedEvent
         }
-        /***/
+        else {
+            launchDataBaseReadyEvent(user);
+        }
+    }
 
+    public void onEvent(CustomListCreatedEvent event) {
+        User user = event.getCustomList().getUser();
+        launchDataBaseReadyEvent(user);
+    }
 
-        NowasteApplication.setCurrentUser(user);
-
+    private void launchDataBaseReadyEvent (User user) {
+        EventBus.getDefault().postSticky(new DatabaseReadyEvent(user));
     }
 
     @Override
@@ -105,13 +133,4 @@ public class NowasteApplication extends Application {
     public void onEvent(ApiErrorEvent event) {
         LogUtil.LOGD(this, "###API-FAIL### " + event.getErrorMessage());
     }
-
-    public static void setCurrentUser(User currentUser) {
-        sCurrentUser = currentUser;
-    }
-
-    public static User getCurrentUser() {
-        return sCurrentUser;
-    }
-
 }

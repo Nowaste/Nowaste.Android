@@ -12,9 +12,13 @@
 
 package com.yacorso.nowaste.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.ModelContainer;
+import com.raizlabs.android.dbflow.annotation.OneToMany;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.sql.builder.Condition;
@@ -26,7 +30,7 @@ import java.util.List;
 
 @ModelContainer
 @Table(databaseName = NowasteDatabase.NAME)
-public class User extends BaseCacheableModel {
+public class User extends BaseCacheableModel implements Parcelable {
 
     /**
      * Attributes
@@ -35,35 +39,35 @@ public class User extends BaseCacheableModel {
     @Column
     @Expose
     @PrimaryKey(autoincrement = true)
-    protected long id;
+    long id;
 
     @Column
     @Expose
-    protected String firstName;
+    String firstName;
 
     @Column
     @Expose
-    protected String lastName;
+    String lastName;
 
     @Column
     @Expose
-    protected String salt;
+    String salt;
 
     @Column
     @Expose
-    protected String email;
+    String email;
 
     @Column
     @Expose
-    protected boolean enabled;
+    boolean enabled;
 
     @Column
     @Expose
-    protected String password;
+    String password;
 
-    protected List<Fridge> fridges;
+    List<Fridge> fridges;
 
-    protected List<CustomList> customLists;
+    List<CustomList> customLists;
 
 
     /**
@@ -128,6 +132,7 @@ public class User extends BaseCacheableModel {
         this.password = password;
     }
 
+    //@OneToMany(methods = {OneToMany.Method.ALL}, variableName = "fridges")
     public List<Fridge> getFridges() {
         if (fridges == null) {
             fridges = new Select()
@@ -135,7 +140,6 @@ public class User extends BaseCacheableModel {
                         .where(Condition.column(Fridge$Table.USER_USER_ID).is(id))
                         .queryList();
         }
-
         return fridges;
     }
 
@@ -149,11 +153,15 @@ public class User extends BaseCacheableModel {
     public void addFridge(Fridge fridge) {
         fridges.add(fridge);
     }
+    public void removeFridge(Fridge fridge) {
+        fridges.remove(fridge);
+    }
 
     public void addCustomList(CustomList customList) {
         customLists.add(customList);
     }
 
+    @OneToMany(methods = {OneToMany.Method.LOAD}, variableName = "customLists")
     public List<CustomList> getCustomLists() {
         if (customLists == null) {
             customLists = new Select()
@@ -161,13 +169,27 @@ public class User extends BaseCacheableModel {
                             .where(Condition.column(CustomList$Table.USER_USER_ID).is(id))
                             .queryList();
         }
-
         return customLists;
     }
+
+    public void removeCustomList(CustomList customList) {
+        customLists.remove(customList);
+    }
+
 
 
     public boolean isEmpty() {
         return false;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel out, int flags) {
+        out.writeLong(this.id);
+        out.writeString(this.firstName);
+    }
 }

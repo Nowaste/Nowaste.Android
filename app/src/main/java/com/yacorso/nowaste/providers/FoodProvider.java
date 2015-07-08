@@ -13,6 +13,7 @@
 package com.yacorso.nowaste.providers;
 
 import com.yacorso.nowaste.dao.FoodDao;
+import com.yacorso.nowaste.dao.FridgeDao;
 import com.yacorso.nowaste.events.LoadFoodsEvent;
 import com.yacorso.nowaste.utils.LogUtil;
 import com.yacorso.nowaste.data.NowasteApi;
@@ -50,7 +51,6 @@ public class FoodProvider extends Provider<Food, Long> {
 
     @Override
     public void create(Food item) {
-
         if (isCreatable(item)) {
             mFoodDao.create(item);
         }

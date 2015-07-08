@@ -13,12 +13,7 @@
 package com.yacorso.nowaste.views.fragments;
 
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
-import android.speech.RecognitionListener;
-import android.speech.RecognizerIntent;
-import android.speech.SpeechRecognizer;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -39,13 +34,16 @@ import com.yacorso.nowaste.events.CallAddFoodEvent;
 import com.yacorso.nowaste.events.CancelSearchEvent;
 import com.yacorso.nowaste.events.CurrentFridgeChangedEvent;
 import com.yacorso.nowaste.events.FoodCreatedEvent;
+import com.yacorso.nowaste.events.FoodDeletedEvent;
 import com.yacorso.nowaste.events.FoodUpdatedEvent;
 import com.yacorso.nowaste.events.FridgesLoadedEvent;
 import com.yacorso.nowaste.events.LaunchSearchEvent;
 import com.yacorso.nowaste.models.Food;
 import com.yacorso.nowaste.models.FoodList;
 import com.yacorso.nowaste.models.Fridge;
+import com.yacorso.nowaste.providers.FoodProvider;
 import com.yacorso.nowaste.providers.FridgeProvider;
+import com.yacorso.nowaste.providers.UserProvider;
 import com.yacorso.nowaste.utils.LogUtil;
 import com.yacorso.nowaste.views.adapters.FoodListAdapter;
 
@@ -64,6 +62,9 @@ public class FoodListFragment extends BaseFragment {
     FoodListAdapter mAdapter;
     FoodList mFoodList;
     FridgeProvider mFridgeProvider;
+    FoodProvider mFoodProvider;
+    UserProvider mUserProvider;
+
 
     public static FoodListFragment newInstance() {
         return new FoodListFragment();
@@ -85,82 +86,12 @@ public class FoodListFragment extends BaseFragment {
         mRootView = super.onCreateView(inflater, container, savedInstanceState);
 
         mFridgeProvider = new FridgeProvider();
+        mFoodProvider = new FoodProvider();
 
         setList();
 
         return mRootView;
     }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        // Registring the bus for MessageEvent
-        EventBus.getDefault().register(this);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        LogUtil.LOGD(this, "OnResume");
-
-//        EventBus.getDefault().post(new LoadFoodsEvent(new Fridge()));
-    }
-
-    @Override
-    public void onStop() {
-        // Unregistering the bus
-        EventBus.getDefault().unregister(this);
-        super.onStop();
-    }
-
-    public void onEvent(FridgesLoadedEvent event) {
-        LogUtil.LOGD(this, "onFridgeLoaded");
-        LogUtil.LOGD(this, event.getFridges().toString());
-    }
-
-    public void onEvent(CurrentFridgeChangedEvent event) {
-        mFoodList = event.getFridge();
-        displayFoodList();
-    }
-
-    public void onEvent(FoodCreatedEvent event) {
-        Food food = event.getFood();
-        addFood(food);
-    }
-
-    private void addFood (Food food) {
-        mAdapter.add(food);
-        mFoodList.addFood(food);
-        mFridgeProvider.update((Fridge) mFoodList);
-    }
-
-    public void onEvent(FoodUpdatedEvent event) {
-        Food food = event.getFood();
-        updateFood(food);
-    }
-
-    private void updateFood (Food food) {
-        int test = mAdapter.indexOf(food);
-        mAdapter.updateItemAt(mAdapter.indexOf(food), food);
-        mFoodList.updateFood(food);
-        mFridgeProvider.update((Fridge)mFoodList);
-    }
-
-    private void removeFood(Food food) {
-        mAdapter.remove(food);
-        mFoodList.removeFood(food);
-        mFridgeProvider.update((Fridge)mFoodList);
-    }
-
-    public void onEvent(LaunchSearchEvent event) {
-        String search = event.getSearchQuery();
-        mAdapter.setFilter(search, mFoodList.getFoods());
-    }
-
-    public void onEvent(CancelSearchEvent event) {
-        displayFoodList();
-    }
-
 
     private void setList() {
         initSwipeRefreshLayout();
@@ -182,7 +113,6 @@ public class FoodListFragment extends BaseFragment {
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                displayFoodList();
                 EventBus.getDefault().post(new CancelSearchEvent());
             }
         });
@@ -206,18 +136,30 @@ public class FoodListFragment extends BaseFragment {
 
                 final int position = viewHolder.getAdapterPosition();
                 final Food item = mAdapter.get(position);
+                mAdapter.remove(item);
 
-                Snackbar.make(getView(), R.string.snackbar_confirm_food_delete, Snackbar.LENGTH_LONG)
-                        .setAction(R.string.snackbar_undo, new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                addFood(item);
-                            }
-                        })
-                        .show();
+                final boolean[] hasCancel = {false};
+                Snackbar snack = Snackbar.make(getView(), R.string.snackbar_confirm_food_delete, Snackbar.LENGTH_LONG)
+                                         .setAction(R.string.snackbar_undo, new View.OnClickListener() {
+                                             @Override
+                                             public void onClick(View v) {
+                                                 hasCancel[0] = true;
+                                                 mAdapter.add(item);
+                                             }
+                                         });
 
-                // callback for swipe to dismiss, removing item from data and adapter
-                removeFood(item);
+                snack.getView().addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+                    @Override
+                    public void onViewAttachedToWindow(View v) { }
+
+                    @Override
+                    public void onViewDetachedFromWindow(View v) {
+                        if (!hasCancel[0]) {
+                            mFoodProvider.delete(item);
+                        }
+                    }
+                });
+                snack.show();
             }
         });
 
@@ -275,6 +217,36 @@ public class FoodListFragment extends BaseFragment {
         mSwipeRefreshLayout.setRefreshing(false);
     }
 
+    public void onEvent(FridgesLoadedEvent event) {
+        LogUtil.LOGD(this, "onFridgeLoaded");
+        LogUtil.LOGD(this, event.getFridges().toString());
+    }
+
+    public void onEvent(CurrentFridgeChangedEvent event) {
+        mFoodList = event.getFridge();
+        displayFoodList();
+    }
+
+    public void onEvent(FoodCreatedEvent event) {
+        mAdapter.add(event.getFood());
+    }
+
+    public void onEvent(FoodUpdatedEvent event) {
+        Food food = event.getFood();
+        mAdapter.updateItemAt(mAdapter.indexOf(food), food);
+    }
+
+    public void onEvent(FoodDeletedEvent event) { }
+
+    public void onEvent(LaunchSearchEvent event) {
+        String search = event.getSearchQuery();
+        mAdapter.setFilter(search, mFoodList.getFoods());
+    }
+
+    public void onEvent(CancelSearchEvent event) {
+        displayFoodList();
+    }
+
     @Override
     public int getTitle() {
         return R.string.app_name;
@@ -287,7 +259,29 @@ public class FoodListFragment extends BaseFragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtil.LOGD(this,"onCreateOptionsMenu");
+        LogUtil.LOGD(this, "onCreateOptionsMenu");
         super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        // Registring the bus for MessageEvent
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        LogUtil.LOGD(this, "OnResume");
+
+//        EventBus.getDefault().post(new LoadFoodsEvent(new Fridge()));
+    }
+
+    @Override
+    public void onStop() {
+        // Unregistering the bus
+        EventBus.getDefault().unregister(this);
+        super.onStop();
     }
 }

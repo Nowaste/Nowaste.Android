@@ -29,14 +29,26 @@ import android.view.ViewGroup;
 
 import com.yacorso.nowaste.NowasteApplication;
 import com.yacorso.nowaste.R;
+import com.yacorso.nowaste.events.CustomListCreatedEvent;
+import com.yacorso.nowaste.events.CustomListDeletedEvent;
+import com.yacorso.nowaste.events.CustomListUpdatedEvent;
+import com.yacorso.nowaste.events.FridgeCreatedEvent;
+import com.yacorso.nowaste.events.FridgeDeletedEvent;
+import com.yacorso.nowaste.events.FridgeUpdatedEvent;
 import com.yacorso.nowaste.models.CustomList;
+import com.yacorso.nowaste.models.FoodList;
 import com.yacorso.nowaste.models.Fridge;
 import com.yacorso.nowaste.models.NavigationDrawerItem;
 import com.yacorso.nowaste.models.User;
+import com.yacorso.nowaste.providers.UserProvider;
+import com.yacorso.nowaste.utils.LogUtil;
 import com.yacorso.nowaste.views.adapters.NavigationDrawerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import butterknife.ButterKnife;
+import de.greenrobot.event.EventBus;
 
 /**
  * Created by quentin on 24/06/15.
@@ -52,6 +64,7 @@ public class NavigationDrawerFragment extends Fragment {
     private View mContainerView;
     private static List<NavigationDrawerItem> mMenuItems = new ArrayList<NavigationDrawerItem>();
     private FragmentDrawerListener mDrawerListener;
+    private User user;
 
     public NavigationDrawerFragment() {
     }
@@ -59,50 +72,19 @@ public class NavigationDrawerFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
         // Inflating view layout
         View layout = inflater.inflate(R.layout.nav_drawer_fragment, container, false);
-        mRecyclerView = (RecyclerView) layout.findViewById(R.id.drawerList);
+        mRecyclerView = ButterKnife.findById(layout, R.id.drawerList);
+        //mRecyclerView = (RecyclerView) layout.findViewById(R.id.drawerList);
 
-        User currentUser = NowasteApplication.getCurrentUser();
-        List<Fridge> fridges = currentUser.getFridges();
-
-        for (Fridge fridge : fridges) {
-            NavigationDrawerItem item = new NavigationDrawerItem();
-            item.setIcon(R.drawable.ic_fridge);
-            item.setTitle(fridge.getName());
-            item.setFragment(FoodListFragment.newInstance(fridge));
-
-            mMenuItems.add(item);
-        }
-
-        List<CustomList> customLists = currentUser.getCustomLists();
-
-        for (CustomList customList : customLists) {
-            NavigationDrawerItem item = new NavigationDrawerItem();
-            item.setIcon(R.drawable.ic_folder);
-            item.setTitle(customList.getName());
-            item.setFragment(FoodListFragment.newInstance(customList));
-
-            mMenuItems.add(item);
-
-        }
-
-        NavigationDrawerItem menuItemSettings = new NavigationDrawerItem();
-        menuItemSettings.setIcon(R.drawable.ic_setting_light);
-        menuItemSettings.setTitle(getResources().getString(R.string.menu_title_settings));
-        menuItemSettings.setFragment(SettingsFragment.newInstance());
-
-        mMenuItems.add(menuItemSettings);
-
-        mAdapter = new NavigationDrawerAdapter(mMenuItems);
+        mAdapter = new NavigationDrawerAdapter();
 
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.addOnItemTouchListener(new RecyclerTouchListener(getActivity(), mRecyclerView, new ClickListener() {
             @Override
             public void onClick(View view, int position) {
-                mDrawerListener.onDrawerItemSelected(view, position, mMenuItems.get(position));
+                mDrawerListener.onDrawerItemSelected(view, position, mAdapter.get(position));
                 mDrawerLayout.closeDrawer(mContainerView);
             }
 
@@ -115,7 +97,22 @@ public class NavigationDrawerFragment extends Fragment {
         return layout;
     }
 
-    public void setUp(int fragmentId, DrawerLayout drawerLayout, final Toolbar toolbar) {
+    public void setUp(User user, int fragmentId, DrawerLayout drawerLayout, final Toolbar toolbar) {
+        List<Fridge> fridges = user.getFridges();
+
+        for (Fridge fridge : fridges) {
+            addFridgeToMenu(fridge);
+        }
+
+        List<CustomList> customLists = user.getCustomLists();
+
+        for (CustomList customList : customLists) {
+            addCustomListToMenu(customList);
+        }
+
+        addSettingsToMenu();
+        displayNavigationDrawerList();
+
         mContainerView = getActivity().findViewById(fragmentId);
         mDrawerLayout = drawerLayout;
         mDrawerToggle = new ActionBarDrawerToggle(getActivity(), drawerLayout,
@@ -204,5 +201,104 @@ public class NavigationDrawerFragment extends Fragment {
 
     public interface FragmentDrawerListener {
         public void onDrawerItemSelected(View view, int position, NavigationDrawerItem menuItem);
+    }
+
+    private void displayNavigationDrawerList() {
+        // Update the adapter and notify data set changed
+        mAdapter.clear();
+        mAdapter.addAll(mMenuItems);
+    }
+
+    private NavigationDrawerItem addFridgeToMenu (Fridge fridge) {
+        NavigationDrawerItem item = new NavigationDrawerItem(
+                fridge.getName(),
+                R.drawable.ic_fridge,
+                FoodListFragment.newInstance(fridge),
+                fridge.getId(),
+                fridge.getClass()
+        );
+
+        mMenuItems.add(item);
+        return item;
+    }
+
+    private NavigationDrawerItem addCustomListToMenu (CustomList customList) {
+        NavigationDrawerItem item = new NavigationDrawerItem(
+                customList.getName(),
+                R.drawable.ic_folder,
+                FoodListFragment.newInstance(customList),
+                customList.getId(),
+                customList.getClass()
+        );
+
+        mMenuItems.add(item);
+        return item;
+    }
+
+    private NavigationDrawerItem addSettingsToMenu () {
+        NavigationDrawerItem menuItemSettings = new NavigationDrawerItem(
+                getResources().getString(R.string.menu_title_settings),
+                R.drawable.ic_setting_light,
+                SettingsFragment.newInstance(),
+                0,
+                null
+        );
+
+        mMenuItems.add(menuItemSettings);
+        return menuItemSettings;
+    }
+
+    private NavigationDrawerItem updateMenu (FoodList foodList) {
+        for (NavigationDrawerItem item : mMenuItems) {
+            if (item.getId() == foodList.getId() && item.getType() == foodList.getClass()) {
+                item.setTitle(foodList.getName());
+                return item;
+            }
+        }
+        return null;
+    }
+
+    public void onEvent(FridgeCreatedEvent event) {
+        NavigationDrawerItem item = addFridgeToMenu(event.getFridge());
+        mAdapter.add(item);
+    }
+
+    public void onEvent(CustomListCreatedEvent event) {
+        NavigationDrawerItem item = addCustomListToMenu(event.getCustomList());
+        mAdapter.add(item);
+    }
+
+    public void onEvent(FridgeUpdatedEvent event) {
+        NavigationDrawerItem item = updateMenu(event.getFridge());
+        if (item != null) {
+            mAdapter.updateItemAt(mAdapter.indexOf(item), item);
+        }
+    }
+
+    public void onEvent(CustomListUpdatedEvent event) {
+        NavigationDrawerItem item = updateMenu(event.getCustomList());
+        if (item != null) {
+            mAdapter.updateItemAt(mAdapter.indexOf(item), item);
+        }
+    }
+
+    public void onEvent(FridgeDeletedEvent event) {
+        //mAdapter.remove(item);
+    }
+
+    public void onEvent(CustomListDeletedEvent event) {
+        //mAdapter.remove(item);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
     }
 }
