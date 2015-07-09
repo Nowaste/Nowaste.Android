@@ -17,6 +17,7 @@ import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.NumberPicker;
 
 import com.yacorso.nowaste.views.activities.DrawerActivity;
@@ -61,6 +62,38 @@ public class ApplicationTest {
         assertThat(shadowOf(activity).getNextStartedActivity()).isEqualTo(expectedIntent);
     }
 
+    /** txt_food_name **/
+
+    @Test
+    public void txt_food_name_should_match_string(){
+        //Given
+        EditText nameField = (EditText)findViewById(R.id.txt_food_name);
+        // When
+        boolean result = nameField.matches("jambon");
+        // Then
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    public void txt_food_name_should_not_match_null(){
+        //Given
+        EditText nameField = (EditText)findViewById(R.id.txt_food_name);
+        // When
+        boolean result = nameField.matches(null);
+        // Then
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    public void txt_food_name_should_not_match_empty(){
+        //Given
+        EditText nameField = (EditText)findViewById(R.id.txt_food_name);
+        // When
+        boolean result = nameField.matches("");
+        // Then
+        assertThat(result).isFalse();
+    }
+
     /** btn_food_quantity **/
 
     //a tester avec une boucle for de plusieurs tests
@@ -70,7 +103,7 @@ public class ApplicationTest {
         int min = 1;
         int random = (int)Math.random() * (max - min) + min;
         // Given
-        NumberPicker numberPicker = (NumberPicker) findViewById(R.id.btn_food_quantity);
+        NumberPicker numberPicker = (NumberPicker)findViewById(R.id.btn_food_quantity);
         // When
         boolean result = numberPicker.matches(random);
         // Then
@@ -80,7 +113,7 @@ public class ApplicationTest {
     @Test
     public void btn_food_quantity_should_not_match_null(){
         //Given
-        NumberPicker numberPicker = (NumberPicker) findViewById(R.id.btn_food_quantity);
+        NumberPicker numberPicker = (NumberPicker)findViewById(R.id.btn_food_quantity);
         // When
         boolean result = numberPicker.matches(null);
         // Then
@@ -90,7 +123,7 @@ public class ApplicationTest {
     @Test
     public void btn_food_quantity_should_not_match_empty(){
         //Given
-        NumberPicker numberPicker = (NumberPicker) findViewById(R.id.btn_food_quantity);
+        NumberPicker numberPicker = (NumberPicker)findViewById(R.id.btn_food_quantity);
         // When
         boolean result = numberPicker.matches("");
         // Then
@@ -100,7 +133,7 @@ public class ApplicationTest {
     @Test
     public void btn_food_quantity_should_not_match_zero(){
         //Given
-        NumberPicker numberPicker = (NumberPicker) findViewById(R.id.btn_food_quantity);
+        NumberPicker numberPicker = (NumberPicker)findViewById(R.id.btn_food_quantity);
         // When
         boolean result = numberPicker.matches(0);
         // Then
@@ -113,7 +146,7 @@ public class ApplicationTest {
         int min = 100;
         int max = 999999999;
         //Given
-        NumberPicker numberPicker = (NumberPicker) findViewById(R.id.btn_food_quantity);
+        NumberPicker numberPicker = (NumberPicker)findViewById(R.id.btn_food_quantity);
         // When
         boolean result = numberPicker.matches(Math.random() * (max - min) + min);
         // Then
