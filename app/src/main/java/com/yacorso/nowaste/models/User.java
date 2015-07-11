@@ -132,7 +132,7 @@ public class User extends BaseCacheableModel implements Parcelable {
         this.password = password;
     }
 
-    //@OneToMany(methods = {OneToMany.Method.ALL}, variableName = "fridges")
+    @OneToMany(methods = {OneToMany.Method.LOAD}, variableName = "fridges")
     public List<Fridge> getFridges() {
         if (fridges == null) {
             fridges = new Select()

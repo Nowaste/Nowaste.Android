@@ -204,7 +204,7 @@ public class AddFoodFragment extends BaseFragment {
         builder.setNeutralButton(null, null);
         builder.setNegativeButton(R.string.cancel, null);
 
-        dialog = setButtonsListener(builder, TYPE_CREATE, food);
+        dialog = setButtonsListener(builder, TYPE_UPDATE, food);
 
         return dialog;
     }
@@ -331,7 +331,7 @@ public class AddFoodFragment extends BaseFragment {
         food.setName(name);
 
         mFoodProvider.update(food);
-        
+
         return true;
     }
 

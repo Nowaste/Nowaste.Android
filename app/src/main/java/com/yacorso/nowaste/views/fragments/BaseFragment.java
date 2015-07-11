@@ -44,7 +44,7 @@ public abstract class BaseFragment extends DialogFragment {
 
         mRootView = inflater.inflate(getLayout(), container, false);
         ButterKnife.inject(this, mRootView);
-        EventBus.getDefault().post(new SetTitleEvent(getResources().getString(getTitle())));
+        //EventBus.getDefault().post(new SetTitleEvent(getResources().getString(getTitle())));
         return mRootView;
     }
 

@@ -188,12 +188,6 @@ public class Food extends BaseCacheableModel implements Parcelable {
         return hasCustomList;
     }
 
-    public void toggleOpen() {
-        if(! foodFridge.isEmpty()){
-            foodFridge.toggleOpen();
-        }
-    }
-
     public boolean isEmpty() {
         boolean isEmpty = false;
 

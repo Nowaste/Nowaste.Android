@@ -34,6 +34,7 @@ import com.yacorso.nowaste.R;
 import com.yacorso.nowaste.events.CallUpdateFoodEvent;
 import com.yacorso.nowaste.events.FoodUpdatedEvent;
 import com.yacorso.nowaste.models.Food;
+import com.yacorso.nowaste.models.FoodFridge;
 import com.yacorso.nowaste.providers.FoodProvider;
 
 import butterknife.ButterKnife;
@@ -47,8 +48,10 @@ public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     SortedList<Food> mFoods;
     Context mContext;
+    FoodProvider mFoodProvider;
 
     public FoodListAdapter() {
+        mFoodProvider = new FoodProvider();
         mFoods = new SortedList<>(Food.class, new SortedList.Callback<Food>() {
             @Override
             public int compare(Food o1, Food o2) {
@@ -138,7 +141,7 @@ public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                          */
                         int selectedValue = numberPicker.getValue();
                         food.getFoodFridge().setQuantity(selectedValue);
-                        EventBus.getDefault().post(new FoodUpdatedEvent(food));
+                        mFoodProvider.update(food);
                     }
                 });
 
@@ -151,11 +154,12 @@ public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         holder.btnOpenToggle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                food.toggleOpen();
+                FoodFridge foodFridge = food.getFoodFridge();
+                foodFridge.toggleOpen();
                 setOpenIcon(v, food);
-                Date outOfDate = food.getFoodFridge().getOutOfDate();
+                Date outOfDate = foodFridge.getOutOfDate();
                 setColorCircleFromDate(holder.btnQuantity, outOfDate, v.getResources());
-                EventBus.getDefault().post(new FoodUpdatedEvent(food));
+                mFoodProvider.update(food);
             }
 
         });
