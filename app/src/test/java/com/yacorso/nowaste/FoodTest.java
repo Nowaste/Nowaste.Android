@@ -23,7 +23,7 @@ import org.robolectric.annotation.Config;
 
 import static org.junit.Assert.assertNotNull;
 
-@Config(constants = BuildConfig.class, sdk = 21)
+@Config(constants = BuildConfig.class, emulateSdk = 21)
 @RunWith(RobolectricTestRunner.class)
 public class FoodTest {
     Food food;
