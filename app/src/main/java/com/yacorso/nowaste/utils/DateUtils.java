@@ -129,5 +129,17 @@ public class DateUtils {
         return colors[3];
     }
 
+    public static boolean checkIfOutOfDateIsSoon(Date date) {
+        Calendar outOfDate = Calendar.getInstance();
+        outOfDate.setTime(date);
+
+        Calendar soonDate = Calendar.getInstance();
+        soonDate.setTime(new Date());
+        soonDate.add(Calendar.DATE, 4);
+        if (outOfDate.before(soonDate)) {
+            return true;
+        }
+        return false;
+    }
 
 }

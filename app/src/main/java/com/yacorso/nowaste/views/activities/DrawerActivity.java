@@ -12,8 +12,13 @@
 
 package com.yacorso.nowaste.views.activities;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -28,7 +33,6 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.yacorso.nowaste.NowasteApplication;
 import com.yacorso.nowaste.R;
 import com.yacorso.nowaste.events.CallAddFoodEvent;
 import com.yacorso.nowaste.events.DatabaseReadyEvent;
@@ -40,7 +44,10 @@ import com.yacorso.nowaste.events.SpeechFoodMatcheEvent;
 import com.yacorso.nowaste.models.Fridge;
 import com.yacorso.nowaste.models.NavigationDrawerItem;
 import com.yacorso.nowaste.models.User;
-import com.yacorso.nowaste.providers.UserProvider;
+import com.yacorso.nowaste.services.AlarmReceiver;
+import com.yacorso.nowaste.services.BootCompletedReceiver;
+import com.yacorso.nowaste.services.NotificationService;
+import com.yacorso.nowaste.utils.LogUtil;
 import com.yacorso.nowaste.utils.NavigatorUtil;
 import com.yacorso.nowaste.views.fragments.AddFoodFragment;
 import com.yacorso.nowaste.views.fragments.BaseFragment;
@@ -83,6 +90,15 @@ public class DrawerActivity extends AppCompatActivity implements
         ButterKnife.inject(this);
 
         mNavigatorUtil = new NavigatorUtil(getSupportFragmentManager(), R.id.container_body);
+
+        Context context = getApplicationContext();
+        //startService(new Intent(this, NotificationService.class));
+        enableNotificationReceiver();
+        AlarmReceiver alarmReceiver = new AlarmReceiver();
+        alarmReceiver.setAlarm(context);
+
+        Intent serviceIntent = new Intent(context, NotificationService.class);
+        context.stopService(serviceIntent);
 
     }
 
@@ -261,4 +277,13 @@ public class DrawerActivity extends AppCompatActivity implements
         }
     }
 
+    private void enableNotificationReceiver() {
+        Context context = getApplicationContext();
+        ComponentName receiver = new ComponentName(context, BootCompletedReceiver.class);
+        PackageManager pm = context.getPackageManager();
+
+        pm.setComponentEnabledSetting(receiver,
+                PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                PackageManager.DONT_KILL_APP);
+    }
 }

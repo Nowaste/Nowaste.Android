@@ -45,4 +45,9 @@
     <string name="snackbar_undo">Annuler</string>
     <string name="snackbar_confirm_food_delete">Êtes-vous sûr de vouloir supprimer l\'aliment ?</string>
 
+    <string name="local_service_started">notification_service</string>
+    <string name="notif_title">Des aliments sont bientôt périmés</string>
+    <string name="notif_text_single">est bientôt périmé</string>
+    <string name="notif_text_multiple">sont bientôt périmés</string>
+
 </resources>
