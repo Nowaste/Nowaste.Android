@@ -149,7 +149,7 @@ public class SpeechAddFoodFragment extends BaseFragment {
 
                 int textError = R.string.speech_error_default;
 
-                switch (error){
+                switch (error) {
                     case SpeechRecognizer.ERROR_AUDIO:
                         textError = R.string.speech_error_audio;
                         break;
@@ -216,6 +216,24 @@ public class SpeechAddFoodFragment extends BaseFragment {
                             }
 
                             String product = matcher.group(2);
+                            String array[] = product.split(" ", 2);
+
+                            if (array.length > 1) {
+
+                                switch (array[0]) {
+                                    case "un":
+                                    case "une":
+                                        quantity = 1;
+                                        product = array[1];
+                                        break;
+                                    case "de":
+                                    case "deux":
+                                        quantity = 2;
+                                        product = array[1];
+                                        break;
+                                }
+                            }
+
                             String day = matcher.group(3);
                             String month = matcher.group(4);
                             String year = "";
@@ -257,11 +275,11 @@ public class SpeechAddFoodFragment extends BaseFragment {
                 mIsListening = false;
 
 
-                if(foodMatche != null){
+                if (foodMatche != null) {
                     LogUtil.LOGD("SpeechAddFoodFragment", foodMatche.toString());
                     EventBus.getDefault().post(new SpeechFoodMatcheEvent(foodMatche));
                     getDialog().dismiss();
-                }else{
+                } else {
                     txtInfos.setText(R.string.speech_no_found);
                 }
 
