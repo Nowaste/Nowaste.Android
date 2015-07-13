@@ -46,7 +46,7 @@
             android:id="@+id/out_of_date_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="12/06/2015"/>
+            android:text="12/08/2015"/>
     </LinearLayout>
 
     <Button

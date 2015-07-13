@@ -25,6 +25,7 @@ import com.raizlabs.android.dbflow.config.FlowManager;
 import com.yacorso.nowaste.events.UserCreatedEvent;
 import com.yacorso.nowaste.models.Food;
 import com.yacorso.nowaste.models.FoodFridge;
+import com.yacorso.nowaste.models.FoodList;
 import com.yacorso.nowaste.models.User;
 import com.yacorso.nowaste.providers.FoodProvider;
 import com.yacorso.nowaste.providers.UserProvider;
@@ -43,6 +44,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import butterknife.ButterKnife;
@@ -61,11 +63,15 @@ public class ApplicationTest {
 
     FragmentActivity activity;
     FoodListFragment customFragment;
+
+    FoodFridge fridgeFragment;
+    FoodList foodList;
     Food food;
+
     UserProvider userProvider;
+    FoodProvider foodProvider;
     User user;
     int countUsers;
-    //private DrawerActivity activity;
 
     @Before
     public void setup() throws Exception {
@@ -85,6 +91,7 @@ public class ApplicationTest {
         EventBus.getDefault().register(this);
     }
 
+    //test of adding different elements into the database
     @Test
     public void testAddElementToDB () {
         userProvider = new UserProvider();
@@ -105,10 +112,35 @@ public class ApplicationTest {
         assertNotEquals(countUsers, newCountUsers);
     }
 
+    //test add food into BDD
+    @Test
+    public void testAddFoodToDB () {
+        foodProvider = new FoodProvider();
+        int countFood = foodProvider.all().size();
+
+        food = new Food();
+        food.setName("Jambon");
+        food.setFoodFridge(fridgeFragment);
+        food.setFoodList(foodList);
+
+        foodProvider.create(food);
+
+        //a quoi sert le sleep ?
+        try {
+            Thread.sleep(1500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        int newCountFood = foodProvider.all().size();
+
+        assertNotEquals(countFood, newCountFood);
+    }
+
     public void onEvent (UserCreatedEvent event) {
         User user = event.getUser();
     }
 
+    //name of food should match string
     @Test
     public void txt_food_name_should_match_string(){
         //Given
@@ -117,8 +149,36 @@ public class ApplicationTest {
         //boolean result = nameField.matches("jambon");
         // Then
         assertEquals(nameField.getText(), "jambon");
-
     }
+
+/*  @Test
+    public void should_compare_less() {
+        // Given
+        App app = new App("AAA");
+
+        // When
+        int result = app.compareTo(new App("BBB"));
+
+        // Then
+        assertThat(result).isEqualTo(-1);
+    }*/
+
+    //date out_of_date should be after today
+    /*@Test
+    public void out_of_date_should_be_today_or_more(){
+        //Given
+        //TextView out_of_date = (TextView)activity.findViewById(R.id.out_of_date_textview);
+        //String title = shadowOf(activity).getResources().getString(customFragment.getTitle());
+        SimpleDateFormat today = new SimpleDateFormat("dd/MM/yyy");
+        String myDate = today.format(fridgeFragment.getOutOfDate());
+
+        String out_of_date = shadowOf(activity).getResources().getString(myDate);
+        //When
+        int result = out_of_date.compareTo(myDate);
+        //Then
+        assertThat(result).isEqualTo(-1);
+        //out_of_date = 12/06/2015
+    }*/
 
     @Test
     public void onCreate_shouldInflateLayout() throws Exception {
