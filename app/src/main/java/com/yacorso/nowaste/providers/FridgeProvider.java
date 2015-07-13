@@ -37,10 +37,6 @@ public class FridgeProvider extends Provider<Fridge, Long> {
 
     public FridgeProvider() {
         super();
-        /**
-         * Register all event on this service
-         */
-        EventBus.getDefault().register(this);
     }
     public FridgeProvider(NowasteApi api) {
         super(api);
@@ -67,16 +63,12 @@ public class FridgeProvider extends Provider<Fridge, Long> {
 
     @Override
     public void create(Fridge item) {
-        if(isCreatable(item)){
-            mFridgeDao.create(item);
-        }
+        mFridgeDao.create(item);
     }
 
     @Override
     public void update(Fridge item) {
-        if(isCreatable(item)){
-            mFridgeDao.update(item);
-        }
+        mFridgeDao.update(item);
     }
 
     @Override
@@ -135,17 +127,5 @@ public class FridgeProvider extends Provider<Fridge, Long> {
 
 
         return foods;
-    }
-
-    private boolean isCreatable(Fridge item){
-        boolean isCreatable = false;
-
-        if (!item.isEmpty()) {
-            isCreatable = true;
-        } else {
-            LogUtil.LOGE(this, "item is empty !");
-        }
-
-        return isCreatable;
     }
 }

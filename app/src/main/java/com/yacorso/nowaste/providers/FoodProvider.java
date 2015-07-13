@@ -35,32 +35,20 @@ public class FoodProvider extends Provider<Food, Long> {
 
     public FoodProvider() {
         super();
-        /**
-         * Register all event on this service
-         */
-        EventBus.getDefault().register(this);
     }
 
     public FoodProvider(NowasteApi api) {
         super(api);
-        /**
-         * Register all event on this service
-         */
-        EventBus.getDefault().register(this);
     }
 
     @Override
     public void create(Food item) {
-        if (isCreatable(item)) {
-            mFoodDao.create(item);
-        }
+        mFoodDao.create(item);
     }
 
     @Override
     public void update(Food item) {
-        if (isCreatable(item)) {
-            mFoodDao.update(item);
-        }
+        mFoodDao.update(item);
     }
 
     @Override
@@ -111,56 +99,4 @@ public class FoodProvider extends Provider<Food, Long> {
 
         return foods;
     }
-
-    private boolean isCreatable(Food item) {
-        boolean isCreatable = false;
-
-        if (!item.isEmpty()) {
-            if (item.hasFridge()) {
-                if (item.hasFoodFridge()) {
-                    /**
-                     * Food can be created
-                     */
-                    isCreatable = true;
-                } else {
-                    LogUtil.LOGE(this, item.getName() + " hasn't FoodFridge!");
-                }
-            } else if (item.hasCustomList()) {
-                isCreatable = true;
-            } else {
-                LogUtil.LOGE(this, item.getName() + " hasn't Fridge!");
-            }
-        } else {
-            LogUtil.LOGE(this, "item is empty !");
-        }
-
-        return isCreatable;
-    }
-
-
-    public void onEvent(LoadFoodsEvent event) {
-
-        if (event.getFoodList() != null) {
-            /**
-             * TODO: Récupérer en fonction de la foodlist en paramètre
-             */
-        }
-
-//        mApi.getAllFridges(new Callback<List<Fridge>>() {
-//            @Override
-//            public void success(List<Fridge> fridges, Response response) {
-////                mBus.post(new FridgesLoadedEvent(fridges));
-//                LogUtil.LOGD(this,"yay");
-//            }
-//
-//            @Override
-//            public void failure(RetrofitError error) {
-//                EventBus.getDefault().post(new ApiErrorEvent(error));
-//            }
-//        });
-
-
-    }
-
-
 }

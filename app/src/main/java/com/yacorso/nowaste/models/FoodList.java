@@ -92,22 +92,15 @@ public abstract class FoodList extends BaseCacheableModel {
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
-//        for (Food food : foodList) {
-//            stringBuilder.append(food.toString());
-//            stringBuilder.append("\n");
-//        }
         stringBuilder.append(name);
         return stringBuilder.toString();
     }
 
     public boolean isEmpty() {
-        boolean isEmpty = false;
-
-        if (id != 0) {
-            isEmpty = false;
+        if (id == 0) {
+            return true;
         }
-
-        return isEmpty;
+        return false;
     }
 
     public void addFood(Food food){

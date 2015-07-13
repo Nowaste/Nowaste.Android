@@ -40,9 +40,6 @@ public class NowasteApplication extends Application {
     private FridgeProvider mFridgeProvider;
     private FoodProvider mFoodProvider;
 
-
-    private static User sCurrentUser;
-
     @Override
     public void onCreate() {
         super.onCreate();

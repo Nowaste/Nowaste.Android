@@ -32,16 +32,12 @@ public class UserProvider extends Provider<User, Long> {
 
     @Override
     public void create(User item) {
-        if(isCreatable(item)){
-            mUserDao.create(item);
-        }
+        mUserDao.create(item);
     }
 
     @Override
     public void update(User item) {
-        if(isCreatable(item)){
-            mUserDao.update(item);
-        }
+        mUserDao.update(item);
     }
 
     @Override
@@ -62,17 +58,5 @@ public class UserProvider extends Provider<User, Long> {
         List<User> users = mUserDao.all();
 
         return users;
-    }
-
-    private boolean isCreatable(User item){
-        boolean isCreatable = false;
-
-        if (!item.isEmpty()) {
-            isCreatable = true;
-        } else {
-            LogUtil.LOGE(this, "item is empty !");
-        }
-
-        return isCreatable;
     }
 }

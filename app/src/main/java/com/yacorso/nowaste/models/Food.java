@@ -127,12 +127,11 @@ public class Food extends BaseCacheableModel implements Parcelable {
     }
 
     public boolean hasFoodFridge() {
-        boolean hasFoodFridge = false;
         if (foodFridge != null) {
-            hasFoodFridge = true;
+            return true;
         }
 
-        return hasFoodFridge;
+        return false;
     }
 
     public void setFoodList(FoodList foodList) {
@@ -159,11 +158,10 @@ public class Food extends BaseCacheableModel implements Parcelable {
     }
 
     public boolean hasFridge() {
-        boolean hasFridge = true;
         if (this.fridge != null) {
-            hasFridge = true;
+            return true;
         }
-        return hasFridge;
+        return false;
     }
 
     public CustomList getCustomList() {
@@ -181,20 +179,17 @@ public class Food extends BaseCacheableModel implements Parcelable {
     }
 
     public boolean hasCustomList() {
-        boolean hasCustomList = false;
         if (this.customList != null) {
-            hasCustomList = true;
+            return true;
         }
-        return hasCustomList;
+        return false;
     }
 
     public boolean isEmpty() {
-        boolean isEmpty = false;
-
         if (name.isEmpty()) {
-            isEmpty = true;
+            return true;
         }
-        return isEmpty;
+        return false;
     }
 
     public ContentValues getContentValues() {
