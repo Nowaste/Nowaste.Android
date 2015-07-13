@@ -15,6 +15,9 @@ package com.yacorso.nowaste.models;
 import com.raizlabs.android.dbflow.annotation.ModelContainer;
 import com.raizlabs.android.dbflow.annotation.OneToMany;
 import com.raizlabs.android.dbflow.annotation.Table;
+import com.raizlabs.android.dbflow.runtime.transaction.BaseTransaction;
+import com.raizlabs.android.dbflow.runtime.transaction.TransactionListener;
+import com.raizlabs.android.dbflow.runtime.transaction.TransactionListenerAdapter;
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.ColumnAlias;
 import com.raizlabs.android.dbflow.sql.language.Join;
@@ -26,7 +29,6 @@ import java.util.List;
 @ModelContainer
 @Table(databaseName = NowasteDatabase.NAME)
 public class Fridge extends FoodList {
-
     public Fridge(){}
 
     @OneToMany(methods = {OneToMany.Method.LOAD}, variableName = "foods")

@@ -232,8 +232,8 @@ public class FoodListFragment extends BaseFragment {
     }
 
     public void onEvent(FoodUpdatedEvent event) {
-        //Food food = event.getFood();
-        //mAdapter.updateItemAt(mAdapter.indexOf(food), food);
+        Food food = event.getFood();
+        mAdapter.updateItem(food);
     }
 
     public void onEvent(FoodDeletedEvent event) { }

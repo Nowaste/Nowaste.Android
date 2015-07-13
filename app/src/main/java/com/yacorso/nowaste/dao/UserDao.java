@@ -29,6 +29,9 @@ import com.raizlabs.android.dbflow.structure.Model;
 import com.yacorso.nowaste.events.UserCreatedEvent;
 import com.yacorso.nowaste.events.UserDeletedEvent;
 import com.yacorso.nowaste.events.UserUpdatedEvent;
+import com.yacorso.nowaste.models.CustomList;
+import com.yacorso.nowaste.models.FoodList;
+import com.yacorso.nowaste.models.Fridge;
 import com.yacorso.nowaste.models.User;
 import com.yacorso.nowaste.models.User$Table;
 
@@ -43,7 +46,8 @@ import de.greenrobot.event.EventBus;
  */
 public class UserDao extends Dao<User, Long> {
 
-    public UserDao() {}
+    int type;
+
     /**
      * Insert item in database
      *
@@ -51,7 +55,8 @@ public class UserDao extends Dao<User, Long> {
      * @return
      */
     public void create(final User item) {
-        transact(item, TYPE_CREATE);
+        type = TYPE_CREATE;
+        transact(item);
     }
 
 
@@ -62,7 +67,66 @@ public class UserDao extends Dao<User, Long> {
      * @return
      */
     public void update(User item) {
-        transact(item, TYPE_UPDATE);
+        type = TYPE_UPDATE;
+        transact(item);
+    }
+
+    public void transact(final User user) {
+        final AsyncModel.OnModelChangedListener callback = new AsyncModel.OnModelChangedListener() {
+            @Override
+            public void onModelChanged(Model model) {
+                User user = (User) model;
+
+                if (type == TYPE_CREATE) {
+                    EventBus.getDefault().post(new UserCreatedEvent(user));
+                } else if (type == TYPE_UPDATE) {
+                    EventBus.getDefault().post(new UserUpdatedEvent(user));
+                }
+            }
+        };
+
+        if (type == TYPE_CREATE) {
+            user.async().withListener(callback).save();
+        }
+        else if (type == TYPE_UPDATE){
+            final TransactionListenerAdapter resultCustomLists = new TransactionListenerAdapter() {
+                @Override
+                public void onResultReceived(Object o) {
+                    user.async().withListener(callback).update();
+                }
+            };
+            TransactionListenerAdapter resultFridges = new TransactionListenerAdapter() {
+                @Override
+                public void onResultReceived(Object o) {
+                    updateCustomLists(user, resultCustomLists);
+                }
+            };
+
+            if (user.getFridges() != null) {
+                updateFridges(user, resultFridges);
+            }
+            else {
+                updateCustomLists(user, resultCustomLists);
+            }
+
+        }
+    }
+
+    private void updateFridges(final User user, TransactionListenerAdapter result) {
+        if (user.getFridges() != null) {
+            ProcessModelInfo processModelInfo = ProcessModelInfo.withModels(user.getFridges()).result(result);
+            ProcessModelTransaction transaction = new UpdateModelListTransaction(processModelInfo);
+            TransactionManager.getInstance().addTransaction(transaction);
+        }
+
+    }
+
+    private void updateCustomLists(User user, TransactionListenerAdapter result) {
+        if (user.getCustomLists() != null) {
+            ProcessModelInfo processModelInfo = ProcessModelInfo.withModels(user.getCustomLists()).result(result);
+            ProcessModelTransaction transaction = new UpdateModelListTransaction(processModelInfo);
+            TransactionManager.getInstance().addTransaction(transaction);
+        }
     }
 
     /**
@@ -71,35 +135,17 @@ public class UserDao extends Dao<User, Long> {
      * @param item
      */
     public void delete(User item) {
-        transact(item, TYPE_DELETE);
-    }
+        type = TYPE_DELETE;
 
-    public void transact(final User item, final int type) {
-        final AsyncModel.OnModelChangedListener resultUser = new AsyncModel.OnModelChangedListener() {
+        final AsyncModel.OnModelChangedListener callback = new AsyncModel.OnModelChangedListener() {
             @Override
             public void onModelChanged(Model model) {
-                User user = (User) model;
-                if (type == TYPE_CREATE) {
-                    EventBus.getDefault().post(new UserCreatedEvent(user));
-                } else if (type == TYPE_UPDATE) {
-                    EventBus.getDefault().post(new UserUpdatedEvent(user));
-                } else if (type == TYPE_DELETE) {
-                    EventBus.getDefault().post(new UserDeletedEvent(user));
-                }
+                EventBus.getDefault().post(new UserDeletedEvent());
             }
         };
 
-        if (type == TYPE_CREATE) {
-            item.async().withListener(resultUser).save();
-        }
-        else if (type == TYPE_UPDATE) {
-            item.async().withListener(resultUser).update();
-        }
-        else if (type == TYPE_DELETE) {
-            item.async().withListener(resultUser).delete();
-        }
-    };
-
+        item.async().withListener(callback).delete();
+    }
 
     /**
      * Get user from database
