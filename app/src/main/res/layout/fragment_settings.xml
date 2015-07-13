@@ -18,8 +18,26 @@
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="46dp"
         android:text="Paramètres !"/>
+
+    <Switch
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Activation notifications"
+        android:id="@+id/activate_notifications"
+        android:checked="false" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Envoyer notification avant :"
+        android:id="@+id/textView" />
+
+    <Spinner
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/spinner_notifications"/>
 
     <android.support.v7.widget.RecyclerView
         android:layout_height="match_parent"
