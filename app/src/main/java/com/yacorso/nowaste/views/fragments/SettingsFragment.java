@@ -13,6 +13,7 @@
 package com.yacorso.nowaste.views.fragments;
 
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +43,6 @@ public class SettingsFragment extends BaseFragment {
         mRootView = super.onCreateView(inflater, container, savedInstanceState);
 
         setSpinnerContent(layout);
-
         return mRootView;
     }
 
@@ -51,9 +51,9 @@ public class SettingsFragment extends BaseFragment {
 
         List<String> list = new ArrayList<String>();
         list.add("1 jour");
-        list.add("2 jour");
-        list.add("3 jour");
-        list.add("5 jour");
+        list.add("2 jours");
+        list.add("3 jours");
+        list.add("5 jours");
         list.add("1 semaine");
 
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>
