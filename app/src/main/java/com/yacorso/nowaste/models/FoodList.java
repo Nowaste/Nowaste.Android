@@ -80,7 +80,7 @@ public abstract class FoodList extends BaseModel {
         if(user == null) {
             return null;
         }
-        return user.toModel();
+        return user.load();
     }
 
     public void setUser(User user) {

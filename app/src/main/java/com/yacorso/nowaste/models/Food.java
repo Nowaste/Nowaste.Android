@@ -140,7 +140,7 @@ public class Food extends BaseModel implements Parcelable {
         if (fridge == null) {
             return null;
         }
-        return fridge.toModel();
+        return fridge.load();
     }
 
     private void setFridge(Fridge fridge) {
@@ -155,7 +155,7 @@ public class Food extends BaseModel implements Parcelable {
         if (customList == null) {
             return null;
         }
-        return customList.toModel();
+        return customList.load();
     }
 
     private void setCustomList(CustomList customList) {
