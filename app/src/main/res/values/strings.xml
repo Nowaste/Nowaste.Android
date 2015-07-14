@@ -8,7 +8,10 @@
     <string name="title_activity_foods">FoodsActivity</string>
     <string name="title_activity_activity_food_list">ActivityFoodList</string>
     <string name="title_activity_drawer">DrawerActivity</string>
-    
+
+    <string name="text_name">Nom</string>
+    <string name="text_surname">Prénom</string>
+    <string name="text_password">Mot de passe</string>
 
     <string name="drawer_open">Ouvert</string>
     <string name="drawer_close">Fermé</string>
