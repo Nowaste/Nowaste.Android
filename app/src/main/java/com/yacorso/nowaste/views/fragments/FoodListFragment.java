@@ -68,14 +68,6 @@ public class FoodListFragment extends BaseFragment {
     CustomListProvider customListProvider;
     FoodProvider foodProvider;
 
-
-    public static FoodListFragment newInstance() {
-        FoodListFragment fragment = new FoodListFragment();
-        EventBus.getDefault().register(fragment);
-
-        return fragment;
-    }
-
     public static FoodListFragment newInstance(FoodList foodList) {
 
         FoodListFragment fragment = new FoodListFragment();
@@ -89,7 +81,6 @@ public class FoodListFragment extends BaseFragment {
 
         EventBus.getDefault().register(fragment);
 
-
         return fragment;
     }
 
@@ -98,8 +89,6 @@ public class FoodListFragment extends BaseFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtil.LOGD(this, "onCreateView");
-
 
         mRootView = super.onCreateView(inflater, container, savedInstanceState);
 
@@ -191,7 +180,7 @@ public class FoodListFragment extends BaseFragment {
 
         /**
          * Si on veut cacher la toolbar et le bouton lors du scroll
-         * Déjà implété avec ces fonctions
+         * Déjà implémenté avec ces fonctions
          */
 //        recyclerView.clearOnScrollListeners();
 //        recyclerView.addOnScrollListener(new HidingScrollListener() {
@@ -210,11 +199,8 @@ public class FoodListFragment extends BaseFragment {
     private void initFabButton() {
         mFabButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                //EventBus.getDefault().post(new CallSetFoodEvent(null));
                 EventBus.getDefault().post(new CallSpeechAddFoodEvent());
-//                EventBus.getDefault().post(new AddFoodEvent());
-//                mSpeechRecognizer.stopListening();
-//                SpeechAddFoodFragment fragment = SpeechAddFoodFragment.newInstance();
-//                fragment.show(getSupportFragmentManager(), "dialog");
             }
         });
     }

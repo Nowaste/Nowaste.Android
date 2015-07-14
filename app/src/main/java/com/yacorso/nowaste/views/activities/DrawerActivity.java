@@ -17,6 +17,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -25,21 +26,20 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
-import android.widget.EditText;
 
 import com.yacorso.nowaste.R;
 import com.yacorso.nowaste.events.CallSetFoodEvent;
 import com.yacorso.nowaste.events.CallSpeechAddFoodEvent;
-import com.yacorso.nowaste.events.ChangeFragmentEvent;
 import com.yacorso.nowaste.events.DatabaseReadyEvent;
 import com.yacorso.nowaste.events.SetTitleEvent;
 import com.yacorso.nowaste.events.CancelSearchEvent;
 import com.yacorso.nowaste.events.LaunchSearchEvent;
 import com.yacorso.nowaste.events.SpeechFoodMatchEvent;
+import com.yacorso.nowaste.models.CustomList;
 import com.yacorso.nowaste.models.FoodList;
 import com.yacorso.nowaste.models.Fridge;
-import com.yacorso.nowaste.models.NavigationDrawerItem;
 import com.yacorso.nowaste.models.User;
 import com.yacorso.nowaste.providers.CustomListProvider;
 import com.yacorso.nowaste.providers.FridgeProvider;
@@ -50,20 +50,20 @@ import com.yacorso.nowaste.utils.NavigatorUtil;
 import com.yacorso.nowaste.views.fragments.SetFoodToFoodListFragment;
 import com.yacorso.nowaste.views.fragments.BaseFragment;
 import com.yacorso.nowaste.views.fragments.FoodListFragment;
-import com.yacorso.nowaste.views.fragments.NavigationDrawerFragment;
+import com.yacorso.nowaste.views.fragments.SettingsFragment;
 import com.yacorso.nowaste.views.fragments.SpeechAddFoodFragment;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
+import butterknife.*;
 import de.greenrobot.event.EventBus;
 
 public class DrawerActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
     @Bind(R.id.drawer_layout) DrawerLayout mDrawerLayout;
-    @Bind(R.id.fragment_navigation_drawer) View mContainerView;
-    NavigationDrawerFragment mDrawerFragment;
+    @Bind(R.id.main_navigation) NavigationView navigationView;
     ActionBarDrawerToggle mDrawerToggle;
     NavigatorUtil mNavigatorUtil;
     @Bind(R.id.toolbar) Toolbar mToolbar;
@@ -72,6 +72,7 @@ public class DrawerActivity extends AppCompatActivity implements SearchView.OnQu
     FoodList currentFoodList;
     FridgeProvider fridgeProvider;
     CustomListProvider customListProvider;
+    Map<Integer, FoodList> navigationItems;
 
     User user;
 
@@ -86,21 +87,66 @@ public class DrawerActivity extends AppCompatActivity implements SearchView.OnQu
 
         fridgeProvider = new FridgeProvider();
         customListProvider = new CustomListProvider();
+        navigationItems = new LinkedHashMap<>();
     }
 
-    private void initActionBarAndNavDrawer(User user) {
+    public void onEvent(DatabaseReadyEvent event) {
+        user = event.getUser();
 
+        initToolbar();
+
+        initNavDrawerAndNavItems(user);
+
+        changeFragment(0, true);
+
+        enableNotificationReceiver();
+    }
+
+    private void initToolbar() {
         // Set toolbar as actionbar
         setSupportActionBar(mToolbar);
 
         // Display hamburger button, on the top left
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
+    }
 
-        // Set up drawer fragment
-        mDrawerFragment = (NavigationDrawerFragment)
-                getSupportFragmentManager().findFragmentById(R.id.fragment_navigation_drawer);
-        mDrawerFragment.setUp(user);
+    private void initNavDrawerAndNavItems(User user) {
+        int index = 0;
+        Menu navigationMenu = navigationView.getMenu();
+        SubMenu fridgeSection = navigationMenu.addSubMenu(getText(R.string.menu_section_fridges));
+        //fridgeSection.setHeaderIcon(ContextCompat.getDrawable(this, R.drawable.ic_fridge));
+        fridgeSection.setIcon(R.drawable.ic_fridge);
+        List<Fridge> fridges = user.getFridges();
+        for (Fridge fridge : fridges) {
+            navigationItems.put(index, fridge);
+            fridgeSection.add(0, index++, 0, fridge.getName());
+        }
+
+        SubMenu customListSection = navigationMenu.addSubMenu(getText(R.string.menu_section_custom_lists));
+        //customListSection.setHeaderIcon(ContextCompat.getDrawable(this, R.drawable.ic_folder));
+        List<CustomList> customLists = user.getCustomLists();
+
+        for (CustomList customList : customLists) {
+            navigationItems.put(index, customList);
+            customListSection.add(1, index++, 0, customList.getName());
+        }
+
+        navigationMenu.add(2, index, 0, R.string.menu_title_settings);
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem menuItem) {
+                boolean isFoodList;
+                if (menuItem.getGroupId() > 1) {
+                    isFoodList = false;
+                }
+                else {
+                    isFoodList = true;
+                }
+                changeFragment(menuItem.getItemId(), isFoodList);
+                return true;
+            }
+        });
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
                 mToolbar, R.string.drawer_open, R.string.drawer_close) {
@@ -131,6 +177,21 @@ public class DrawerActivity extends AppCompatActivity implements SearchView.OnQu
         });
     }
 
+    private void enableNotificationReceiver() {
+        Context context = getApplicationContext();
+        ComponentName receiver = new ComponentName(context, BootCompletedReceiver.class);
+        PackageManager pm = context.getPackageManager();
+
+        pm.setComponentEnabledSetting(receiver,
+                PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                PackageManager.DONT_KILL_APP);
+
+        Intent serviceIntent = new Intent(context, NotificationService.class);
+        context.stopService(serviceIntent);
+
+        AlarmReceiver alarmReceiver = new AlarmReceiver();
+        alarmReceiver.setAlarm(context);
+    }
 
     private void updateToolbarTitle(String title) {
         getSupportActionBar().setTitle(title);
@@ -163,17 +224,24 @@ public class DrawerActivity extends AppCompatActivity implements SearchView.OnQu
         super.onBackPressed();
     }
 
-    public void onEvent(ChangeFragmentEvent event) {
-        NavigationDrawerItem item = event.getItem();
-        mNavigatorUtil.setRootFragment(item.getFragment());
-        mDrawerLayout.closeDrawer(mContainerView);
-        updateToolbarTitle(item.getTitle());
-        if (item.getType().equals(Fridge.class)) {
-            currentFoodList = fridgeProvider.get(item.getId());
+    private void changeFragment(int id, boolean isFoodList) {
+        BaseFragment fragment;
+        String title;
+
+        if (isFoodList) {
+            FoodList foodList = navigationItems.get(id);
+            fragment = FoodListFragment.newInstance(foodList);
+            title = foodList.getName();
+            currentFoodList = foodList;
         }
         else {
-            currentFoodList = customListProvider.get(item.getId());
+            fragment = SettingsFragment.newInstance();
+            title = getText(R.string.menu_title_settings).toString();
         }
+
+        mNavigatorUtil.setRootFragment(fragment);
+        mDrawerLayout.closeDrawer(navigationView);
+        updateToolbarTitle(title);
     }
 
     @Override
@@ -208,34 +276,7 @@ public class DrawerActivity extends AppCompatActivity implements SearchView.OnQu
         launchDialog(SetFoodToFoodListFragment.newInstance(event.getFood(), currentFoodList));
     }
 
-    public void onEvent(DatabaseReadyEvent event) {
-        user = event.getUser();
-        initActionBarAndNavDrawer(user);
-        List<Fridge> fridges = user.getFridges();
-        if(fridges.size() > 0){
-            Fridge fridge = fridges.get(0);
-            currentFoodList = fridge;
-            mNavigatorUtil.setRootFragment(FoodListFragment.newInstance(fridge));
-            updateToolbarTitle(fridge.getName());
-        }
-        enableNotificationReceiver();
-    }
 
-    private void enableNotificationReceiver() {
-        Context context = getApplicationContext();
-        ComponentName receiver = new ComponentName(context, BootCompletedReceiver.class);
-        PackageManager pm = context.getPackageManager();
-
-        pm.setComponentEnabledSetting(receiver,
-                PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-                PackageManager.DONT_KILL_APP);
-
-        Intent serviceIntent = new Intent(context, NotificationService.class);
-        context.stopService(serviceIntent);
-
-        AlarmReceiver alarmReceiver = new AlarmReceiver();
-        alarmReceiver.setAlarm(context);
-    }
 
 
     @Override

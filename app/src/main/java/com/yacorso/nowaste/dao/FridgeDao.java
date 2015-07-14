@@ -72,12 +72,6 @@ public class FridgeDao extends Dao<Fridge, Long> {
             public void onModelChanged(Model model) {
                 Fridge fridge = (Fridge) model;
 
-                User user = fridge.getUser();
-                if (type == TYPE_CREATE) {
-                    user.addFridge(fridge);
-                }
-                user.async().update();
-
                 if (type == TYPE_CREATE) {
                     EventBus.getDefault().post(new FridgeCreatedEvent(fridge));
                 } else if (type == TYPE_UPDATE) {

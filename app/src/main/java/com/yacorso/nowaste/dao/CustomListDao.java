@@ -69,12 +69,6 @@ public class CustomListDao extends Dao<CustomList, Long> {
             public void onModelChanged(Model model) {
                 CustomList customList = (CustomList) model;
 
-                User user = customList.getUser();
-                if (type == TYPE_CREATE) {
-                    user.addCustomList(customList);
-                }
-                user.async().update();
-
                 if (type == TYPE_CREATE) {
                     EventBus.getDefault().post(new CustomListCreatedEvent(customList));
                 } else if (type == TYPE_UPDATE) {
