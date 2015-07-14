@@ -44,6 +44,7 @@ import com.yacorso.nowaste.views.adapters.NavigationDrawerAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.greenrobot.event.EventBus;
 
@@ -54,7 +55,7 @@ public class NavigationDrawerFragment extends Fragment {
 
     private static String TAG = NavigationDrawerFragment.class.getSimpleName();
 
-    private RecyclerView mRecyclerView;
+    @Bind(R.id.drawerList) RecyclerView mRecyclerView;
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
     private NavigationDrawerAdapter mAdapter;
@@ -71,7 +72,8 @@ public class NavigationDrawerFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflating view layout
         View layout = inflater.inflate(R.layout.nav_drawer_fragment, container, false);
-        mRecyclerView = ButterKnife.findById(layout, R.id.drawerList);
+        ButterKnife.bind(this, layout);
+        //mRecyclerView = ButterKnife.bind(layout, R.id.drawerList);
         //mRecyclerView = (RecyclerView) layout.findViewById(R.id.drawerList);
 
         mAdapter = new NavigationDrawerAdapter();

@@ -54,8 +54,8 @@ import com.yacorso.nowaste.views.fragments.SpeechAddFoodFragment;
 
 import java.util.List;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 import de.greenrobot.event.EventBus;
 
 import static com.yacorso.nowaste.utils.Utils.hideKeyboard;
@@ -64,14 +64,12 @@ import static com.yacorso.nowaste.utils.Utils.showKeyboard;
 public class DrawerActivity extends AppCompatActivity implements
         NavigationDrawerFragment.FragmentDrawerListener {
 
-    @InjectView(R.id.drawer_layout)
-    DrawerLayout mDrawerLayout;
+    @Bind(R.id.drawer_layout) DrawerLayout mDrawerLayout;
 
     NavigationDrawerFragment mDrawerFragment;
     NavigatorUtil mNavigatorUtil;
 
-    @InjectView(R.id.toolbar)
-    Toolbar mToolbar;
+    @Bind(R.id.toolbar) Toolbar mToolbar;
 
     private MenuItem mSearchAction;
     private boolean isSearchOpened = false;
@@ -84,7 +82,7 @@ public class DrawerActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drawer);
 
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
 
         mNavigatorUtil = new NavigatorUtil(getSupportFragmentManager(), R.id.container_body);
 

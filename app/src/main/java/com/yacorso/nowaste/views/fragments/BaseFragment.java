@@ -43,7 +43,7 @@ public abstract class BaseFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         mRootView = inflater.inflate(getLayout(), container, false);
-        ButterKnife.inject(this, mRootView);
+        ButterKnife.bind(this, mRootView);
         //EventBus.getDefault().post(new SetTitleEvent(getResources().getString(getTitle())));
         return mRootView;
     }

@@ -46,6 +46,7 @@ import com.yacorso.nowaste.providers.UserProvider;
 import com.yacorso.nowaste.utils.LogUtil;
 import com.yacorso.nowaste.views.adapters.FridgeFoodAdapter;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.greenrobot.event.EventBus;
 
@@ -54,10 +55,10 @@ import de.greenrobot.event.EventBus;
  */
 public class FridgeFragment extends BaseFragment {
 
-    RecyclerView mRecyclerView;
+    @Bind(R.id.rv_food_list)RecyclerView mRecyclerView;
     LinearLayoutManager mLayoutManager;
-    FloatingActionButton mFabButton;
-    SwipeRefreshLayout mSwipeRefreshLayout;
+    @Bind(R.id.btnAddFood) FloatingActionButton mFabButton;
+    @Bind(R.id.swipeRefreshFoodListLayout) SwipeRefreshLayout mSwipeRefreshLayout;
     FridgeFoodAdapter mAdapter;
     FoodList mFoodList;
     FridgeProvider mFridgeProvider;
@@ -107,7 +108,6 @@ public class FridgeFragment extends BaseFragment {
     }
 
     private void initSwipeRefreshLayout() {
-        mSwipeRefreshLayout = ButterKnife.findById(mRootView, R.id.swipeRefreshFoodListLayout);
         mSwipeRefreshLayout.setColorSchemeResources(R.color.refresh_progress_1, R.color.refresh_progress_2);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -118,8 +118,6 @@ public class FridgeFragment extends BaseFragment {
     }
 
     private void initRecyclerView() {
-        mRecyclerView = ButterKnife.findById(mRootView, R.id.rv_food_list);
-
 
         ItemTouchHelper swipeToDismissTouchHelper = new ItemTouchHelper(
                 new ItemTouchHelper.SimpleCallback( ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT,
@@ -183,7 +181,6 @@ public class FridgeFragment extends BaseFragment {
     }
 
     private void initFabButton() {
-        mFabButton = ButterKnife.findById(mRootView, R.id.btnAddFood);
         mFabButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 EventBus.getDefault().post(new CallAddFoodEvent());

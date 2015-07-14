@@ -34,14 +34,13 @@ import java.util.List;
 import com.yacorso.nowaste.NowasteApplication;
 import com.yacorso.nowaste.R;
 import com.yacorso.nowaste.events.CallUpdateFoodEvent;
-import com.yacorso.nowaste.events.FoodUpdatedEvent;
 import com.yacorso.nowaste.models.CustomList;
 import com.yacorso.nowaste.models.Food;
 import com.yacorso.nowaste.models.FoodFridge;
 import com.yacorso.nowaste.models.User;
-import com.yacorso.nowaste.providers.CustomListProvider;
 import com.yacorso.nowaste.providers.FoodProvider;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.greenrobot.event.EventBus;
 
@@ -80,22 +79,16 @@ public class FridgeFoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public static class FoodListViewHolder extends RecyclerView.ViewHolder
             implements View.OnClickListener, View.OnLongClickListener {
 
-        TextView tvName;
-        TextView btnQuantity;
-        Button btnFavoriteToggle;
-        Button btnOpenToggle;
-        TextView outOfDate;
-        View textZone;
+        @Bind(R.id.txt_food_name) TextView tvName;
+        @Bind(R.id.btn_food_quantity) TextView btnQuantity;
+        @Bind(R.id.btn_favorite_toggle) Button btnFavoriteToggle;
+        @Bind(R.id.btn_open_toggle) Button btnOpenToggle;
+        @Bind(R.id.out_of_date_textview) TextView outOfDate;
+        @Bind(R.id.item_text_zone) View textZone;
 
         public FoodListViewHolder(View itemView) {
             super(itemView);
-            tvName = ButterKnife.findById(itemView, R.id.txt_food_name);
-            btnQuantity = ButterKnife.findById(itemView, R.id.btn_food_quantity);
-            btnFavoriteToggle = ButterKnife.findById(itemView, R.id.btn_favorite_toggle);
-            btnOpenToggle = ButterKnife.findById(itemView, R.id.btn_open_toggle);
-            outOfDate = ButterKnife.findById(itemView, R.id.out_of_date_textview);
-            textZone = ButterKnife.findById(itemView, R.id.item_text_zone);
-
+            ButterKnife.bind(this, itemView);
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
         }

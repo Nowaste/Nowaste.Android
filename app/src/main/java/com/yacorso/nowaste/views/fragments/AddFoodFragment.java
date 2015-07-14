@@ -41,6 +41,7 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.greenrobot.event.EventBus;
 
@@ -52,9 +53,10 @@ public class AddFoodFragment extends BaseFragment {
     public static int TYPE_CREATE = 1;
     public static int TYPE_UPDATE = 2;
 
-    EditText nameField;
-    DatePicker datePicker;
-    NumberPicker numberPicker;
+    @Bind(R.id.name_edit_text) EditText nameField;
+    @Bind(R.id.out_of_date_picker) DatePicker datePicker;
+    @Bind(R.id.quantity_number_picker) NumberPicker numberPicker;
+    @Bind(R.id.name_text_input_layout) TextInputLayout tIL;
 
     Fridge mCurrentFridge;
     FoodProvider mFoodProvider;
@@ -102,7 +104,7 @@ public class AddFoodFragment extends BaseFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         mRootView = getActivity().getLayoutInflater().inflate(getLayout(), null);
-        ButterKnife.inject(this, mRootView);
+        ButterKnife.bind(this, mRootView);
 
         Dialog dialog = setDialog();
 
@@ -111,13 +113,9 @@ public class AddFoodFragment extends BaseFragment {
 
     private Dialog setDialog() {
 
-        datePicker = ButterKnife.findById(mRootView, R.id.out_of_date_picker);
-
-        numberPicker = ButterKnife.findById(mRootView, R.id.quantity_number_picker);
         numberPicker.setMinValue(1);
         numberPicker.setMaxValue(100);
 
-        nameField = ButterKnife.findById(mRootView, R.id.name_edit_text);
         nameField.requestFocus();
         nameField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -336,7 +334,6 @@ public class AddFoodFragment extends BaseFragment {
     }
 
     private boolean checkIfInputEmpty(String name) {
-        TextInputLayout tIL = ButterKnife.findById(getDialog(), R.id.name_text_input_layout);
         if (name.isEmpty()) {
             tIL.setError(getResources().getString(R.string.name_mandatory));
             return true;
