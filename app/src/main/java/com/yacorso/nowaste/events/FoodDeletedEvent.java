@@ -15,4 +15,13 @@ package com.yacorso.nowaste.events;
 import com.yacorso.nowaste.models.Food;
 
 public class FoodDeletedEvent {
+    Food food;
+
+    public FoodDeletedEvent (Food foodElement) {
+        food = foodElement;
+    }
+
+    public Food getFood() {
+        return food;
+    }
 }

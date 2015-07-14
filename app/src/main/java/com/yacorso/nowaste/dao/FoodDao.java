@@ -103,16 +103,10 @@ public class FoodDao extends Dao<Food, Long> {
     private void transactFoodList (Food food) {
         Fridge fridge = food.getFridge();
         if (fridge != null) {
-            if (type == TYPE_CREATE) {
-                fridge.addFood(food);
-            }
             fridge.async().update();
         }
         CustomList customList = food.getCustomList();
         if (customList != null) {
-            if (type == TYPE_CREATE) {
-                customList.addFood(food);
-            }
             customList.async().update();
         }
 
@@ -128,23 +122,21 @@ public class FoodDao extends Dao<Food, Long> {
      *
      * @param item
      */
-    public void delete(Food item) {
+    public void delete(final Food item) {
         type = TYPE_DELETE;
         Fridge fridge = item.getFridge();
         if (fridge != null) {
-            fridge.removeFood(item);
             fridge.async().update();
         }
         CustomList customList = item.getCustomList();
         if (customList != null) {
-            customList.removeFood(item);
             customList.async().update();
         }
 
         final AsyncModel.OnModelChangedListener callback = new AsyncModel.OnModelChangedListener() {
             @Override
             public void onModelChanged(Model model) {
-                EventBus.getDefault().post(new FoodDeletedEvent());
+                EventBus.getDefault().post(new FoodDeletedEvent(item));
             }
         };
 

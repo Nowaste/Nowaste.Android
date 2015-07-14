@@ -224,7 +224,9 @@ public class FridgeFragment extends BaseFragment {
     }
 
     public void onEvent(FoodCreatedEvent event) {
-        mAdapter.add(event.getFood());
+        Food food = event.getFood();
+        mFoodList.addFood(food);
+        mAdapter.add(food);
     }
 
     public void onEvent(FoodUpdatedEvent event) {
@@ -232,7 +234,10 @@ public class FridgeFragment extends BaseFragment {
         mAdapter.updateItem(food);
     }
 
-    public void onEvent(FoodDeletedEvent event) { }
+    public void onEvent(FoodDeletedEvent event) {
+        Food food = event.getFood();
+        mFoodList.removeFood(food);
+    }
 
     public void onEvent(LaunchSearchEvent event) {
         String search = event.getSearchQuery();
