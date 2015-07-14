@@ -40,7 +40,6 @@ public class NowasteApplication extends Application {
     private FridgeProvider mFridgeProvider;
     private FoodProvider mFoodProvider;
 
-
     public static User sCurrentUser;
 
     @Override

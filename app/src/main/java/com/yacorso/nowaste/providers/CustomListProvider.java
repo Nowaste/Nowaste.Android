@@ -33,16 +33,12 @@ public class CustomListProvider extends Provider<CustomList, Long>{
 
     @Override
     public void create(CustomList item) {
-        if(isCreatable(item)){
-            mCustomListDao.create(item);
-        }
+        mCustomListDao.create(item);
     }
 
     @Override
     public void update(CustomList item) {
-        if(isCreatable(item)){
-            mCustomListDao.update(item);
-        }
+        mCustomListDao.update(item);
     }
 
     @Override
@@ -66,15 +62,4 @@ public class CustomListProvider extends Provider<CustomList, Long>{
         return new Select().from(CustomList.class).queryList();
     }
 
-    private boolean isCreatable(CustomList item){
-        boolean isCreatable = false;
-
-        if (!item.isEmpty()) {
-            isCreatable = true;
-        } else {
-            LogUtil.LOGE(this, "item is empty !");
-        }
-
-        return isCreatable;
-    }
 }

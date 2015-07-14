@@ -18,6 +18,7 @@ import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.support.v7.util.SortedList;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.util.SortedListAdapterCallback;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,33 +54,14 @@ public class FridgeFoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     SortedList<Food> mFoods;
     Context mContext;
     FoodProvider mFoodProvider;
+    int lastFoodClickedPosition;
 
     public FridgeFoodAdapter() {
         mFoodProvider = new FoodProvider();
-        mFoods = new SortedList<>(Food.class, new SortedList.Callback<Food>() {
+        mFoods = new SortedList<>(Food.class, new SortedListAdapterCallback<Food>(this) {
             @Override
             public int compare(Food o1, Food o2) {
                 return o1.getFoodFridge().getOutOfDate().compareTo(o2.getFoodFridge().getOutOfDate());
-            }
-
-            @Override
-            public void onInserted(int position, int count) {
-                notifyItemRangeInserted(position, count);
-            }
-
-            @Override
-            public void onRemoved(int position, int count) {
-                notifyItemRangeRemoved(position, count);
-            }
-
-            @Override
-            public void onMoved(int fromPosition, int toPosition) {
-                notifyItemMoved(fromPosition, toPosition);
-            }
-
-            @Override
-            public void onChanged(int position, int count) {
-                notifyItemRangeChanged(position, count);
             }
 
             @Override
@@ -95,11 +77,46 @@ public class FridgeFoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         });
     }
 
+    public static class FoodListViewHolder extends RecyclerView.ViewHolder
+            implements View.OnClickListener, View.OnLongClickListener {
+
+        TextView tvName;
+        TextView btnQuantity;
+        Button btnFavoriteToggle;
+        Button btnOpenToggle;
+        TextView outOfDate;
+        View textZone;
+
+        public FoodListViewHolder(View itemView) {
+            super(itemView);
+            tvName = ButterKnife.findById(itemView, R.id.txt_food_name);
+            btnQuantity = ButterKnife.findById(itemView, R.id.btn_food_quantity);
+            btnFavoriteToggle = ButterKnife.findById(itemView, R.id.btn_favorite_toggle);
+            btnOpenToggle = ButterKnife.findById(itemView, R.id.btn_open_toggle);
+            outOfDate = ButterKnife.findById(itemView, R.id.out_of_date_textview);
+            textZone = ButterKnife.findById(itemView, R.id.item_text_zone);
+
+            itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            Toast.makeText(v.getContext(), "OnClick",
+                    Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            Toast.makeText(v.getContext(), "OnLongClick",
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        }
+    }
+
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
         mContext = parent.getContext();
-
         View view = LayoutInflater.from(mContext).inflate(R.layout.card_food_item, parent, false);
         RecyclerView.ViewHolder vh = new FridgeViewHolder(view);
 
@@ -122,104 +139,109 @@ public class FridgeFoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
         setColorCircleFromDate(holder.btnQuantity, outOfDate, mContext.getResources());
 
-        /*
-         *  Popup changement quantité
-         */
-        holder.btnQuantity.setOnClickListener(new View.OnClickListener() {
+        View.OnClickListener clickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final NumberPicker numberPicker = new NumberPicker(mContext);
-                numberPicker.setMinValue(1);
-                numberPicker.setMaxValue(100);
-                numberPicker.setValue(quantity);
-                numberPicker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                builder.setMessage(R.string.title_quantity_number_picker);
-                builder.setView(numberPicker);
+                lastFoodClickedPosition = position;
+                switch (v.getId()) {
+                    case R.id.btn_food_quantity:
+                        /*
+                         *  Popup changement quantité
+                         */
+                        final NumberPicker numberPicker = new NumberPicker(mContext);
+                        numberPicker.setMinValue(1);
+                        numberPicker.setMaxValue(100);
+                        numberPicker.setValue(quantity);
+                        numberPicker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
 
-                builder.setPositiveButton(R.string.validate, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                        builder.setMessage(R.string.title_quantity_number_picker);
+                        builder.setView(numberPicker);
+
+                        builder.setPositiveButton(R.string.validate, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
                         /*
                          * Save the modification
                          */
-                        int selectedValue = numberPicker.getValue();
-                        food.getFoodFridge().setQuantity(selectedValue);
+                                int selectedValue = numberPicker.getValue();
+                                food.getFoodFridge().setQuantity(selectedValue);
+                                mFoodProvider.update(food);
+                            }
+                        });
+
+                        builder.setNegativeButton(R.string.cancel, null);
+
+                        builder.create().show();
+                        break;
+
+                    case R.id.btn_open_toggle:
+                        /*
+                         *  Open/close food
+                         */
+                        FoodFridge foodFridge = food.getFoodFridge();
+                        foodFridge.toggleOpen();
+                        setOpenIcon(v, food);
+                        Date outOfDate = foodFridge.getOutOfDate();
+                        setColorCircleFromDate(holder.btnQuantity, outOfDate, v.getResources());
                         mFoodProvider.update(food);
-                    }
-                });
+                        break;
 
-                builder.setNegativeButton(R.string.cancel, null);
+                    case R.id.item_text_zone:
+                        EventBus.getDefault().post(new CallUpdateFoodEvent(food));
+                        break;
+                    case R.id.btn_favorite_toggle:
 
-                builder.create().show();
-            }
-        });
-
-        holder.btnOpenToggle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FoodFridge foodFridge = food.getFoodFridge();
-                foodFridge.toggleOpen();
-                setOpenIcon(v, food);
-                Date outOfDate = foodFridge.getOutOfDate();
-                setColorCircleFromDate(holder.btnQuantity, outOfDate, v.getResources());
-                mFoodProvider.update(food);
-            }
-
-        });
-
-        holder.textZone.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                EventBus.getDefault().post(new CallUpdateFoodEvent(food));
-            }
-        });
-
-        holder.btnFavoriteToggle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                User user = NowasteApplication.sCurrentUser;
+                        User user = NowasteApplication.sCurrentUser;
 //                CustomList customList = user.getCustomList();
-                final List<CustomList> customLists = user.getCustomLists();
+                        final List<CustomList> customLists = user.getCustomLists();
 
-                String[] values = new String[customLists.size()];
+                        String[] values = new String[customLists.size()];
 
-                for (int i = 0; i < customLists.size(); i++) {
-                    values[i] = customLists.get(i).getName();
-                }
-
-                final NumberPicker numberPicker = new NumberPicker(mContext);
-                numberPicker.setMinValue(0);
-                numberPicker.setMaxValue(values.length - 1);
-                numberPicker.setDisplayedValues(values);
-                numberPicker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                builder.setMessage(R.string.title_select_custom_list);
-                builder.setView(numberPicker);
-
-                builder.setPositiveButton(R.string.validate, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        int index = numberPicker.getValue();
-                        CustomList customList = customLists.get(index);
-
-                        if(customList != null){
-                            Food newFood = new Food(food.getName());
-                            newFood.setFoodList(customList);
-
-                            FoodProvider foodProvider = new FoodProvider();
-                            foodProvider.create(newFood);
+                        for (int i = 0; i < customLists.size(); i++) {
+                            values[i] = customLists.get(i).getName();
                         }
-                    }
-                });
 
-                builder.setNegativeButton(R.string.cancel, null);
+                        final NumberPicker customListPicker = new NumberPicker(mContext);
+                        customListPicker.setMinValue(0);
+                        customListPicker.setMaxValue(values.length - 1);
+                        customListPicker.setDisplayedValues(values);
+                        customListPicker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
 
-                builder.create().show();
+                        AlertDialog.Builder builderCustomList = new AlertDialog.Builder(mContext);
+                        builderCustomList.setMessage(R.string.title_select_custom_list);
+                        builderCustomList.setView(customListPicker);
+
+                        builderCustomList.setPositiveButton(R.string.validate, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                int index = customListPicker.getValue();
+                                CustomList customList = customLists.get(index);
+
+                                if(customList != null){
+                                    Food newFood = new Food(food.getName());
+                                    newFood.setFoodList(customList);
+
+                                    FoodProvider foodProvider = new FoodProvider();
+                                    foodProvider.create(newFood);
+                                }
+                            }
+                        });
+
+                        builderCustomList.setNegativeButton(R.string.cancel, null);
+
+                        builderCustomList.create().show();
+
+                        break;
+                }
             }
-        });
+        };
+
+        holder.btnQuantity.setOnClickListener(clickListener);
+        holder.btnOpenToggle.setOnClickListener(clickListener);
+        holder.btnFavoriteToggle.setOnClickListener(clickListener);
+        holder.textZone.setOnClickListener(clickListener);
     }
 
     private void setOpenIcon (View v, Food food) {
@@ -298,6 +320,7 @@ public class FridgeFoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     // region PageList Helpers
     public Food get(int position) {
+        mFoods.recalculatePositionOfItemAt(position);
         return mFoods.get(position);
     }
 
@@ -309,8 +332,9 @@ public class FridgeFoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         return mFoods.indexOf(item);
     }
 
-    public void updateItemAt(int index, Food item) {
-        mFoods.updateItemAt(index, item);
+    public void updateItem(Food item) {
+        mFoods.recalculatePositionOfItemAt(lastFoodClickedPosition);
+        mFoods.updateItemAt(indexOf(item), item);
     }
 
     public void addAll(List<Food> items) {

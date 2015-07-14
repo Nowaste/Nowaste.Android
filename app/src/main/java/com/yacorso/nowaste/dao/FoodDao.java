@@ -67,9 +67,8 @@ public class FoodDao extends Dao<Food, Long> {
                 transactFood(item, foodFridge);
             }
         };
-
-        if (item.hasFoodFridge()) {
-            FoodFridge foodFridge = item.getFoodFridge();
+        FoodFridge foodFridge = item.getFoodFridge();
+        if (foodFridge != null) {
             if (type == TYPE_CREATE) {
                 foodFridge.async().withListener(callback).save();
             }
@@ -102,15 +101,15 @@ public class FoodDao extends Dao<Food, Long> {
     }
 
     private void transactFoodList (Food food) {
-        if (food.hasFridge()) {
-            Fridge fridge = food.getFridge();
+        Fridge fridge = food.getFridge();
+        if (fridge != null) {
             if (type == TYPE_CREATE) {
                 fridge.addFood(food);
             }
             fridge.async().update();
         }
-        if (food.hasCustomList()) {
-            CustomList customList = food.getCustomList();
+        CustomList customList = food.getCustomList();
+        if (customList != null) {
             if (type == TYPE_CREATE) {
                 customList.addFood(food);
             }
@@ -131,13 +130,13 @@ public class FoodDao extends Dao<Food, Long> {
      */
     public void delete(Food item) {
         type = TYPE_DELETE;
-        if (item.hasFridge()) {
-            Fridge fridge = item.getFridge();
+        Fridge fridge = item.getFridge();
+        if (fridge != null) {
             fridge.removeFood(item);
             fridge.async().update();
         }
-        if (item.hasCustomList()) {
-            CustomList customList = item.getCustomList();
+        CustomList customList = item.getCustomList();
+        if (customList != null) {
             customList.removeFood(item);
             customList.async().update();
         }

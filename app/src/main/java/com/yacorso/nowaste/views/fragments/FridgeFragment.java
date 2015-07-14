@@ -232,7 +232,7 @@ public class FridgeFragment extends BaseFragment {
 
     public void onEvent(FoodUpdatedEvent event) {
         Food food = event.getFood();
-        mAdapter.updateItemAt(mAdapter.indexOf(food), food);
+        mAdapter.updateItem(food);
     }
 
     public void onEvent(FoodDeletedEvent event) { }

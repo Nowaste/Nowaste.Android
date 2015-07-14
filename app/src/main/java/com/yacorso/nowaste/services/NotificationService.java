@@ -59,7 +59,7 @@ public class NotificationService extends Service {
         UserProvider userProvider = new UserProvider();
         List<User> users = userProvider.all();
         User user;
-        FlowManager.init(getApplicationContext());
+        //FlowManager.init(getApplicationContext());
         try {
             if (users.size() == 0) { throw new Error("no user"); }
 

@@ -17,6 +17,7 @@ import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.ForeignKey;
 import com.raizlabs.android.dbflow.annotation.ForeignKeyReference;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
+import com.raizlabs.android.dbflow.structure.BaseModel;
 import com.raizlabs.android.dbflow.structure.cache.BaseCacheableModel;
 import com.raizlabs.android.dbflow.structure.container.ForeignKeyContainer;
 
@@ -24,7 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class FoodList extends BaseCacheableModel {
+public abstract class FoodList extends BaseModel {
 
     /**
      * Attributes
@@ -76,38 +77,25 @@ public abstract class FoodList extends BaseCacheableModel {
     }
 
     public User getUser() {
-        return user.toModel();
+        if(user == null) {
+            return null;
+        }
+        return user.load();
     }
 
     public void setUser(User user) {
-        if (!user.isEmpty()) {
-            this.user = new ForeignKeyContainer<>(User.class);
-            Map<String, Object> keys = new LinkedHashMap<>();
-            keys.put(User$Table.ID, user.id);
-            this.user.setData(keys);
-            this.user.setModel(user);
-        }
+        this.user = new ForeignKeyContainer<>(User.class);
+        Map<String, Object> keys = new LinkedHashMap<>();
+        keys.put(User$Table.ID, user.id);
+        this.user.setData(keys);
+        //this.user.setModel(user);
     }
 
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
-//        for (Food food : foodList) {
-//            stringBuilder.append(food.toString());
-//            stringBuilder.append("\n");
-//        }
         stringBuilder.append(name);
         return stringBuilder.toString();
-    }
-
-    public boolean isEmpty() {
-        boolean isEmpty = false;
-
-        if (id != 0) {
-            isEmpty = false;
-        }
-
-        return isEmpty;
     }
 
     public void addFood(Food food){

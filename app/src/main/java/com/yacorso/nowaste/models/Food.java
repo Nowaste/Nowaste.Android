@@ -24,6 +24,7 @@ import com.raizlabs.android.dbflow.annotation.ForeignKeyReference;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.annotation.Unique;
+import com.raizlabs.android.dbflow.structure.BaseModel;
 import com.raizlabs.android.dbflow.structure.cache.BaseCacheableModel;
 import com.raizlabs.android.dbflow.structure.container.ForeignKeyContainer;
 import com.yacorso.nowaste.data.NowasteDatabase;
@@ -33,7 +34,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Table(databaseName = NowasteDatabase.NAME)
-public class Food extends BaseCacheableModel implements Parcelable {
+public class Food extends BaseModel implements Parcelable {
 
 
     /**
@@ -130,15 +131,6 @@ public class Food extends BaseCacheableModel implements Parcelable {
         this.foodFridge = foodFridge;
     }
 
-    public boolean hasFoodFridge() {
-        boolean hasFoodFridge = false;
-        if (foodFridge != null) {
-            hasFoodFridge = true;
-        }
-
-        return hasFoodFridge;
-    }
-
     public void setFoodList(FoodList foodList) {
         if (foodList instanceof Fridge) {
             setFridge((Fridge)foodList);
@@ -148,6 +140,7 @@ public class Food extends BaseCacheableModel implements Parcelable {
         }
     }
 
+
     public Fridge getFridge() {
         if (fridge == null) {
             return null;
@@ -156,21 +149,11 @@ public class Food extends BaseCacheableModel implements Parcelable {
     }
 
     private void setFridge(Fridge fridge) {
-        if (!fridge.isEmpty()) {
-            this.fridge = new ForeignKeyContainer<>(Fridge.class);
-            Map<String, Object> keys = new LinkedHashMap<>();
-            keys.put(Fridge$Table.ID, fridge.id);
-            this.fridge.setData(keys);
-            this.fridge.setModel(fridge);
-        }
-    }
-
-    public boolean hasFridge() {
-        boolean hasFridge = false;
-        if (this.fridge != null) {
-            hasFridge = true;
-        }
-        return hasFridge;
+        this.fridge = new ForeignKeyContainer<>(Fridge.class);
+        Map<String, Object> keys = new LinkedHashMap<>();
+        keys.put(Fridge$Table.ID, fridge.id);
+        this.fridge.setData(keys);
+        //this.fridge.setModel(fridge);
     }
 
     public CustomList getCustomList() {
@@ -181,30 +164,11 @@ public class Food extends BaseCacheableModel implements Parcelable {
     }
 
     private void setCustomList(CustomList customList) {
-        if (!customList.isEmpty()) {
-            this.customList = new ForeignKeyContainer<>(CustomList.class);
-            Map<String, Object> keys = new LinkedHashMap<>();
-            keys.put(CustomList$Table.ID, customList.id);
-            this.customList.setData(keys);
-            this.customList.setModel(customList);
-        }
-    }
-
-    public boolean hasCustomList() {
-        boolean hasCustomList = false;
-        if (this.customList != null) {
-            hasCustomList = true;
-        }
-        return hasCustomList;
-    }
-
-    public boolean isEmpty() {
-        boolean isEmpty = false;
-
-        if (name.isEmpty()) {
-            isEmpty = true;
-        }
-        return isEmpty;
+        this.customList = new ForeignKeyContainer<>(CustomList.class);
+        Map<String, Object> keys = new LinkedHashMap<>();
+        keys.put(CustomList$Table.ID, customList.id);
+        this.customList.setData(keys);
+        //this.customList.setModel(customList);
     }
 
     public ContentValues getContentValues() {

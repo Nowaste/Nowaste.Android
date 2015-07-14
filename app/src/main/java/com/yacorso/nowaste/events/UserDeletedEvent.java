@@ -15,13 +15,4 @@ package com.yacorso.nowaste.events;
 import com.yacorso.nowaste.models.User;
 
 public class UserDeletedEvent {
-    User user;
-
-    public UserDeletedEvent(User userElement) {
-        user = userElement;
-    }
-
-    public User getUser() {
-        return user;
-    }
 }

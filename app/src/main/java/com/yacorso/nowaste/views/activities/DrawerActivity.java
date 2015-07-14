@@ -90,12 +90,7 @@ public class DrawerActivity extends AppCompatActivity implements
 
         Context context = getApplicationContext();
         //startService(new Intent(this, NotificationService.class));
-        enableNotificationReceiver();
-        AlarmReceiver alarmReceiver = new AlarmReceiver();
-        alarmReceiver.setAlarm(context);
 
-        Intent serviceIntent = new Intent(context, NotificationService.class);
-        context.stopService(serviceIntent);
 
     }
 
@@ -272,6 +267,7 @@ public class DrawerActivity extends AppCompatActivity implements
             mNavigatorUtil.setRootFragment(FridgeFragment.newInstance(fridges.get(0)));
             updateToolbarTitle(fridges.get(0).getName());
         }
+        enableNotificationReceiver();
     }
 
     private void enableNotificationReceiver() {
@@ -282,5 +278,13 @@ public class DrawerActivity extends AppCompatActivity implements
         pm.setComponentEnabledSetting(receiver,
                 PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
                 PackageManager.DONT_KILL_APP);
+
+        Intent serviceIntent = new Intent(context, NotificationService.class);
+        context.stopService(serviceIntent);
+
+        AlarmReceiver alarmReceiver = new AlarmReceiver();
+        alarmReceiver.setAlarm(context);
     }
+
+
 }
