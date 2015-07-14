@@ -28,6 +28,7 @@
     <string name="name_mandatory">Vous devez entrer un nom</string>
 
     <string name="title_quantity_number_picker">Veuillez sélectionner la nouvelle quantité</string>
+    <string name="title_select_custom_list">Veuillez sélectionner la liste personnalisée</string>
     <string name="cancel">Annuler</string>
     <string name="validate">OK</string>
     <string name="add_another_element">Ajouter un autre</string>

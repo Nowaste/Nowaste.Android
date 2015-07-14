@@ -27,7 +27,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.yacorso.nowaste.NowasteApplication;
 import com.yacorso.nowaste.R;
 import com.yacorso.nowaste.events.CustomListCreatedEvent;
 import com.yacorso.nowaste.events.CustomListDeletedEvent;
@@ -40,8 +39,6 @@ import com.yacorso.nowaste.models.FoodList;
 import com.yacorso.nowaste.models.Fridge;
 import com.yacorso.nowaste.models.NavigationDrawerItem;
 import com.yacorso.nowaste.models.User;
-import com.yacorso.nowaste.providers.UserProvider;
-import com.yacorso.nowaste.utils.LogUtil;
 import com.yacorso.nowaste.views.adapters.NavigationDrawerAdapter;
 
 import java.util.ArrayList;
@@ -213,7 +210,7 @@ public class NavigationDrawerFragment extends Fragment {
         NavigationDrawerItem item = new NavigationDrawerItem(
                 fridge.getName(),
                 R.drawable.ic_fridge,
-                FoodListFragment.newInstance(fridge),
+                FridgeFragment.newInstance(fridge),
                 fridge.getId(),
                 fridge.getClass()
         );
@@ -226,7 +223,7 @@ public class NavigationDrawerFragment extends Fragment {
         NavigationDrawerItem item = new NavigationDrawerItem(
                 customList.getName(),
                 R.drawable.ic_folder,
-                FoodListFragment.newInstance(customList),
+                CustomListFragment.newInstance(customList),
                 customList.getId(),
                 customList.getClass()
         );

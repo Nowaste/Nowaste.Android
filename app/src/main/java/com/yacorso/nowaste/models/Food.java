@@ -94,6 +94,10 @@ public class Food extends BaseCacheableModel implements Parcelable {
         this.name = name;
     }
 
+    public Food(String name) {
+        this.name = name;
+    }
+
     public Food(Parcel in) {
         this.id = in.readLong();
         this.name = in.readString();
@@ -139,13 +143,16 @@ public class Food extends BaseCacheableModel implements Parcelable {
         if (foodList instanceof Fridge) {
             setFridge((Fridge)foodList);
         }
-        else {
+        else if(foodList instanceof CustomList) {
             setCustomList((CustomList) foodList);
         }
     }
 
     public Fridge getFridge() {
-        return fridge.toModel();
+        if (fridge == null) {
+            return null;
+        }
+        return fridge.load();
     }
 
     private void setFridge(Fridge fridge) {
@@ -159,7 +166,7 @@ public class Food extends BaseCacheableModel implements Parcelable {
     }
 
     public boolean hasFridge() {
-        boolean hasFridge = true;
+        boolean hasFridge = false;
         if (this.fridge != null) {
             hasFridge = true;
         }
@@ -167,7 +174,10 @@ public class Food extends BaseCacheableModel implements Parcelable {
     }
 
     public CustomList getCustomList() {
-        return customList.toModel();
+        if (customList == null) {
+            return null;
+        }
+        return customList.load();
     }
 
     private void setCustomList(CustomList customList) {

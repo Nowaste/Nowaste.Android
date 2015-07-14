@@ -30,11 +30,15 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import com.yacorso.nowaste.NowasteApplication;
 import com.yacorso.nowaste.R;
 import com.yacorso.nowaste.events.CallUpdateFoodEvent;
 import com.yacorso.nowaste.events.FoodUpdatedEvent;
+import com.yacorso.nowaste.models.CustomList;
 import com.yacorso.nowaste.models.Food;
 import com.yacorso.nowaste.models.FoodFridge;
+import com.yacorso.nowaste.models.User;
+import com.yacorso.nowaste.providers.CustomListProvider;
 import com.yacorso.nowaste.providers.FoodProvider;
 
 import butterknife.ButterKnife;
@@ -43,14 +47,14 @@ import de.greenrobot.event.EventBus;
 import static com.yacorso.nowaste.utils.DateUtils.getDateTextFromDate;
 import static com.yacorso.nowaste.utils.DateUtils.setColorCircleFromDate;
 
-public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class FridgeFoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
 
     SortedList<Food> mFoods;
     Context mContext;
     FoodProvider mFoodProvider;
 
-    public FoodListAdapter() {
+    public FridgeFoodAdapter() {
         mFoodProvider = new FoodProvider();
         mFoods = new SortedList<>(Food.class, new SortedList.Callback<Food>() {
             @Override
@@ -97,14 +101,14 @@ public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         mContext = parent.getContext();
 
         View view = LayoutInflater.from(mContext).inflate(R.layout.card_food_item, parent, false);
-        RecyclerView.ViewHolder vh = new FoodListViewHolder(view);
+        RecyclerView.ViewHolder vh = new FridgeViewHolder(view);
 
         return vh;
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, final int position) {
-        final FoodListViewHolder holder = (FoodListViewHolder) viewHolder;
+        final FridgeViewHolder holder = (FridgeViewHolder) viewHolder;
 
         final Food food = mFoods.get(position);
 
@@ -128,6 +132,7 @@ public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 numberPicker.setMinValue(1);
                 numberPicker.setMaxValue(100);
                 numberPicker.setValue(quantity);
+                numberPicker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
                 builder.setMessage(R.string.title_quantity_number_picker);
@@ -170,6 +175,51 @@ public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 EventBus.getDefault().post(new CallUpdateFoodEvent(food));
             }
         });
+
+        holder.btnFavoriteToggle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                User user = NowasteApplication.sCurrentUser;
+//                CustomList customList = user.getCustomList();
+                final List<CustomList> customLists = user.getCustomLists();
+
+                String[] values = new String[customLists.size()];
+
+                for (int i = 0; i < customLists.size(); i++) {
+                    values[i] = customLists.get(i).getName();
+                }
+
+                final NumberPicker numberPicker = new NumberPicker(mContext);
+                numberPicker.setMinValue(0);
+                numberPicker.setMaxValue(values.length - 1);
+                numberPicker.setDisplayedValues(values);
+                numberPicker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                builder.setMessage(R.string.title_select_custom_list);
+                builder.setView(numberPicker);
+
+                builder.setPositiveButton(R.string.validate, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        int index = numberPicker.getValue();
+                        CustomList customList = customLists.get(index);
+
+                        if(customList != null){
+                            Food newFood = new Food(food.getName());
+                            newFood.setFoodList(customList);
+
+                            FoodProvider foodProvider = new FoodProvider();
+                            foodProvider.create(newFood);
+                        }
+                    }
+                });
+
+                builder.setNegativeButton(R.string.cancel, null);
+
+                builder.create().show();
+            }
+        });
     }
 
     private void setOpenIcon (View v, Food food) {
@@ -204,7 +254,7 @@ public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
-    public static class FoodListViewHolder extends RecyclerView.ViewHolder
+    public static class FridgeViewHolder extends RecyclerView.ViewHolder
             implements View.OnClickListener, View.OnLongClickListener {
 
         TextView tvName;
@@ -214,7 +264,7 @@ public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         TextView outOfDate;
         View textZone;
 
-        public FoodListViewHolder(View itemView) {
+        public FridgeViewHolder(View itemView) {
             super(itemView);
             tvName = ButterKnife.findById(itemView, R.id.txt_food_name);
             btnQuantity = ButterKnife.findById(itemView, R.id.btn_food_quantity);
@@ -229,14 +279,14 @@ public class FoodListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         @Override
         public void onClick(View v) {
-            Toast.makeText(v.getContext(), "OnClick",
-                    Toast.LENGTH_SHORT).show();
+//            Toast.makeText(v.getContext(), "OnClick",
+//                    Toast.LENGTH_SHORT).show();
         }
 
         @Override
         public boolean onLongClick(View v) {
-            Toast.makeText(v.getContext(), "OnLongClick",
-                    Toast.LENGTH_SHORT).show();
+//            Toast.makeText(v.getContext(), "OnLongClick",
+//                    Toast.LENGTH_SHORT).show();
             return false;
         }
     }

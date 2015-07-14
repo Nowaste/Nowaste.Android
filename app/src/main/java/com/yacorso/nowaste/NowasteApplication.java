@@ -41,7 +41,7 @@ public class NowasteApplication extends Application {
     private FoodProvider mFoodProvider;
 
 
-    private static User sCurrentUser;
+    public static User sCurrentUser;
 
     @Override
     public void onCreate() {
@@ -69,8 +69,10 @@ public class NowasteApplication extends Application {
             //Will throw UserCreatedEvent
         } else {
             user = users.get(0);
-            addFridgeToUserIfNone(user);
         }
+
+        addFridgeToUserIfNone(user);
+        sCurrentUser = user;
     }
 
     public void onEvent(UserCreatedEvent event) {
@@ -88,9 +90,8 @@ public class NowasteApplication extends Application {
             fridgeProvider.create(f);
             //Will throw FridgeCreatedEvent
         }
-        else {
-            addCustomListToUserIfNone(user);
-        }
+
+        addCustomListToUserIfNone(user);
     }
 
     public void onEvent(FridgeCreatedEvent event) {
@@ -107,10 +108,25 @@ public class NowasteApplication extends Application {
             customList.setUser(user);
             customListProvider.create(customList);
             //Will throw CustomListCreatedEvent
+        }else if (user.getCustomLists().size() == 1) {
+            CustomListProvider customListProvider = new CustomListProvider();
+            CustomList customList = new CustomList();
+
+            customList.setName("Ma liste 2");
+            customList.setUser(user);
+            customListProvider.create(customList);
+        }else if (user.getCustomLists().size() == 2) {
+            CustomListProvider customListProvider = new CustomListProvider();
+            CustomList customList = new CustomList();
+
+            customList.setName("Ma liste 3");
+            customList.setUser(user);
+            customListProvider.create(customList);
         }
-        else {
-            launchDataBaseReadyEvent(user);
-        }
+
+
+        launchDataBaseReadyEvent(user);
+
     }
 
     public void onEvent(CustomListCreatedEvent event) {

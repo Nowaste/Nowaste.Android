@@ -136,9 +136,9 @@ public class User extends BaseCacheableModel implements Parcelable {
     public List<Fridge> getFridges() {
         if (fridges == null) {
             fridges = new Select()
-                        .from(Fridge.class)
-                        .where(Condition.column(Fridge$Table.USER_USER_ID).is(id))
-                        .queryList();
+                    .from(Fridge.class)
+                    .where(Condition.column(Fridge$Table.USER_USER_ID).is(id))
+                    .queryList();
         }
         return fridges;
     }
@@ -153,6 +153,7 @@ public class User extends BaseCacheableModel implements Parcelable {
     public void addFridge(Fridge fridge) {
         fridges.add(fridge);
     }
+
     public void removeFridge(Fridge fridge) {
         fridges.remove(fridge);
     }
@@ -165,17 +166,27 @@ public class User extends BaseCacheableModel implements Parcelable {
     public List<CustomList> getCustomLists() {
         if (customLists == null) {
             customLists = new Select()
-                            .from(CustomList.class)
-                            .where(Condition.column(CustomList$Table.USER_USER_ID).is(id))
-                            .queryList();
+                    .from(CustomList.class)
+                    .where(Condition.column(CustomList$Table.USER_USER_ID).is(id))
+                    .queryList();
         }
         return customLists;
+    }
+
+
+    public CustomList getCustomList() {
+        this.getCustomLists();
+        CustomList customList = null;
+        if (customLists.size() > 0) {
+            customList = customLists.get(0);
+        }
+
+        return customList;
     }
 
     public void removeCustomList(CustomList customList) {
         customLists.remove(customList);
     }
-
 
 
     public boolean isEmpty() {

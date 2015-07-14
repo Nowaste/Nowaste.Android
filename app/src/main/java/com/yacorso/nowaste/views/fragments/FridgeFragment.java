@@ -40,12 +40,11 @@ import com.yacorso.nowaste.events.FridgesLoadedEvent;
 import com.yacorso.nowaste.events.LaunchSearchEvent;
 import com.yacorso.nowaste.models.Food;
 import com.yacorso.nowaste.models.FoodList;
-import com.yacorso.nowaste.models.Fridge;
 import com.yacorso.nowaste.providers.FoodProvider;
 import com.yacorso.nowaste.providers.FridgeProvider;
 import com.yacorso.nowaste.providers.UserProvider;
 import com.yacorso.nowaste.utils.LogUtil;
-import com.yacorso.nowaste.views.adapters.FoodListAdapter;
+import com.yacorso.nowaste.views.adapters.FridgeFoodAdapter;
 
 import butterknife.ButterKnife;
 import de.greenrobot.event.EventBus;
@@ -53,32 +52,32 @@ import de.greenrobot.event.EventBus;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class FoodListFragment extends BaseFragment {
+public class FridgeFragment extends BaseFragment {
 
     RecyclerView mRecyclerView;
     LinearLayoutManager mLayoutManager;
     FloatingActionButton mFabButton;
     SwipeRefreshLayout mSwipeRefreshLayout;
-    FoodListAdapter mAdapter;
+    FridgeFoodAdapter mAdapter;
     FoodList mFoodList;
     FridgeProvider mFridgeProvider;
     FoodProvider mFoodProvider;
     UserProvider mUserProvider;
 
 
-    public static FoodListFragment newInstance() {
-        return new FoodListFragment();
+    public static FridgeFragment newInstance() {
+        return new FridgeFragment();
     }
 
-    public static FoodListFragment newInstance(FoodList foodList) {
+    public static FridgeFragment newInstance(FoodList foodList) {
 
-        FoodListFragment fragment = new FoodListFragment();
+        FridgeFragment fragment = new FridgeFragment();
         fragment.mFoodList = foodList;
 
         return fragment;
     }
 
-    public FoodListFragment() {
+    public FridgeFragment() {
     }
 
     @Override
@@ -101,7 +100,7 @@ public class FoodListFragment extends BaseFragment {
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        mAdapter = new FoodListAdapter();
+        mAdapter = new FridgeFoodAdapter();
         mRecyclerView.setAdapter(mAdapter);
 
         displayFoodList();

@@ -15,10 +15,8 @@ package com.yacorso.nowaste.views.activities;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -47,11 +45,10 @@ import com.yacorso.nowaste.models.User;
 import com.yacorso.nowaste.services.AlarmReceiver;
 import com.yacorso.nowaste.services.BootCompletedReceiver;
 import com.yacorso.nowaste.services.NotificationService;
-import com.yacorso.nowaste.utils.LogUtil;
 import com.yacorso.nowaste.utils.NavigatorUtil;
 import com.yacorso.nowaste.views.fragments.AddFoodFragment;
 import com.yacorso.nowaste.views.fragments.BaseFragment;
-import com.yacorso.nowaste.views.fragments.FoodListFragment;
+import com.yacorso.nowaste.views.fragments.FridgeFragment;
 import com.yacorso.nowaste.views.fragments.NavigationDrawerFragment;
 import com.yacorso.nowaste.views.fragments.SpeechAddFoodFragment;
 
@@ -272,7 +269,7 @@ public class DrawerActivity extends AppCompatActivity implements
         initActionBarAndNavDrawer(user);
         List<Fridge> fridges = user.getFridges();
         if(fridges.size() > 0){
-            mNavigatorUtil.setRootFragment(FoodListFragment.newInstance(fridges.get(0)));
+            mNavigatorUtil.setRootFragment(FridgeFragment.newInstance(fridges.get(0)));
             updateToolbarTitle(fridges.get(0).getName());
         }
     }
