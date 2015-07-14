@@ -28,11 +28,6 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".views.activities.SpeechRecognitionActivity"
-            android:screenOrientation="portrait">
-        </activity>
-
         <service android:name=".services.NotificationService" >
         </service>
 
