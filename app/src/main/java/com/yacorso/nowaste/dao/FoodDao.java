@@ -14,6 +14,7 @@ package com.yacorso.nowaste.dao;
 
 
 import com.raizlabs.android.dbflow.sql.builder.Condition;
+import com.raizlabs.android.dbflow.sql.builder.ConditionQueryBuilder;
 import com.raizlabs.android.dbflow.sql.language.Select;
 import com.raizlabs.android.dbflow.structure.AsyncModel;
 import com.raizlabs.android.dbflow.structure.Model;
@@ -27,6 +28,7 @@ import com.yacorso.nowaste.models.FoodFridge;
 import com.yacorso.nowaste.models.FoodList;
 import com.yacorso.nowaste.models.Fridge;
 
+import java.util.Date;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
@@ -46,6 +48,7 @@ public class FoodDao extends Dao<Food, Long> {
      */
     public void create(final Food item) {
         type = TYPE_CREATE;
+        item.setCreated(new Date());
         transact(item);
     }
 
@@ -56,7 +59,19 @@ public class FoodDao extends Dao<Food, Long> {
      */
     public void update(Food item) {
         type = TYPE_UPDATE;
+        item.setUpdated(new Date());
         transact(item);
+    }
+
+    /**
+     * Delete item in database
+     *
+     * @param item
+     */
+    public void delete(final Food item) {
+        type = TYPE_DELETE;
+        item.setDeleted(new Date());
+        transactFood(item, null);
     }
 
     public void transact(final Food item) {
@@ -71,17 +86,15 @@ public class FoodDao extends Dao<Food, Long> {
         if (foodFridge != null) {
             if (type == TYPE_CREATE) {
                 foodFridge.async().withListener(callback).save();
-            }
-            else if (type == TYPE_UPDATE) {
+            } else if (type == TYPE_UPDATE) {
                 foodFridge.async().withListener(callback).update();
             }
-        }
-        else {
+        } else {
             transactFood(item, null);
         }
     }
 
-    private void transactFood (final Food item, FoodFridge foodFridge) {
+    private void transactFood(final Food item, FoodFridge foodFridge) {
         final AsyncModel.OnModelChangedListener callback = new AsyncModel.OnModelChangedListener() {
             @Override
             public void onModelChanged(Model model) {
@@ -93,14 +106,16 @@ public class FoodDao extends Dao<Food, Long> {
         if (type == TYPE_CREATE) {
             item.setFoodFridge(foodFridge);
             item.async().withListener(callback).save();
-        }
-        else if (type == TYPE_UPDATE) {
+        } else if (type == TYPE_UPDATE) {
             item.setFoodFridge(foodFridge);
             item.async().withListener(callback).update();
+        } else if (type == TYPE_DELETE) {
+            item.async().update();
+            EventBus.getDefault().post(new FoodDeletedEvent(item));
         }
     }
 
-    private void transactFoodList (Food food) {
+    private void transactFoodList(Food food) {
         Fridge fridge = food.getFridge();
         if (fridge != null) {
             fridge.async().update();
@@ -118,32 +133,6 @@ public class FoodDao extends Dao<Food, Long> {
     }
 
     /**
-     * Delete item in database
-     *
-     * @param item
-     */
-    public void delete(final Food item) {
-        type = TYPE_DELETE;
-        Fridge fridge = item.getFridge();
-        if (fridge != null) {
-            fridge.async().update();
-        }
-        CustomList customList = item.getCustomList();
-        if (customList != null) {
-            customList.async().update();
-        }
-
-        final AsyncModel.OnModelChangedListener callback = new AsyncModel.OnModelChangedListener() {
-            @Override
-            public void onModelChanged(Model model) {
-                EventBus.getDefault().post(new FoodDeletedEvent(item));
-            }
-        };
-
-        item.async().withListener(callback).delete();
-    }
-
-    /**
      * Get food from database
      *
      * @param id
@@ -155,9 +144,14 @@ public class FoodDao extends Dao<Food, Long> {
          * This query is done without transactionManager
          * because you can't return the value
          */
+
+        ConditionQueryBuilder<Food> queryBuilder = new ConditionQueryBuilder<Food>(Food.class,
+                Condition.column(Food$Table.ID).is(id))
+                .and(Condition.column(Food$Table.DELETED).isNull());
+
         return new Select()
                 .from(Food.class)
-                .where(Condition.column(Food$Table.ID).is(id))
+                .where(queryBuilder)
                 .querySingle();
     }
 
@@ -169,6 +163,9 @@ public class FoodDao extends Dao<Food, Long> {
      */
     @Override
     public List<Food> all() {
-        return new Select().from(Food.class).queryList();
+        return new Select()
+                .from(Food.class)
+                .where(Condition.column(Food$Table.DELETED).isNull())
+                .queryList();
     }
 }

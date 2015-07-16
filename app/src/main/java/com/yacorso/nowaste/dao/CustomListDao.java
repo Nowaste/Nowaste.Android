@@ -21,6 +21,7 @@ import com.raizlabs.android.dbflow.runtime.transaction.process.ProcessModelInfo;
 import com.raizlabs.android.dbflow.runtime.transaction.process.ProcessModelTransaction;
 import com.raizlabs.android.dbflow.runtime.transaction.process.UpdateModelListTransaction;
 import com.raizlabs.android.dbflow.sql.builder.Condition;
+import com.raizlabs.android.dbflow.sql.builder.ConditionQueryBuilder;
 import com.raizlabs.android.dbflow.sql.language.Delete;
 import com.raizlabs.android.dbflow.sql.language.Select;
 import com.raizlabs.android.dbflow.structure.AsyncModel;
@@ -34,6 +35,7 @@ import com.yacorso.nowaste.models.Food;
 import com.yacorso.nowaste.models.Fridge;
 import com.yacorso.nowaste.models.User;
 
+import java.util.Date;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
@@ -53,6 +55,7 @@ public class CustomListDao extends Dao<CustomList, Long> {
      */
     public void create(final CustomList item) {
         type= TYPE_CREATE;
+        item.setCreated(new Date());
         transact(item);
     }
 
@@ -64,6 +67,7 @@ public class CustomListDao extends Dao<CustomList, Long> {
      */
     public void update(CustomList item) {
         type = TYPE_UPDATE;
+        item.setUpdated(new Date());
         transact(item);
     }
 
@@ -118,6 +122,8 @@ public class CustomListDao extends Dao<CustomList, Long> {
         user.removeCustomList(item);
         user.async().update();
 
+        item.setDeleted(new Date());
+
         final AsyncModel.OnModelChangedListener callback = new AsyncModel.OnModelChangedListener() {
             @Override
             public void onModelChanged(Model model) {
@@ -130,14 +136,24 @@ public class CustomListDao extends Dao<CustomList, Long> {
 
     @Override
     public CustomList get(Long id) {
+
+        ConditionQueryBuilder<CustomList> queryBuilder = new ConditionQueryBuilder<CustomList>(
+                CustomList.class,
+                Condition.column(CustomList$Table.ID).is(id))
+                .and(Condition.column(CustomList$Table.DELETED).isNull());
+
+
         return new Select()
                 .from(CustomList.class)
-                .where(Condition.column(CustomList$Table.ID).is(id))
+                .where(queryBuilder)
                 .querySingle();
     }
 
     @Override
     public List<CustomList> all() {
-        return new Select().from(CustomList.class).queryList();
+        return new Select()
+                .from(CustomList.class)
+                .where(Condition.column(CustomList$Table.DELETED).isNull())
+                .queryList();
     }
 }

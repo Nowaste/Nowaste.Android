@@ -20,6 +20,7 @@ import com.raizlabs.android.dbflow.runtime.transaction.process.ProcessModelTrans
 import com.raizlabs.android.dbflow.runtime.transaction.process.SaveModelTransaction;
 import com.raizlabs.android.dbflow.runtime.transaction.process.UpdateModelListTransaction;
 import com.raizlabs.android.dbflow.sql.builder.Condition;
+import com.raizlabs.android.dbflow.sql.builder.ConditionQueryBuilder;
 import com.raizlabs.android.dbflow.sql.language.Select;
 
 import com.raizlabs.android.dbflow.structure.AsyncModel;
@@ -34,6 +35,7 @@ import com.yacorso.nowaste.models.Fridge$Table;
 import com.yacorso.nowaste.models.User;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
@@ -54,6 +56,7 @@ public class FridgeDao extends Dao<Fridge, Long> {
      */
     public void create(final Fridge item) {
         type = TYPE_CREATE;
+        item.setCreated(new Date());
         transact(item);
     }
 
@@ -65,6 +68,7 @@ public class FridgeDao extends Dao<Fridge, Long> {
      */
     public void update(Fridge item) {
         type = TYPE_UPDATE;
+        item.setUpdated(new Date());
         transact(item);
     }
 
@@ -90,8 +94,7 @@ public class FridgeDao extends Dao<Fridge, Long> {
 
         if (type == TYPE_CREATE) {
             item.async().withListener(callback).save();
-        }
-        else if (type == TYPE_UPDATE){
+        } else if (type == TYPE_UPDATE) {
             TransactionListenerAdapter resultFoods = new TransactionListenerAdapter() {
                 @Override
                 public void onResultReceived(Object o) {
@@ -113,7 +116,7 @@ public class FridgeDao extends Dao<Fridge, Long> {
         };
 
         final List<FoodFridge> foodFridges = new ArrayList<>();
-        for (Food food: foods) {
+        for (Food food : foods) {
             foodFridges.add(food.getFoodFridge());
         }
 
@@ -133,6 +136,8 @@ public class FridgeDao extends Dao<Fridge, Long> {
         user.removeFridge(item);
         user.async().update();
 
+        item.setDeleted(new Date());
+
         final AsyncModel.OnModelChangedListener callback = new AsyncModel.OnModelChangedListener() {
             @Override
             public void onModelChanged(Model model) {
@@ -140,7 +145,7 @@ public class FridgeDao extends Dao<Fridge, Long> {
             }
         };
 
-        item.async().withListener(callback).delete();
+        item.async().withListener(callback).update();
     }
 
     /**
@@ -151,9 +156,14 @@ public class FridgeDao extends Dao<Fridge, Long> {
      */
     @Override
     public Fridge get(Long id) {
+        ConditionQueryBuilder<Fridge> queryBuilder = new ConditionQueryBuilder<Fridge>(Fridge.class,
+                Condition.column(Fridge$Table.ID).is(id))
+                .and(Condition.column(Fridge$Table.DELETED).isNull());
+
+
         return new Select()
                 .from(Fridge.class)
-                .where(Condition.column(Fridge$Table.ID).is(id))
+                .where(queryBuilder)
                 .querySingle();
     }
 
@@ -165,6 +175,9 @@ public class FridgeDao extends Dao<Fridge, Long> {
      */
     @Override
     public List<Fridge> all() {
-        return new Select().from(Fridge.class).queryList();
+        return new Select()
+                .from(Fridge.class)
+                .where(Condition.column(Fridge$Table.DELETED).isNull())
+                .queryList();
     }
 }

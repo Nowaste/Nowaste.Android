@@ -22,6 +22,7 @@ import com.raizlabs.android.dbflow.runtime.transaction.process.ProcessModelTrans
 import com.raizlabs.android.dbflow.runtime.transaction.process.SaveModelTransaction;
 import com.raizlabs.android.dbflow.runtime.transaction.process.UpdateModelListTransaction;
 import com.raizlabs.android.dbflow.sql.builder.Condition;
+import com.raizlabs.android.dbflow.sql.builder.ConditionQueryBuilder;
 import com.raizlabs.android.dbflow.sql.language.Delete;
 import com.raizlabs.android.dbflow.sql.language.Select;
 import com.raizlabs.android.dbflow.structure.AsyncModel;
@@ -35,6 +36,7 @@ import com.yacorso.nowaste.models.Fridge;
 import com.yacorso.nowaste.models.User;
 import com.yacorso.nowaste.models.User$Table;
 
+import java.util.Date;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
@@ -56,6 +58,7 @@ public class UserDao extends Dao<User, Long> {
      */
     public void create(final User item) {
         type = TYPE_CREATE;
+        item.setCreated(new Date());
         transact(item);
     }
 
@@ -68,6 +71,18 @@ public class UserDao extends Dao<User, Long> {
      */
     public void update(User item) {
         type = TYPE_UPDATE;
+        item.setUpdated(new Date());
+        transact(item);
+    }
+
+    /**
+     * Delete item in database
+     *
+     * @param item
+     */
+    public void delete(User item) {
+        type = TYPE_DELETE;
+        item.setDeleted(new Date());
         transact(item);
     }
 
@@ -81,14 +96,15 @@ public class UserDao extends Dao<User, Long> {
                     EventBus.getDefault().post(new UserCreatedEvent(user));
                 } else if (type == TYPE_UPDATE) {
                     EventBus.getDefault().post(new UserUpdatedEvent(user));
+                } else if (type == TYPE_DELETE) {
+                    EventBus.getDefault().post(new UserDeletedEvent());
                 }
             }
         };
 
         if (type == TYPE_CREATE) {
             user.async().withListener(callback).save();
-        }
-        else if (type == TYPE_UPDATE){
+        } else if (type == TYPE_UPDATE) {
             final TransactionListenerAdapter resultCustomLists = new TransactionListenerAdapter() {
                 @Override
                 public void onResultReceived(Object o) {
@@ -104,11 +120,12 @@ public class UserDao extends Dao<User, Long> {
 
             if (user.getFridges() != null) {
                 updateFridges(user, resultFridges);
-            }
-            else {
+            } else {
                 updateCustomLists(user, resultCustomLists);
             }
 
+        } else if (type == TYPE_DELETE) {
+            user.async().withListener(callback).update();
         }
     }
 
@@ -130,24 +147,6 @@ public class UserDao extends Dao<User, Long> {
     }
 
     /**
-     * Delete item in database
-     *
-     * @param item
-     */
-    public void delete(User item) {
-        type = TYPE_DELETE;
-
-        final AsyncModel.OnModelChangedListener callback = new AsyncModel.OnModelChangedListener() {
-            @Override
-            public void onModelChanged(Model model) {
-                EventBus.getDefault().post(new UserDeletedEvent());
-            }
-        };
-
-        item.async().withListener(callback).delete();
-    }
-
-    /**
      * Get user from database
      *
      * @param id
@@ -155,9 +154,14 @@ public class UserDao extends Dao<User, Long> {
      */
     @Override
     public User get(Long id) {
+
+        ConditionQueryBuilder<User> queryBuilder = new ConditionQueryBuilder<User>(User.class,
+                Condition.column(User$Table.ID).is(id))
+                .and(Condition.column(User$Table.DELETED).isNull());
+
         return new Select()
                 .from(User.class)
-                .where(Condition.column(User$Table.ID).is(id))
+                .where(queryBuilder)
                 .querySingle();
     }
 
@@ -168,6 +172,9 @@ public class UserDao extends Dao<User, Long> {
      */
     @Override
     public List<User> all() {
-        return new Select().from(User.class).queryList();
+        return new Select()
+                .from(User.class)
+                .where(Condition.column(User$Table.DELETED).isNull())
+                .queryList();
     }
 }
