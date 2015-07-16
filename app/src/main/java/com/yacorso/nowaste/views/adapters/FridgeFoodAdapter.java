@@ -33,26 +33,23 @@ import java.util.List;
 
 import com.yacorso.nowaste.NowasteApplication;
 import com.yacorso.nowaste.R;
-import com.yacorso.nowaste.events.CallUpdateFoodEvent;
+import com.yacorso.nowaste.events.CallSpeechAddFoodEvent;
 import com.yacorso.nowaste.models.CustomList;
 import com.yacorso.nowaste.models.Food;
 import com.yacorso.nowaste.models.FoodFridge;
 import com.yacorso.nowaste.models.User;
 import com.yacorso.nowaste.providers.FoodProvider;
+import com.yacorso.nowaste.utils.LogUtil;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
+import butterknife.*;
 import de.greenrobot.event.EventBus;
 
 import static com.yacorso.nowaste.utils.DateUtils.getDateTextFromDate;
 import static com.yacorso.nowaste.utils.DateUtils.setColorCircleFromDate;
 
-public class FridgeFoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class FridgeFoodAdapter extends BaseAdapter {
 
-
-    SortedList<Food> mFoods;
-    Context mContext;
-    FoodProvider mFoodProvider;
+    public static final int TYPE_CREATE = 1;
     int lastFoodClickedPosition;
 
     public FridgeFoodAdapter() {
@@ -76,8 +73,7 @@ public class FridgeFoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         });
     }
 
-    public static class FoodListViewHolder extends RecyclerView.ViewHolder
-            implements View.OnClickListener, View.OnLongClickListener {
+    public static class FoodListViewHolder extends RecyclerView.ViewHolder {
 
         @Bind(R.id.txt_food_name) TextView tvName;
         @Bind(R.id.btn_food_quantity) TextView btnQuantity;
@@ -89,21 +85,6 @@ public class FridgeFoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         public FoodListViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            itemView.setOnClickListener(this);
-            itemView.setOnLongClickListener(this);
-        }
-
-        @Override
-        public void onClick(View v) {
-            Toast.makeText(v.getContext(), "OnClick",
-                    Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        public boolean onLongClick(View v) {
-            Toast.makeText(v.getContext(), "OnLongClick",
-                    Toast.LENGTH_SHORT).show();
-            return false;
         }
     }
 
@@ -182,11 +163,10 @@ public class FridgeFoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                         break;
 
                     case R.id.item_text_zone:
-                        EventBus.getDefault().post(new CallUpdateFoodEvent(food));
+                        EventBus.getDefault().post(new CallSpeechAddFoodEvent());
                         break;
                     case R.id.btn_favorite_toggle:
-
-                        User user = NowasteApplication.sCurrentUser;
+                        User user = food.getFridge().getUser();
 //                CustomList customList = user.getCustomList();
                         final List<CustomList> customLists = user.getCustomLists();
 
@@ -258,17 +238,6 @@ public class FridgeFoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         return mContext.getResources().getColor(R.color.circle_long);
     }
 
-    public void setFilter(String queryText, List<Food> foodList) {
-        for (Food food: foodList) {
-            if (!food.getName().toLowerCase().contains(queryText)) {
-                remove(food);
-            }
-            else {
-                add(food);
-            }
-        }
-    }
-
     public static class FridgeViewHolder extends RecyclerView.ViewHolder
             implements View.OnClickListener, View.OnLongClickListener {
 
@@ -307,56 +276,11 @@ public class FridgeFoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     @Override
-    public int getItemCount() {
-        return mFoods == null ? 0 : mFoods.size();
-    }
-
-    // region PageList Helpers
-    public Food get(int position) {
-        mFoods.recalculatePositionOfItemAt(position);
-        return mFoods.get(position);
-    }
-
-    public int add(Food item) {
-        return mFoods.add(item);
-    }
-
-    public int indexOf(Food item) {
-        return mFoods.indexOf(item);
-    }
-
     public void updateItem(Food item) {
+        LogUtil.LOGD(this, "UpdateItem");
         mFoods.recalculatePositionOfItemAt(lastFoodClickedPosition);
         mFoods.updateItemAt(indexOf(item), item);
     }
 
-    public void addAll(List<Food> items) {
-        mFoods.beginBatchedUpdates();
-        for (Food item : items) {
-            mFoods.add(item);
-        }
-        mFoods.endBatchedUpdates();
-    }
-
-    public void addAll(Food[] items) {
-        addAll(Arrays.asList(items));
-    }
-
-    public boolean remove(Food item) {
-        return mFoods.remove(item);
-    }
-
-    public Food removeItemAt(int index) {
-        return mFoods.removeItemAt(index);
-    }
-
-    public void clear() {
-        mFoods.beginBatchedUpdates();
-        //remove items at end, to avoid unnecessary array shifting
-        while (mFoods.size() > 0) {
-            mFoods.removeItemAt(mFoods.size() - 1);
-        }
-        mFoods.endBatchedUpdates();
-    }
 
 }

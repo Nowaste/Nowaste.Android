@@ -19,6 +19,7 @@ import com.yacorso.nowaste.dao.CustomListDao;
 import com.yacorso.nowaste.models.CustomList;
 import com.yacorso.nowaste.models.CustomList$Table;
 import com.yacorso.nowaste.models.Fridge;
+import com.yacorso.nowaste.models.User;
 import com.yacorso.nowaste.utils.LogUtil;
 
 import java.util.List;
@@ -60,6 +61,17 @@ public class CustomListProvider extends Provider<CustomList, Long>{
     @Override
     public List<CustomList> all() {
         return new Select().from(CustomList.class).queryList();
+    }
+
+    public CustomList getCurrentCustomList(User user){
+        CustomList customList=null;
+        if( user != null){
+            if( user.getCustomLists().size() > 0){
+                customList = user.getCustomLists().get(0);
+            }
+        }
+
+        return customList;
     }
 
 }

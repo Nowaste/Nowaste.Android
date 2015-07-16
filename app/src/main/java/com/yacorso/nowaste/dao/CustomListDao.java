@@ -13,15 +13,11 @@
 package com.yacorso.nowaste.dao;
 
 import com.raizlabs.android.dbflow.runtime.TransactionManager;
-import com.raizlabs.android.dbflow.runtime.transaction.BaseTransaction;
-import com.raizlabs.android.dbflow.runtime.transaction.TransactionListener;
 import com.raizlabs.android.dbflow.runtime.transaction.TransactionListenerAdapter;
-import com.raizlabs.android.dbflow.runtime.transaction.process.InsertModelTransaction;
 import com.raizlabs.android.dbflow.runtime.transaction.process.ProcessModelInfo;
 import com.raizlabs.android.dbflow.runtime.transaction.process.ProcessModelTransaction;
 import com.raizlabs.android.dbflow.runtime.transaction.process.UpdateModelListTransaction;
 import com.raizlabs.android.dbflow.sql.builder.Condition;
-import com.raizlabs.android.dbflow.sql.language.Delete;
 import com.raizlabs.android.dbflow.sql.language.Select;
 import com.raizlabs.android.dbflow.structure.AsyncModel;
 import com.raizlabs.android.dbflow.structure.Model;
@@ -31,7 +27,6 @@ import com.yacorso.nowaste.events.CustomListUpdatedEvent;
 import com.yacorso.nowaste.models.CustomList;
 import com.yacorso.nowaste.models.CustomList$Table;
 import com.yacorso.nowaste.models.Food;
-import com.yacorso.nowaste.models.Fridge;
 import com.yacorso.nowaste.models.User;
 
 import java.util.List;
@@ -39,7 +34,8 @@ import java.util.List;
 import de.greenrobot.event.EventBus;
 
 /**
- * Created by quentin on 05/07/15.
+ * CustomListDao
+ * Relation with database
  */
 public class CustomListDao extends Dao<CustomList, Long> {
 
@@ -68,7 +64,7 @@ public class CustomListDao extends Dao<CustomList, Long> {
     }
 
     public void transact(final CustomList item) {
-        final AsyncModel.OnModelChangedListener resultCustomList = new AsyncModel.OnModelChangedListener() {
+        final AsyncModel.OnModelChangedListener callback = new AsyncModel.OnModelChangedListener() {
             @Override
             public void onModelChanged(Model model) {
                 CustomList customList = (CustomList) model;
@@ -88,13 +84,13 @@ public class CustomListDao extends Dao<CustomList, Long> {
         };
 
         if (type == TYPE_CREATE) {
-            item.async().withListener(resultCustomList).save();
+            item.async().withListener(callback).save();
         }
         else if (type == TYPE_UPDATE){
             TransactionListenerAdapter resultFoods = new TransactionListenerAdapter() {
                 @Override
                 public void onResultReceived(Object o) {
-                    item.async().withListener(resultCustomList).update();
+                    item.async().withListener(callback).update();
                 }
             };
             updateFood(item.getFoods(), resultFoods);

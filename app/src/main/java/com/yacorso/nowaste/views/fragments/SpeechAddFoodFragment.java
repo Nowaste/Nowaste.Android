@@ -38,11 +38,9 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import butterknife.*;
 import de.greenrobot.event.EventBus;
 
-/**
- * Created by quentin on 06/07/15.
- */
 public class SpeechAddFoodFragment extends BaseFragment {
 
     SpeechRecognizer mSpeechRecognizer;
@@ -51,8 +49,24 @@ public class SpeechAddFoodFragment extends BaseFragment {
 
     Intent mSpeechIntent;
 
-    TextView txtInfos;
-    Button btnAction;
+    @Bind(R.id.txt_speech_infos) TextView txtInfos;
+    @Bind(R.id.btn_speech_action) Button btnAction;
+    @OnClick(R.id.btn_speech_action)
+    void stopOrStartListener() {
+        if (mIsListening) {
+                    /*
+                     * If already listening
+                     * Then Stop
+                     */
+            mSpeechRecognizer.stopListening();
+        } else {
+                    /*
+                     * If not listening
+                     * Then start
+                     */
+            mSpeechRecognizer.startListening(mSpeechIntent);
+        }
+    }
 
 
     public SpeechAddFoodFragment() {
@@ -68,30 +82,10 @@ public class SpeechAddFoodFragment extends BaseFragment {
 
         View view = super.onCreateView(inflater, container, savedInstanceState);
 
+        ButterKnife.bind(this, view);
         mSpeechIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         mSpeechIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
                 RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-
-        txtInfos = (TextView) view.findViewById(R.id.txt_speech_infos);
-        btnAction = (Button) view.findViewById(R.id.btn_speech_action);
-        btnAction.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mIsListening) {
-                    /*
-                     * If already listening
-                     * Then Stop
-                     */
-                    mSpeechRecognizer.stopListening();
-                } else {
-                    /*
-                     * If not listening
-                     * Then start
-                     */
-                    mSpeechRecognizer.startListening(mSpeechIntent);
-                }
-            }
-        });
 
 
 //        ComponentName componentName = new ComponentName("com.google.android.voicesearch",
@@ -267,7 +261,6 @@ public class SpeechAddFoodFragment extends BaseFragment {
                 }
 
                 mIsListening = false;
-
 
                 if (foodMatch != null) {
                     LogUtil.LOGD("SpeechAddFoodFragment", foodMatch.toString());

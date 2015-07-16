@@ -30,11 +30,7 @@ import java.util.List;
 
 import butterknife.ButterKnife;
 
-public class CustomListFoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-
-    SortedList<Food> mFoods;
-    Context mContext;
-    FoodProvider mFoodProvider;
+public class CustomListFoodAdapter extends BaseAdapter {
 
     public CustomListFoodAdapter() {
         mFoodProvider = new FoodProvider();
@@ -119,56 +115,6 @@ public class CustomListFoodAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         public boolean onLongClick(View v) {
             return false;
         }
-    }
-
-    @Override
-    public int getItemCount() {
-        return mFoods == null ? 0 : mFoods.size();
-    }
-
-    public Food get(int position) {
-        return mFoods.get(position);
-    }
-
-    public int add(Food item) {
-        return mFoods.add(item);
-    }
-
-    public int indexOf(Food item) {
-        return mFoods.indexOf(item);
-    }
-
-    public void updateItemAt(int index, Food item) {
-        mFoods.updateItemAt(index, item);
-    }
-
-    public void addAll(List<Food> items) {
-        mFoods.beginBatchedUpdates();
-        for (Food item : items) {
-            mFoods.add(item);
-        }
-        mFoods.endBatchedUpdates();
-    }
-
-    public void addAll(Food[] items) {
-        addAll(Arrays.asList(items));
-    }
-
-    public boolean remove(Food item) {
-        return mFoods.remove(item);
-    }
-
-    public Food removeItemAt(int index) {
-        return mFoods.removeItemAt(index);
-    }
-
-    public void clear() {
-        mFoods.beginBatchedUpdates();
-        //remove items at end, to avoid unnecessary array shifting
-        while (mFoods.size() > 0) {
-            mFoods.removeItemAt(mFoods.size() - 1);
-        }
-        mFoods.endBatchedUpdates();
     }
 
 }

@@ -13,6 +13,7 @@
 package com.yacorso.nowaste.views.adapters;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.support.v7.util.SortedList;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -22,15 +23,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.yacorso.nowaste.R;
+import com.yacorso.nowaste.events.ChangeFragmentEvent;
 import com.yacorso.nowaste.models.NavigationDrawerItem;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Created by quentin on 24/06/15.
- */
+import butterknife.*;
+import de.greenrobot.event.EventBus;
+
 public class NavigationDrawerAdapter extends RecyclerView.Adapter
         <NavigationDrawerAdapter.NavigationDrawerViewHolder> {
 
@@ -101,14 +102,25 @@ public class NavigationDrawerAdapter extends RecyclerView.Adapter
 
     class NavigationDrawerViewHolder extends RecyclerView.ViewHolder {
 
-        TextView mTxtTitle;
-        ImageView mImgIcon;
+        @Bind(R.id.title) TextView mTxtTitle;
+        @Nullable @Bind(R.id.list_item_left_icon) ImageView mImgIcon;
 
         public NavigationDrawerViewHolder(View itemView) {
             super(itemView);
+            ButterKnife.bind(this, itemView);
+        }
 
-            mTxtTitle = (TextView) itemView.findViewById(R.id.title);
-            mImgIcon = (ImageView) itemView.findViewById(R.id.list_item_left_icon);
+        @OnClick(R.id.title)
+        void changeFragment(View view) {
+            NavigationDrawerItem item = get(getAdapterPosition());
+            EventBus.getDefault().post(new ChangeFragmentEvent(item));
+        }
+
+        @OnLongClick(R.id.title)
+        boolean renameFoodList(View view) {
+            //TODO ajouter ici la logique de changement de nom du frigo
+            NavigationDrawerItem item = get(getAdapterPosition());
+            return false;
         }
     }
 

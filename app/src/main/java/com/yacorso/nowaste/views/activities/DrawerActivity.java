@@ -19,6 +19,7 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
@@ -28,23 +29,27 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.yacorso.nowaste.R;
-import com.yacorso.nowaste.events.CallAddFoodEvent;
+import com.yacorso.nowaste.events.CallSetFoodEvent;
+import com.yacorso.nowaste.events.CallSpeechAddFoodEvent;
+import com.yacorso.nowaste.events.ChangeFragmentEvent;
 import com.yacorso.nowaste.events.DatabaseReadyEvent;
 import com.yacorso.nowaste.events.SetTitleEvent;
 import com.yacorso.nowaste.events.CancelSearchEvent;
 import com.yacorso.nowaste.events.LaunchSearchEvent;
-import com.yacorso.nowaste.events.CallUpdateFoodEvent;
 import com.yacorso.nowaste.events.SpeechFoodMatchEvent;
+import com.yacorso.nowaste.models.FoodList;
 import com.yacorso.nowaste.models.Fridge;
 import com.yacorso.nowaste.models.NavigationDrawerItem;
 import com.yacorso.nowaste.models.User;
+import com.yacorso.nowaste.providers.CustomListProvider;
+import com.yacorso.nowaste.providers.FridgeProvider;
 import com.yacorso.nowaste.services.AlarmReceiver;
 import com.yacorso.nowaste.services.BootCompletedReceiver;
 import com.yacorso.nowaste.services.NotificationService;
 import com.yacorso.nowaste.utils.NavigatorUtil;
-import com.yacorso.nowaste.views.fragments.AddFoodFragment;
+import com.yacorso.nowaste.views.fragments.SetFoodToFoodListFragment;
 import com.yacorso.nowaste.views.fragments.BaseFragment;
-import com.yacorso.nowaste.views.fragments.FridgeFragment;
+import com.yacorso.nowaste.views.fragments.FoodListFragment;
 import com.yacorso.nowaste.views.fragments.NavigationDrawerFragment;
 import com.yacorso.nowaste.views.fragments.SpeechAddFoodFragment;
 
@@ -54,19 +59,19 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.greenrobot.event.EventBus;
 
-public class DrawerActivity extends AppCompatActivity implements
-        NavigationDrawerFragment.FragmentDrawerListener, SearchView.OnQueryTextListener {
+public class DrawerActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
     @Bind(R.id.drawer_layout) DrawerLayout mDrawerLayout;
-
+    @Bind(R.id.fragment_navigation_drawer) View mContainerView;
     NavigationDrawerFragment mDrawerFragment;
+    ActionBarDrawerToggle mDrawerToggle;
     NavigatorUtil mNavigatorUtil;
-
     @Bind(R.id.toolbar) Toolbar mToolbar;
 
     private MenuItem mSearchAction;
-    private boolean isSearchOpened = false;
-    private EditText searchQuery;
+    FoodList currentFoodList;
+    FridgeProvider fridgeProvider;
+    CustomListProvider customListProvider;
 
     User user;
 
@@ -79,10 +84,8 @@ public class DrawerActivity extends AppCompatActivity implements
 
         mNavigatorUtil = new NavigatorUtil(getSupportFragmentManager(), R.id.container_body);
 
-        Context context = getApplicationContext();
-        //startService(new Intent(this, NotificationService.class));
-
-
+        fridgeProvider = new FridgeProvider();
+        customListProvider = new CustomListProvider();
     }
 
     private void initActionBarAndNavDrawer(User user) {
@@ -97,8 +100,35 @@ public class DrawerActivity extends AppCompatActivity implements
         // Set up drawer fragment
         mDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.fragment_navigation_drawer);
-        mDrawerFragment.setUp(user, R.id.fragment_navigation_drawer, mDrawerLayout, mToolbar);
-        mDrawerFragment.setDrawerListener(this);
+        mDrawerFragment.setUp(user);
+
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
+                mToolbar, R.string.drawer_open, R.string.drawer_close) {
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                invalidateOptionsMenu();
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+                invalidateOptionsMenu();
+            }
+
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+                super.onDrawerSlide(drawerView, slideOffset);
+                mToolbar.setAlpha(1 - slideOffset / 2);
+            }
+        };
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        mDrawerLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                mDrawerToggle.syncState();
+            }
+        });
     }
 
 
@@ -128,33 +158,27 @@ public class DrawerActivity extends AppCompatActivity implements
         return super.onOptionsItemSelected(item);
     }
 
-    private void doSearch(String searchQuery) {
-        EventBus.getDefault().post(new LaunchSearchEvent(searchQuery));
-    }
-
-    private void cancelSearch() {
-        EventBus.getDefault().post(new CancelSearchEvent());
-    }
-
     @Override
     public void onBackPressed() {
-        /*if (isSearchOpened) {
-            handleMenuSearch();
-            return;
-        }*/
         super.onBackPressed();
     }
 
-    @Override
-    public void onDrawerItemSelected(View view, int position, NavigationDrawerItem menuItem) {
-        mNavigatorUtil.setRootFragment(menuItem.getFragment());
-        updateToolbarTitle(menuItem.getTitle());
+    public void onEvent(ChangeFragmentEvent event) {
+        NavigationDrawerItem item = event.getItem();
+        mNavigatorUtil.setRootFragment(item.getFragment());
+        mDrawerLayout.closeDrawer(mContainerView);
+        updateToolbarTitle(item.getTitle());
+        if (item.getType().equals(Fridge.class)) {
+            currentFoodList = fridgeProvider.get(item.getId());
+        }
+        else {
+            currentFoodList = customListProvider.get(item.getId());
+        }
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        //EventBus.getDefault().register(this);
         EventBus.getDefault().registerSticky(this);
     }
 
@@ -172,17 +196,16 @@ public class DrawerActivity extends AppCompatActivity implements
         fragment.show(getSupportFragmentManager(), "dialog");
     }
 
-
-    public void onEvent(CallAddFoodEvent event) {
-//        launchDialog(AddFoodFragment.newInstance());
+    public void onEvent(CallSpeechAddFoodEvent event) {
         launchDialog(SpeechAddFoodFragment.newInstance());
     }
-    public void onEvent(CallUpdateFoodEvent event) {
-        launchDialog(AddFoodFragment.newInstance(user, event.getFood(), AddFoodFragment.TYPE_UPDATE));
+
+    public void onEvent(CallSetFoodEvent event) {
+        launchDialog(SetFoodToFoodListFragment.newInstance(event.getFood(), currentFoodList));
     }
 
     public void onEvent(SpeechFoodMatchEvent event) {
-        launchDialog(AddFoodFragment.newInstance(user, event.getFood(), AddFoodFragment.TYPE_CREATE));
+        launchDialog(SetFoodToFoodListFragment.newInstance(event.getFood(), currentFoodList));
     }
 
     public void onEvent(DatabaseReadyEvent event) {
@@ -190,8 +213,10 @@ public class DrawerActivity extends AppCompatActivity implements
         initActionBarAndNavDrawer(user);
         List<Fridge> fridges = user.getFridges();
         if(fridges.size() > 0){
-            mNavigatorUtil.setRootFragment(FridgeFragment.newInstance(fridges.get(0)));
-            updateToolbarTitle(fridges.get(0).getName());
+            Fridge fridge = fridges.get(0);
+            currentFoodList = fridge;
+            mNavigatorUtil.setRootFragment(FoodListFragment.newInstance(fridge));
+            updateToolbarTitle(fridge.getName());
         }
         enableNotificationReceiver();
     }

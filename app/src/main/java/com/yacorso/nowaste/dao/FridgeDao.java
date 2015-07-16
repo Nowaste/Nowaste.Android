@@ -14,10 +14,8 @@ package com.yacorso.nowaste.dao;
 
 import com.raizlabs.android.dbflow.runtime.TransactionManager;
 import com.raizlabs.android.dbflow.runtime.transaction.TransactionListenerAdapter;
-import com.raizlabs.android.dbflow.runtime.transaction.process.DeleteModelListTransaction;
 import com.raizlabs.android.dbflow.runtime.transaction.process.ProcessModelInfo;
 import com.raizlabs.android.dbflow.runtime.transaction.process.ProcessModelTransaction;
-import com.raizlabs.android.dbflow.runtime.transaction.process.SaveModelTransaction;
 import com.raizlabs.android.dbflow.runtime.transaction.process.UpdateModelListTransaction;
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
