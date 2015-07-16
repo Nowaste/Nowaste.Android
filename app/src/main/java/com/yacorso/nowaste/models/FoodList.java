@@ -17,15 +17,13 @@ import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.ForeignKey;
 import com.raizlabs.android.dbflow.annotation.ForeignKeyReference;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
-import com.raizlabs.android.dbflow.structure.BaseModel;
-import com.raizlabs.android.dbflow.structure.cache.BaseCacheableModel;
 import com.raizlabs.android.dbflow.structure.container.ForeignKeyContainer;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class FoodList extends BaseModel {
+public abstract class FoodList extends Model {
 
     /**
      * Attributes

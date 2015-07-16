@@ -19,6 +19,7 @@ import com.raizlabs.android.dbflow.runtime.transaction.BaseTransaction;
 import com.raizlabs.android.dbflow.runtime.transaction.TransactionListener;
 import com.raizlabs.android.dbflow.runtime.transaction.TransactionListenerAdapter;
 import com.raizlabs.android.dbflow.sql.builder.Condition;
+import com.raizlabs.android.dbflow.sql.builder.ConditionQueryBuilder;
 import com.raizlabs.android.dbflow.sql.language.ColumnAlias;
 import com.raizlabs.android.dbflow.sql.language.Join;
 import com.raizlabs.android.dbflow.sql.language.Select;
@@ -34,9 +35,15 @@ public class Fridge extends FoodList {
     @OneToMany(methods = {OneToMany.Method.LOAD}, variableName = "foods")
     public List<Food> getFoods() {
         if(foods == null) {
+
+
+            ConditionQueryBuilder<Food> queryBuilder = new ConditionQueryBuilder<Food>(Food.class,
+                    Condition.column(Food$Table.FRIDGE_FRIDGE_ID).is(id))
+                    .and(Condition.column(Food$Table.DELETED).isNull());
+
             foods = new Select()
                     .from(Food.class)
-                    .where(Condition.column(Food$Table.FRIDGE_FRIDGE_ID).is(id))
+                    .where(queryBuilder)
                     .queryList();
         }
         return foods;

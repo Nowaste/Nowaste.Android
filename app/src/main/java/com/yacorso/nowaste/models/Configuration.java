@@ -21,8 +21,6 @@ import com.raizlabs.android.dbflow.annotation.ForeignKey;
 import com.raizlabs.android.dbflow.annotation.ForeignKeyReference;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
-import com.raizlabs.android.dbflow.structure.BaseModel;
-import com.raizlabs.android.dbflow.structure.cache.BaseCacheableModel;
 import com.raizlabs.android.dbflow.structure.container.ForeignKeyContainer;
 import com.yacorso.nowaste.data.NowasteDatabase;
 
@@ -31,7 +29,7 @@ import java.util.Map;
 
 
 @Table(databaseName = NowasteDatabase.NAME)
-public class Configuration extends BaseModel implements Parcelable {
+public class Configuration extends Model implements Parcelable {
 
     /**
      * Attributes

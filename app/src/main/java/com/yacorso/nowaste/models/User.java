@@ -23,15 +23,13 @@ import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
-import com.raizlabs.android.dbflow.structure.BaseModel;
-import com.raizlabs.android.dbflow.structure.cache.BaseCacheableModel;
 import com.yacorso.nowaste.data.NowasteDatabase;
 
 import java.util.List;
 
 @ModelContainer
 @Table(databaseName = NowasteDatabase.NAME)
-public class User extends BaseModel implements Parcelable {
+public class User extends Model implements Parcelable {
 
     /**
      * Attributes
