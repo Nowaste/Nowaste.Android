@@ -17,11 +17,11 @@ import com.yacorso.nowaste.models.Food;
 /**
  * Created by quentin on 08/07/15.
  */
-public class SpeechFoodMatcheEvent {
+public class SpeechFoodMatchEvent {
 
     Food mFood;
 
-    public SpeechFoodMatcheEvent(Food food) {
+    public SpeechFoodMatchEvent(Food food) {
         mFood = food;
     }
 

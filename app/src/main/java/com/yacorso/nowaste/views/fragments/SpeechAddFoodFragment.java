@@ -12,11 +12,8 @@
 
 package com.yacorso.nowaste.views.fragments;
 
-import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
@@ -25,12 +22,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.yacorso.nowaste.R;
-import com.yacorso.nowaste.events.SpeechFoodMatcheEvent;
+import com.yacorso.nowaste.events.SpeechFoodMatchEvent;
 import com.yacorso.nowaste.models.Food;
 import com.yacorso.nowaste.models.FoodFridge;
 import com.yacorso.nowaste.utils.DateUtils;
@@ -39,11 +35,9 @@ import com.yacorso.nowaste.utils.LogUtil;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import butterknife.ButterKnife;
 import de.greenrobot.event.EventBus;
 
 /**
@@ -193,7 +187,7 @@ public class SpeechAddFoodFragment extends BaseFragment {
                 ArrayList<String> realMatches = new ArrayList<String>();
 
 
-                Food foodMatche = null;
+                Food foodMatch = null;
 
                 for (String matchStr : resultats) {
                     LogUtil.LOGD(this, matchStr + "  ### " + String.valueOf(matchStr.matches(regex)));
@@ -253,19 +247,19 @@ public class SpeechAddFoodFragment extends BaseFragment {
                             LogUtil.LOGD("SpeechAddFoodFragment", month);
                             LogUtil.LOGD("SpeechAddFoodFragment", year);
 
-                            foodMatche = new Food();
-                            foodMatche.setName(product);
+                            foodMatch = new Food();
+                            foodMatch.setName(product);
 
-                            FoodFridge foodFridgeMatche = new FoodFridge();
-                            foodFridgeMatche.setOpen(false);
-                            foodFridgeMatche.setQuantity(quantity);
+                            FoodFridge foodFridgeMatch = new FoodFridge();
+                            foodFridgeMatch.setOpen(false);
+                            foodFridgeMatch.setQuantity(quantity);
 
                             String dateString = day + " " + month + " " + year;
                             Date date = DateUtils.getDateFromText(dateString);
 
-                            foodFridgeMatche.setOutOfDate(date);
+                            foodFridgeMatch.setOutOfDate(date);
 
-                            foodMatche.setFoodFridge(foodFridgeMatche);
+                            foodMatch.setFoodFridge(foodFridgeMatch);
 
                             break;
                         }
@@ -275,9 +269,9 @@ public class SpeechAddFoodFragment extends BaseFragment {
                 mIsListening = false;
 
 
-                if (foodMatche != null) {
-                    LogUtil.LOGD("SpeechAddFoodFragment", foodMatche.toString());
-                    EventBus.getDefault().post(new SpeechFoodMatcheEvent(foodMatche));
+                if (foodMatch != null) {
+                    LogUtil.LOGD("SpeechAddFoodFragment", foodMatch.toString());
+                    EventBus.getDefault().post(new SpeechFoodMatchEvent(foodMatch));
                     getDialog().dismiss();
                 } else {
                     txtInfos.setText(R.string.speech_no_found);

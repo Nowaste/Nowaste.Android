@@ -17,19 +17,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.yacorso.nowaste.R;
 import com.yacorso.nowaste.events.CallAddFoodEvent;
@@ -38,7 +34,7 @@ import com.yacorso.nowaste.events.SetTitleEvent;
 import com.yacorso.nowaste.events.CancelSearchEvent;
 import com.yacorso.nowaste.events.LaunchSearchEvent;
 import com.yacorso.nowaste.events.CallUpdateFoodEvent;
-import com.yacorso.nowaste.events.SpeechFoodMatcheEvent;
+import com.yacorso.nowaste.events.SpeechFoodMatchEvent;
 import com.yacorso.nowaste.models.Fridge;
 import com.yacorso.nowaste.models.NavigationDrawerItem;
 import com.yacorso.nowaste.models.User;
@@ -58,11 +54,8 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.greenrobot.event.EventBus;
 
-import static com.yacorso.nowaste.utils.Utils.hideKeyboard;
-import static com.yacorso.nowaste.utils.Utils.showKeyboard;
-
 public class DrawerActivity extends AppCompatActivity implements
-        NavigationDrawerFragment.FragmentDrawerListener {
+        NavigationDrawerFragment.FragmentDrawerListener, SearchView.OnQueryTextListener {
 
     @Bind(R.id.drawer_layout) DrawerLayout mDrawerLayout;
 
@@ -122,76 +115,17 @@ public class DrawerActivity extends AppCompatActivity implements
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_search, menu);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_search));
+        searchView.setOnQueryTextListener(this);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_search) {
-            handleMenuSearch();
+            mSearchAction.expandActionView();
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    protected void handleMenuSearch() {
-        ActionBar action = getSupportActionBar(); //get the actionbar
-
-        if (isSearchOpened) { //test if the search is open
-
-            action.setDisplayShowCustomEnabled(false); //disable a custom view inside the actionbar
-            action.setDisplayShowTitleEnabled(true); //show the title in the action bar
-            cancelSearch();
-            hideKeyboard(this);
-
-            //add the search icon in the action bar
-            mSearchAction.setIcon(getResources().getDrawable(R.drawable.abc_ic_search_api_mtrl_alpha));
-
-            isSearchOpened = false;
-        } else { //open the search entry
-
-            action.setDisplayShowCustomEnabled(true); //enable it to display a
-            // custom view in the action bar.
-            action.setCustomView(R.layout.searchbar);//add the custom view
-            action.setDisplayShowTitleEnabled(false); //hide the title
-
-            searchQuery = (EditText) action.getCustomView().findViewById(R.id.edtSearch); //the text editor
-            //this is a listener to do a search when the user clicks on search button
-            searchQuery.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-                @Override
-                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                    if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                        hideKeyboard(getParent());
-                        return true;
-                    }
-                    return false;
-                }
-            });
-
-            searchQuery.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    doSearch(searchQuery.getText().toString());
-                }
-
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {
-                }
-            });
-
-            searchQuery.requestFocus();
-
-            showKeyboard(searchQuery, this);
-
-            //add the close icon
-            mSearchAction.setIcon(getResources().getDrawable(R.drawable.abc_ic_clear_mtrl_alpha));
-
-            isSearchOpened = true;
-        }
-
     }
 
     private void doSearch(String searchQuery) {
@@ -204,10 +138,10 @@ public class DrawerActivity extends AppCompatActivity implements
 
     @Override
     public void onBackPressed() {
-        if (isSearchOpened) {
+        /*if (isSearchOpened) {
             handleMenuSearch();
             return;
-        }
+        }*/
         super.onBackPressed();
     }
 
@@ -247,14 +181,8 @@ public class DrawerActivity extends AppCompatActivity implements
         launchDialog(AddFoodFragment.newInstance(user, event.getFood(), AddFoodFragment.TYPE_UPDATE));
     }
 
-    public void onEvent(SpeechFoodMatcheEvent event) {
+    public void onEvent(SpeechFoodMatchEvent event) {
         launchDialog(AddFoodFragment.newInstance(user, event.getFood(), AddFoodFragment.TYPE_CREATE));
-    }
-
-    public void onEvent(CancelSearchEvent event) {
-        if (isSearchOpened) {
-            handleMenuSearch();
-        }
     }
 
     public void onEvent(DatabaseReadyEvent event) {
@@ -285,4 +213,19 @@ public class DrawerActivity extends AppCompatActivity implements
     }
 
 
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        if (newText.isEmpty()) {
+            EventBus.getDefault().post(new CancelSearchEvent());
+        }
+        else {
+            EventBus.getDefault().post(new LaunchSearchEvent(newText));
+        }
+        return false;
+    }
 }

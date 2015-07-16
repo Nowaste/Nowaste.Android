@@ -41,7 +41,8 @@
     </style>
 
     <style name="MySearchViewStyle" parent="Widget.AppCompat.SearchView">
-        <item name="queryBackground">@color/black</item>
+        <item name="submitBackground">@color/black</item>
+        <item name="queryHint">@string/name_hint</item>
     </style>
 
     <style name="Button" parent="Base.Widget.AppCompat.Button">
