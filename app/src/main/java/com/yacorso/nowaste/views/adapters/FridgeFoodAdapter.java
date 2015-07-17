@@ -33,6 +33,7 @@ import java.util.List;
 
 import com.yacorso.nowaste.NowasteApplication;
 import com.yacorso.nowaste.R;
+import com.yacorso.nowaste.events.CallSetFoodEvent;
 import com.yacorso.nowaste.events.CallSpeechAddFoodEvent;
 import com.yacorso.nowaste.models.CustomList;
 import com.yacorso.nowaste.models.Food;
@@ -49,7 +50,6 @@ import static com.yacorso.nowaste.utils.DateUtils.setColorCircleFromDate;
 
 public class FridgeFoodAdapter extends BaseAdapter {
 
-    public static final int TYPE_CREATE = 1;
     int lastFoodClickedPosition;
 
     public FridgeFoodAdapter() {
@@ -163,7 +163,7 @@ public class FridgeFoodAdapter extends BaseAdapter {
                         break;
 
                     case R.id.item_text_zone:
-                        EventBus.getDefault().post(new CallSpeechAddFoodEvent());
+                        EventBus.getDefault().post(new CallSetFoodEvent(food));
                         break;
                     case R.id.btn_favorite_toggle:
                         User user = food.getFridge().getUser();
@@ -238,8 +238,7 @@ public class FridgeFoodAdapter extends BaseAdapter {
         return mContext.getResources().getColor(R.color.circle_long);
     }
 
-    public static class FridgeViewHolder extends RecyclerView.ViewHolder
-            implements View.OnClickListener, View.OnLongClickListener {
+    public static class FridgeViewHolder extends RecyclerView.ViewHolder {
 
         TextView tvName;
         TextView btnQuantity;
@@ -257,21 +256,6 @@ public class FridgeFoodAdapter extends BaseAdapter {
             outOfDate = ButterKnife.findById(itemView, R.id.out_of_date_textview);
             textZone = ButterKnife.findById(itemView, R.id.item_text_zone);
 
-            itemView.setOnClickListener(this);
-            itemView.setOnLongClickListener(this);
-        }
-
-        @Override
-        public void onClick(View v) {
-//            Toast.makeText(v.getContext(), "OnClick",
-//                    Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        public boolean onLongClick(View v) {
-//            Toast.makeText(v.getContext(), "OnLongClick",
-//                    Toast.LENGTH_SHORT).show();
-            return false;
         }
     }
 

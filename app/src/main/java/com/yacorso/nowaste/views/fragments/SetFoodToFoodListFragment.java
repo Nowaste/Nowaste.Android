@@ -151,8 +151,10 @@ public class SetFoodToFoodListFragment extends BaseFragment {
 
     private void setFoodToBuilder(Food food) {
         nameField.setText(food.getName());
-        setDatePicker(datePicker, food.getFoodFridge().getOutOfDate());
-        numberPicker.setValue(food.getFoodFridge().getQuantity());
+        if (currentFoodList instanceof Fridge) {
+            setDatePicker(datePicker, food.getFoodFridge().getOutOfDate());
+            numberPicker.setValue(food.getFoodFridge().getQuantity());
+        }
     }
 
     private AlertDialog setButtonsListener(AlertDialog.Builder builder, Food food) {

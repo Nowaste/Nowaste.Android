@@ -22,6 +22,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.yacorso.nowaste.R;
+import com.yacorso.nowaste.events.CallSetFoodEvent;
 import com.yacorso.nowaste.models.Food;
 import com.yacorso.nowaste.providers.FoodProvider;
 
@@ -29,6 +30,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import butterknife.ButterKnife;
+import de.greenrobot.event.EventBus;
 
 public class CustomListFoodAdapter extends BaseAdapter {
 
@@ -82,18 +84,21 @@ public class CustomListFoodAdapter extends BaseAdapter {
         return vh;
     }
 
-
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         CustomListViewHolder holder = (CustomListViewHolder) viewHolder;
-        Food food = mFoods.get(position);
+        final Food food = mFoods.get(position);
 
         holder.tvName.setText(food.getName());
-
+        holder.textZone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EventBus.getDefault().post(new CallSetFoodEvent(food));
+            }
+        });
     }
 
-    public static class CustomListViewHolder extends RecyclerView.ViewHolder
-            implements View.OnClickListener, View.OnLongClickListener {
+    public static class CustomListViewHolder extends RecyclerView.ViewHolder {
 
         TextView tvName;
         View textZone;
@@ -102,19 +107,6 @@ public class CustomListFoodAdapter extends BaseAdapter {
             super(itemView);
             tvName = ButterKnife.findById(itemView, R.id.txt_food_name);
             textZone = ButterKnife.findById(itemView, R.id.item_text_zone);
-
-            itemView.setOnClickListener(this);
-            itemView.setOnLongClickListener(this);
-        }
-
-        @Override
-        public void onClick(View v) {
-        }
-
-        @Override
-        public boolean onLongClick(View v) {
-            return false;
         }
     }
-
 }
