@@ -58,12 +58,12 @@ public class Configuration extends BaseModel implements Parcelable {
     @Expose
     @ForeignKey(
             references = {@ForeignKeyReference(
-                            columnName = "user_id",
-                            columnType = Long.class,
-                            foreignColumnName = "id")},
+                    columnName = "config_id",
+                    columnType = Long.class,
+                    foreignColumnName = "id")},
             saveForeignKeyModel = false
     )
-    protected ForeignKeyContainer<User> user;
+    protected ForeignKeyContainer<Configuration> config;
 
     /**
      * Functions
@@ -108,6 +108,7 @@ public class Configuration extends BaseModel implements Parcelable {
         this.value = value;
     }
 
+
     public User getUser() {
         if (user == null) {
             return null;
@@ -119,6 +120,19 @@ public class Configuration extends BaseModel implements Parcelable {
         Map<String, Object> keys = new LinkedHashMap<>();
         keys.put(User$Table.ID, user.id);
         this.user.setData(keys);
+	}
+    public Configuration getConfiguration() {
+        return config.toModel();
+    }
+    public void setConfiguration(Configuration config) {
+        if (!config.isEmpty()) {
+            this.config = new ForeignKeyContainer<>(Configuration.class);
+            Map<String, Object> keys = new LinkedHashMap<>();
+            keys.put(Configuration$Table.ID, config.id);
+            this.config.setData(keys);
+            this.config.setModel(config);
+        }
+
     }
 
     @Override
@@ -134,5 +148,9 @@ public class Configuration extends BaseModel implements Parcelable {
         dest.writeString(this.key);
         dest.writeString(this.value);
 
+    }
+
+    public boolean isEmpty() {
+        return false;
     }
 }

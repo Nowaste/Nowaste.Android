@@ -26,6 +26,7 @@ import android.widget.Spinner;
 import android.widget.Switch;
 
 import com.yacorso.nowaste.R;
+import com.yacorso.nowaste.models.Configuration;
 import com.yacorso.nowaste.models.User;
 import com.yacorso.nowaste.providers.UserProvider;
 
@@ -58,40 +59,44 @@ public class SettingsFragment extends BaseFragment {
         View layout = inflater.inflate(R.layout.fragment_settings, container, false);
         mRootView = super.onCreateView(inflater, container, savedInstanceState);
 
-        User monUser = new User();
-        setMailContent(layout, monUser);
-        setFirstNameContent(layout, monUser);
-        setLastNameContent(layout, monUser);
-        setPasswordContent(layout, monUser);
+        Configuration maConfig = new Configuration();
+        setMailContent(layout, maConfig);
+        setFirstNameContent(layout, maConfig);
+        setLastNameContent(layout, maConfig);
+        setPasswordContent(layout, maConfig);
         //isNotificationContent(layout);
 
         setSpinnerContent(layout);
         return mRootView;
     }
 
-    private void setMailContent(View view, User user){
+    private void setMailContent(View view, Configuration config){
         text_email = (EditText) view.findViewById(R.id.text_email);
         String string_email = text_email.getText().toString();
-        //user.setEmail(string_email);
-        user.setEmail("marjorie.debote@free.fr");
+        //config.setEmail(string_email);
+        config.setKey("email");
+        config.setValue("marjorie.debote@free.fr");
     }
-    private void setFirstNameContent(View view, User user){
+    private void setFirstNameContent(View view, Configuration config){
         text_first_name = (EditText) view.findViewById(R.id.text_first_name);
         String string_first_name = text_first_name.getText().toString();
-        //user.setFirstName(string_first_name);
-        user.setFirstName("Debote");
+        //config.setFirstName(string_first_name);
+        config.setKey("firstname");
+        config.setValue("Debote");
     }
-    private void setLastNameContent(View view, User user){
+    private void setLastNameContent(View view, Configuration config){
         text_last_name = (EditText) view.findViewById(R.id.text_last_name);
         String string_last_name = text_last_name.getText().toString();
-        //user.setLastName(string_last_name);
-        user.setLastName("Marjorie");
+        //config.setLastName(string_last_name);
+        config.setKey("lastname");
+        config.setValue("Marjorie");
     }
-    private void setPasswordContent(View view, User user){
+    private void setPasswordContent(View view, Configuration config){
         text_password = (EditText) view.findViewById(R.id.text_password);
         String string_password = text_password.getText().toString();
-        //user.setPassword(string_password);
-        user.setPassword("Password");
+        //config.setPassword(string_password);
+        config.setKey("password");
+        config.setValue("Password");
         //verifier sil ny a pas besoin de rajouter un salt
     }
     private void isNotificationContent(View view){
