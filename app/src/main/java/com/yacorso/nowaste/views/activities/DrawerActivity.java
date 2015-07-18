@@ -15,6 +15,7 @@ package com.yacorso.nowaste.views.activities;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -30,19 +31,22 @@ import android.view.SubMenu;
 import android.view.View;
 
 import com.yacorso.nowaste.R;
-import com.yacorso.nowaste.events.CallSetFoodEvent;
+import com.yacorso.nowaste.events.CallCreateFoodEvent;
 import com.yacorso.nowaste.events.CallSpeechAddFoodEvent;
-import com.yacorso.nowaste.events.DatabaseReadyEvent;
-import com.yacorso.nowaste.events.SetTitleEvent;
+import com.yacorso.nowaste.events.CallUpdateFoodEvent;
+import com.yacorso.nowaste.events.CustomListCreatedEvent;
+import com.yacorso.nowaste.events.FridgeCreatedEvent;
 import com.yacorso.nowaste.events.CancelSearchEvent;
 import com.yacorso.nowaste.events.LaunchSearchEvent;
 import com.yacorso.nowaste.events.SpeechFoodMatchEvent;
+import com.yacorso.nowaste.events.UserCreatedEvent;
 import com.yacorso.nowaste.models.CustomList;
 import com.yacorso.nowaste.models.FoodList;
 import com.yacorso.nowaste.models.Fridge;
 import com.yacorso.nowaste.models.User;
 import com.yacorso.nowaste.providers.CustomListProvider;
 import com.yacorso.nowaste.providers.FridgeProvider;
+import com.yacorso.nowaste.providers.UserProvider;
 import com.yacorso.nowaste.services.AlarmReceiver;
 import com.yacorso.nowaste.services.BootCompletedReceiver;
 import com.yacorso.nowaste.services.NotificationService;
@@ -62,6 +66,9 @@ import de.greenrobot.event.EventBus;
 
 public class DrawerActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
+    public static final int TYPE_CREATE = 1;
+    public static final int TYPE_UPDATE = 2;
+
     @Bind(R.id.drawer_layout) DrawerLayout mDrawerLayout;
     @Bind(R.id.main_navigation) NavigationView navigationView;
     ActionBarDrawerToggle mDrawerToggle;
@@ -72,9 +79,9 @@ public class DrawerActivity extends AppCompatActivity implements SearchView.OnQu
     FoodList currentFoodList;
     FridgeProvider fridgeProvider;
     CustomListProvider customListProvider;
+    UserProvider userProvider;
     Map<Integer, FoodList> navigationItems;
-
-    User user;
+    SharedPreferences settings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,12 +94,26 @@ public class DrawerActivity extends AppCompatActivity implements SearchView.OnQu
 
         fridgeProvider = new FridgeProvider();
         customListProvider = new CustomListProvider();
+        userProvider = new UserProvider();
         navigationItems = new LinkedHashMap<>();
+
+        User user;
+        settings = getSharedPreferences("preferences", MODE_PRIVATE);
+        long userId = settings.getLong("user", 0);
+
+        if(userId == 0){
+            /**
+             * Load database and call initApp after it is done
+             */
+            loadDatabase();
+        }
+        else{
+            user = userProvider.get(userId);
+            initApp(user);
+        }
     }
 
-    public void onEvent(DatabaseReadyEvent event) {
-        user = event.getUser();
-
+    public void initApp(User user) {
         initToolbar();
 
         initNavDrawerAndNavItems(user);
@@ -102,6 +123,11 @@ public class DrawerActivity extends AppCompatActivity implements SearchView.OnQu
         enableNotificationReceiver();
     }
 
+
+
+    /**
+     * Setup toolbar
+     */
     private void initToolbar() {
         // Set toolbar as actionbar
         setSupportActionBar(mToolbar);
@@ -111,6 +137,37 @@ public class DrawerActivity extends AppCompatActivity implements SearchView.OnQu
         getSupportActionBar().setHomeButtonEnabled(true);
     }
 
+    private void updateToolbarTitle(String title) {
+        getSupportActionBar().setTitle(title);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        mSearchAction = menu.findItem(R.id.action_search);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_search, menu);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_search));
+        searchView.setOnQueryTextListener(this);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_search) {
+            mSearchAction.expandActionView();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
+
+    /**
+     * Setup navigation drawer
+     */
     private void initNavDrawerAndNavItems(User user) {
         int index = 0;
         Menu navigationMenu = navigationView.getMenu();
@@ -177,53 +234,11 @@ public class DrawerActivity extends AppCompatActivity implements SearchView.OnQu
         });
     }
 
-    private void enableNotificationReceiver() {
-        Context context = getApplicationContext();
-        ComponentName receiver = new ComponentName(context, BootCompletedReceiver.class);
-        PackageManager pm = context.getPackageManager();
 
-        pm.setComponentEnabledSetting(receiver,
-                PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-                PackageManager.DONT_KILL_APP);
 
-        Intent serviceIntent = new Intent(context, NotificationService.class);
-        context.stopService(serviceIntent);
-
-        AlarmReceiver alarmReceiver = new AlarmReceiver();
-        alarmReceiver.setAlarm(context);
-    }
-
-    private void updateToolbarTitle(String title) {
-        getSupportActionBar().setTitle(title);
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        mSearchAction = menu.findItem(R.id.action_search);
-        return super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_search, menu);
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_search));
-        searchView.setOnQueryTextListener(this);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_search) {
-            mSearchAction.expandActionView();
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-    }
-
+    /**
+     * Events to change fragment/dialog displayed
+     */
     private void changeFragment(int id, boolean isFoodList) {
         BaseFragment fragment;
         String title;
@@ -244,41 +259,31 @@ public class DrawerActivity extends AppCompatActivity implements SearchView.OnQu
         updateToolbarTitle(title);
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        EventBus.getDefault().registerSticky(this);
+    public void onEvent(CallSpeechAddFoodEvent event) {
+        launchDialog(SpeechAddFoodFragment.newInstance());
     }
 
-    @Override
-    public void onStop() {
-        EventBus.getDefault().unregister(this);
-        super.onStop();
+    public void onEvent(CallCreateFoodEvent event) {
+        launchDialog(SetFoodToFoodListFragment.newInstance(event.getFood(), currentFoodList, TYPE_CREATE));
     }
 
-    public void onEvent(SetTitleEvent event) {
-        updateToolbarTitle(event.getTitleFragment());
+    public void onEvent(CallUpdateFoodEvent event) {
+        launchDialog(SetFoodToFoodListFragment.newInstance(event.getFood(), currentFoodList, TYPE_UPDATE));
+    }
+
+    public void onEvent(SpeechFoodMatchEvent event) {
+        launchDialog(SetFoodToFoodListFragment.newInstance(event.getFood(), currentFoodList , TYPE_CREATE));
     }
 
     private void launchDialog(BaseFragment fragment) {
         fragment.show(getSupportFragmentManager(), "dialog");
     }
 
-    public void onEvent(CallSpeechAddFoodEvent event) {
-        launchDialog(SpeechAddFoodFragment.newInstance());
-    }
-
-    public void onEvent(CallSetFoodEvent event) {
-        launchDialog(SetFoodToFoodListFragment.newInstance(event.getFood(), currentFoodList));
-    }
-
-    public void onEvent(SpeechFoodMatchEvent event) {
-        launchDialog(SetFoodToFoodListFragment.newInstance(event.getFood(), currentFoodList));
-    }
 
 
-
-
+    /**
+     * Handle search
+     */
     @Override
     public boolean onQueryTextSubmit(String query) {
         return false;
@@ -293,5 +298,100 @@ public class DrawerActivity extends AppCompatActivity implements SearchView.OnQu
             EventBus.getDefault().post(new LaunchSearchEvent(newText));
         }
         return false;
+    }
+
+
+    /**
+     * Enable every day local notification
+     */
+    private void enableNotificationReceiver() {
+        Context context = getApplicationContext();
+        ComponentName receiver = new ComponentName(context, BootCompletedReceiver.class);
+        PackageManager pm = context.getPackageManager();
+
+        pm.setComponentEnabledSetting(receiver,
+                PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                PackageManager.DONT_KILL_APP);
+
+        Intent serviceIntent = new Intent(context, NotificationService.class);
+        context.stopService(serviceIntent);
+
+        AlarmReceiver alarmReceiver = new AlarmReceiver();
+        alarmReceiver.setAlarm(context);
+    }
+
+
+
+    /**
+     * Create first user, first fridge and first customList on first launch
+     */
+    private void loadDatabase() {
+        User user = new User();
+        user.setEmail("toto.albert@nowaste.fr");
+        user.setFirstName("Toto");
+        user.setLastName("Albert");
+        /**
+         * Throw UserCreatedEvent
+         */
+        userProvider.create(user);
+    }
+
+    public void onEvent(UserCreatedEvent event) {
+        User user = event.getUser();
+        addFridgeToUser(user);
+    }
+
+    private void addFridgeToUser(User user) {
+        Fridge f = new Fridge();
+
+        f.setName("Default fridge");
+        f.setUser(user);
+        /**
+         * Throw FridgeCreatedEvent
+         */
+        fridgeProvider.create(f);
+    }
+
+    public void onEvent(FridgeCreatedEvent event) {
+        User user = event.getFridge().getUser();
+        addCustomListToUser(user);
+    }
+
+    private void addCustomListToUser(User user) {
+        CustomList customList = new CustomList();
+
+        customList.setName("Ma liste");
+        customList.setUser(user);
+        /**
+         * Throw CustomListCreatedEvent
+         */
+        customListProvider.create(customList);
+    }
+
+    public void onEvent(CustomListCreatedEvent event) {
+        User user = event.getCustomList().getUser();
+        initApp(user);
+        settings.edit().putLong("user", user.getId()).commit();
+    }
+
+
+    /**
+     * Setup activity
+     */
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().registerSticky(this);
+    }
+
+    @Override
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 }

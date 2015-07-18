@@ -2,10 +2,10 @@ package com.yacorso.nowaste.events;
 
 import com.yacorso.nowaste.models.Food;
 
-public class CallSetFoodEvent {
+public class CallCreateFoodEvent {
     Food food;
 
-    public CallSetFoodEvent(Food food) {
+    public CallCreateFoodEvent(Food food) {
         this.food = food;
     }
 
