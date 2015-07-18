@@ -49,6 +49,7 @@ public class FoodDao extends Dao<Food, Long> {
     public void create(final Food item) {
         type = TYPE_CREATE;
         item.setCreated(new Date());
+        item.setUpdated(new Date());
         transact(item);
     }
 
@@ -71,6 +72,7 @@ public class FoodDao extends Dao<Food, Long> {
     public void delete(final Food item) {
         type = TYPE_DELETE;
         item.setDeleted(new Date());
+        item.setUpdated(new Date());
         transactFood(item, null);
     }
 

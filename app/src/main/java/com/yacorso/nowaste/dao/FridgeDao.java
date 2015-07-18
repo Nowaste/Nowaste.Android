@@ -57,6 +57,7 @@ public class FridgeDao extends Dao<Fridge, Long> {
     public void create(final Fridge item) {
         type = TYPE_CREATE;
         item.setCreated(new Date());
+        item.setUpdated(new Date());
         transact(item);
     }
 
@@ -137,6 +138,7 @@ public class FridgeDao extends Dao<Fridge, Long> {
         user.async().update();
 
         item.setDeleted(new Date());
+        item.setUpdated(new Date());
 
         final AsyncModel.OnModelChangedListener callback = new AsyncModel.OnModelChangedListener() {
             @Override

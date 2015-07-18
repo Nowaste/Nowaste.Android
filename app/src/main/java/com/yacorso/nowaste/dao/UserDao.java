@@ -59,6 +59,7 @@ public class UserDao extends Dao<User, Long> {
     public void create(final User item) {
         type = TYPE_CREATE;
         item.setCreated(new Date());
+        item.setUpdated(new Date());
         transact(item);
     }
 
@@ -83,6 +84,7 @@ public class UserDao extends Dao<User, Long> {
     public void delete(User item) {
         type = TYPE_DELETE;
         item.setDeleted(new Date());
+        item.setUpdated(new Date());
         transact(item);
     }
 

@@ -56,6 +56,7 @@ public class CustomListDao extends Dao<CustomList, Long> {
     public void create(final CustomList item) {
         type= TYPE_CREATE;
         item.setCreated(new Date());
+        item.setUpdated(new Date());
         transact(item);
     }
 
@@ -122,6 +123,7 @@ public class CustomListDao extends Dao<CustomList, Long> {
         user.removeCustomList(item);
         user.async().update();
 
+        item.setUpdated(new Date());
         item.setDeleted(new Date());
 
         final AsyncModel.OnModelChangedListener callback = new AsyncModel.OnModelChangedListener() {
