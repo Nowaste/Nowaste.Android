@@ -57,12 +57,12 @@ public class Configuration extends BaseCacheableModel implements Parcelable {
     @Expose
     @ForeignKey(
             references = {@ForeignKeyReference(
-                            columnName = "user_id",
-                            columnType = Long.class,
-                            foreignColumnName = "id")},
+                    columnName = "config_id",
+                    columnType = Long.class,
+                    foreignColumnName = "id")},
             saveForeignKeyModel = false
     )
-    protected ForeignKeyContainer<User> user;
+    protected ForeignKeyContainer<Configuration> config;
 
     /**
      * Functions
@@ -107,16 +107,16 @@ public class Configuration extends BaseCacheableModel implements Parcelable {
         this.value = value;
     }
 
-    public User getUser() {
-        return user.toModel();
+    public Configuration getConfiguration() {
+        return config.toModel();
     }
-    public void setUser(User user) {
-        if (!user.isEmpty()) {
-            this.user = new ForeignKeyContainer<>(User.class);
+    public void setConfiguration(Configuration config) {
+        if (!config.isEmpty()) {
+            this.config = new ForeignKeyContainer<>(Configuration.class);
             Map<String, Object> keys = new LinkedHashMap<>();
-            keys.put(User$Table.ID, user.id);
-            this.user.setData(keys);
-            this.user.setModel(user);
+            keys.put(Configuration$Table.ID, config.id);
+            this.config.setData(keys);
+            this.config.setModel(config);
         }
     }
 
@@ -133,5 +133,9 @@ public class Configuration extends BaseCacheableModel implements Parcelable {
         dest.writeString(this.key);
         dest.writeString(this.value);
 
+    }
+
+    public boolean isEmpty() {
+        return false;
     }
 }
