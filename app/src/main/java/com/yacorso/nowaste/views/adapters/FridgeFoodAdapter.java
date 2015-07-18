@@ -15,6 +15,7 @@ package com.yacorso.nowaste.views.adapters;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.util.SortedList;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.util.SortedListAdapterCallback;
@@ -66,21 +67,6 @@ public class FridgeFoodAdapter extends BaseAdapter {
                 return item1.getId() == item2.getId();
             }
         });
-    }
-
-    public static class FoodListViewHolder extends RecyclerView.ViewHolder {
-
-        @Bind(R.id.txt_food_name) TextView tvName;
-        @Bind(R.id.btn_food_quantity) TextView btnQuantity;
-        @Bind(R.id.btn_favorite_toggle) Button btnFavoriteToggle;
-        @Bind(R.id.btn_open_toggle) Button btnOpenToggle;
-        @Bind(R.id.out_of_date_textview) TextView outOfDate;
-        @Bind(R.id.item_text_zone) View textZone;
-
-        public FoodListViewHolder(View itemView) {
-            super(itemView);
-            ButterKnife.bind(this, itemView);
-        }
     }
 
     @Override
@@ -215,10 +201,10 @@ public class FridgeFoodAdapter extends BaseAdapter {
     private void setOpenIcon (View v, Food food) {
         Drawable icon;
         if (food.getFoodFridge().isOpen()) {
-            icon = mContext.getResources().getDrawable(R.drawable.food_started);
+            icon = ContextCompat.getDrawable(mContext, R.drawable.food_started);
         }
         else {
-            icon = mContext.getResources().getDrawable(R.drawable.food_not_started);
+            icon = ContextCompat.getDrawable(mContext, R.drawable.food_not_started);
         }
 
         if(android.os.Build.VERSION.SDK_INT >= 16) {
@@ -229,28 +215,18 @@ public class FridgeFoodAdapter extends BaseAdapter {
         }
     }
 
-    private int setColorCircle () {
-        return mContext.getResources().getColor(R.color.circle_long);
-    }
-
     public static class FridgeViewHolder extends RecyclerView.ViewHolder {
 
-        TextView tvName;
-        TextView btnQuantity;
-        Button btnFavoriteToggle;
-        Button btnOpenToggle;
-        TextView outOfDate;
-        View textZone;
+        @Bind(R.id.txt_food_name) TextView tvName;
+        @Bind(R.id.btn_food_quantity) TextView btnQuantity;
+        @Bind(R.id.btn_favorite_toggle) Button btnFavoriteToggle;
+        @Bind(R.id.btn_open_toggle) Button btnOpenToggle;
+        @Bind(R.id.out_of_date_textview) TextView outOfDate;
+        @Bind(R.id.item_text_zone) View textZone;
 
         public FridgeViewHolder(View itemView) {
             super(itemView);
-            tvName = ButterKnife.findById(itemView, R.id.txt_food_name);
-            btnQuantity = ButterKnife.findById(itemView, R.id.btn_food_quantity);
-            btnFavoriteToggle = ButterKnife.findById(itemView, R.id.btn_favorite_toggle);
-            btnOpenToggle = ButterKnife.findById(itemView, R.id.btn_open_toggle);
-            outOfDate = ButterKnife.findById(itemView, R.id.out_of_date_textview);
-            textZone = ButterKnife.findById(itemView, R.id.item_text_zone);
-
+            ButterKnife.bind(this, itemView);
         }
     }
 
@@ -260,6 +236,4 @@ public class FridgeFoodAdapter extends BaseAdapter {
         mFoods.recalculatePositionOfItemAt(lastFoodClickedPosition);
         mFoods.updateItemAt(indexOf(item), item);
     }
-
-
 }

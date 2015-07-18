@@ -17,6 +17,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.yacorso.nowaste.R;
@@ -24,14 +25,14 @@ import com.yacorso.nowaste.events.CallUpdateFoodEvent;
 import com.yacorso.nowaste.models.Food;
 import com.yacorso.nowaste.providers.FoodProvider;
 
-import butterknife.ButterKnife;
+import butterknife.*;
 import de.greenrobot.event.EventBus;
 
 public class CustomListFoodAdapter extends BaseAdapter {
 
     public CustomListFoodAdapter() {
         mFoodProvider = new FoodProvider();
-        mFoods = new SortedList<Food>(Food.class, new SortedList.Callback<Food>() {
+        mFoods = new SortedList<>(Food.class, new SortedList.Callback<Food>() {
             @Override
             public int compare(Food o1, Food o2) {
                 return o1.getName().compareTo(o2.getName());
@@ -95,13 +96,12 @@ public class CustomListFoodAdapter extends BaseAdapter {
 
     public static class CustomListViewHolder extends RecyclerView.ViewHolder {
 
-        TextView tvName;
-        View textZone;
+        @Bind(R.id.txt_food_name) TextView tvName;
+        @Bind(R.id.item_text_zone) View textZone;
 
         public CustomListViewHolder(View itemView) {
             super(itemView);
-            tvName = ButterKnife.findById(itemView, R.id.txt_food_name);
-            textZone = ButterKnife.findById(itemView, R.id.item_text_zone);
+            ButterKnife.bind(this, itemView);
         }
     }
 }
