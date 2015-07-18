@@ -12,22 +12,17 @@
 
 package com.yacorso.nowaste.views.adapters;
 
-import android.content.Context;
 import android.support.v7.util.SortedList;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.yacorso.nowaste.R;
-import com.yacorso.nowaste.events.CallSetFoodEvent;
+import com.yacorso.nowaste.events.CallUpdateFoodEvent;
 import com.yacorso.nowaste.models.Food;
 import com.yacorso.nowaste.providers.FoodProvider;
-
-import java.util.Arrays;
-import java.util.List;
 
 import butterknife.ButterKnife;
 import de.greenrobot.event.EventBus;
@@ -93,7 +88,7 @@ public class CustomListFoodAdapter extends BaseAdapter {
         holder.textZone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EventBus.getDefault().post(new CallSetFoodEvent(food));
+                EventBus.getDefault().post(new CallUpdateFoodEvent(food));
             }
         });
     }

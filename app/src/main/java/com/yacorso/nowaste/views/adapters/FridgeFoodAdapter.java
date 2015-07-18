@@ -13,7 +13,6 @@
 package com.yacorso.nowaste.views.adapters;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.support.v7.util.SortedList;
@@ -25,16 +24,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.NumberPicker;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import com.yacorso.nowaste.NowasteApplication;
 import com.yacorso.nowaste.R;
-import com.yacorso.nowaste.events.CallSetFoodEvent;
-import com.yacorso.nowaste.events.CallSpeechAddFoodEvent;
+import com.yacorso.nowaste.events.CallUpdateFoodEvent;
 import com.yacorso.nowaste.models.CustomList;
 import com.yacorso.nowaste.models.Food;
 import com.yacorso.nowaste.models.FoodFridge;
@@ -163,7 +158,7 @@ public class FridgeFoodAdapter extends BaseAdapter {
                         break;
 
                     case R.id.item_text_zone:
-                        EventBus.getDefault().post(new CallSetFoodEvent(food));
+                        EventBus.getDefault().post(new CallUpdateFoodEvent(food));
                         break;
                     case R.id.btn_favorite_toggle:
                         User user = food.getFridge().getUser();

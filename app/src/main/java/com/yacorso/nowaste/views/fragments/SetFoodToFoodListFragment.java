@@ -17,7 +17,7 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import com.yacorso.nowaste.R;
-import com.yacorso.nowaste.events.CallSetFoodEvent;
+import com.yacorso.nowaste.events.CallCreateFoodEvent;
 import com.yacorso.nowaste.events.CallSpeechAddFoodEvent;
 import com.yacorso.nowaste.models.CustomList;
 import com.yacorso.nowaste.models.Food;
@@ -26,6 +26,7 @@ import com.yacorso.nowaste.models.FoodList;
 import com.yacorso.nowaste.models.Fridge;
 import com.yacorso.nowaste.providers.FoodProvider;
 import com.yacorso.nowaste.utils.DateUtils;
+import com.yacorso.nowaste.views.activities.DrawerActivity;
 
 import java.util.Date;
 
@@ -46,12 +47,15 @@ public class SetFoodToFoodListFragment extends BaseFragment {
 
     FoodList currentFoodList;
     FoodProvider foodProvider;
+    int type;
+    Food food;
 
-    public static SetFoodToFoodListFragment newInstance(Food food, FoodList foodList) {
+    public static SetFoodToFoodListFragment newInstance(Food food, FoodList foodList, int type) {
         SetFoodToFoodListFragment setFoodToFoodListFragment = new SetFoodToFoodListFragment();
 
         Bundle args = new Bundle();
         args.putParcelable("foodList", foodList);
+        args.putInt("type", type);
         if (food != null) {
             args.putParcelable("food", food);
         }
@@ -66,11 +70,6 @@ public class SetFoodToFoodListFragment extends BaseFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Bundle arguments = getArguments();
-
-        if (arguments.containsKey("foodList") ) {
-            currentFoodList = arguments.getParcelable("foodList");
-        }
 
         if (currentFoodList instanceof CustomList) {
             containerFridgeItems.setVisibility(View.GONE);
@@ -89,6 +88,14 @@ public class SetFoodToFoodListFragment extends BaseFragment {
 
         mRootView = getActivity().getLayoutInflater().inflate(getLayout(), null);
         ButterKnife.bind(this, mRootView);
+
+        Bundle arguments = getArguments();
+
+        currentFoodList = arguments.getParcelable("foodList");
+        type = arguments.getInt("type");
+        if (arguments != null && arguments.containsKey("food")) {
+            food = arguments.getParcelable("food");
+        }
 
         Dialog dialog = setDialog();
 
@@ -111,23 +118,10 @@ public class SetFoodToFoodListFragment extends BaseFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(mRootView);
 
-        Bundle arguments = getArguments();
-
-        AlertDialog dialog = setInformationsToDialog(builder, arguments);
+        AlertDialog dialog = getFoodDialog(builder, food);
         dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 
         return dialog;
-
-    }
-
-    private AlertDialog setInformationsToDialog(AlertDialog.Builder builder, Bundle arguments) {
-        Food food = null;
-
-        if (arguments != null && arguments.containsKey("food")) {
-            food = arguments.getParcelable("food");
-        }
-
-        return getFoodDialog(builder, food);
     }
 
     private AlertDialog getFoodDialog(AlertDialog.Builder builder, Food food) {
@@ -135,15 +129,18 @@ public class SetFoodToFoodListFragment extends BaseFragment {
 
         builder.setNegativeButton(R.string.cancel, null);
 
-        if (food == null) {
+        if (type == DrawerActivity.TYPE_CREATE) {
             builder.setPositiveButton(R.string.add_one_element, null);
             builder.setNeutralButton(R.string.add_another_element, null);
             dialog = setButtonsListener(builder, null);
         }
         else {
-            setFoodToBuilder(food);
             builder.setPositiveButton(R.string.validate, null);
             dialog = setButtonsListener(builder, food);
+        }
+
+        if (food != null) {
+            setFoodToBuilder(food);
         }
 
         return dialog;
@@ -160,8 +157,8 @@ public class SetFoodToFoodListFragment extends BaseFragment {
     private AlertDialog setButtonsListener(AlertDialog.Builder builder, Food food) {
         final AlertDialog dialog = builder.create();
 
-        if (food == null) {
-            setButtonListenerForCreate(dialog);
+        if (type == DrawerActivity.TYPE_CREATE) {
+            setButtonListenerForCreate(dialog, food);
         }
         else {
             setButtonListenerForUpdate(dialog, food);
@@ -195,11 +192,14 @@ public class SetFoodToFoodListFragment extends BaseFragment {
         });
     }
 
-    private void setButtonListenerForCreate(final AlertDialog dialog) {
+    private void setButtonListenerForCreate(final AlertDialog dialog, final Food foodz) {
         dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-            Food food = new Food();
+
             @Override
             public void onShow(DialogInterface dI) {
+                final Food food;
+                if (foodz == null) { food = new Food(); } else { food = foodz; }
+
                 Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
                 positiveButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -219,7 +219,12 @@ public class SetFoodToFoodListFragment extends BaseFragment {
                             food.setFoodList(currentFoodList);
                             foodProvider.create(food);
                             dialog.dismiss();
-                            EventBus.getDefault().post(new CallSpeechAddFoodEvent());
+                            if (currentFoodList instanceof Fridge) {
+                                EventBus.getDefault().post(new CallSpeechAddFoodEvent());
+                            }
+                            else {
+                                EventBus.getDefault().post(new CallCreateFoodEvent(null));
+                            }
                         }
                     }
                 });
