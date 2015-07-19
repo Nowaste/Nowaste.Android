@@ -13,8 +13,18 @@
 package com.yacorso.nowaste.providers;
 
 import com.yacorso.nowaste.data.NowasteApi;
+import com.yacorso.nowaste.models.SyncArrays;
+import com.yacorso.nowaste.utils.ConfigurationUtil;
+import com.yacorso.nowaste.utils.LogUtil;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 /**
  * Abstract class Service
@@ -66,5 +76,33 @@ public abstract class Provider<T, U> {
      * @return
      */
     public abstract List<T> all();
+
+    public void sync(){
+
+        NowasteApi api = NowasteApi.ApiInstance.getInstance();
+        final ConfigurationUtil config = ConfigurationUtil.getInstance();
+        api.getSync(config.getCurrentUser().getId(), config.getLastSync().getTime()/1000, new Callback<SyncArrays>() {
+            @Override
+            public void success(SyncArrays syncArrays, Response response) {
+                LogUtil.LOGD(this, syncArrays.toString());
+                LogUtil.LOGD(this, response.toString());
+                LogUtil.LOGD(this, String.valueOf(config.getLastSync()));
+
+                syncArrays.sync();
+
+
+//                config.setLastSync(new Date());
+                LogUtil.LOGD(this, String.valueOf(config.getLastSync()));
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                LogUtil.LOGD(this, "### ERROR ###");
+                LogUtil.LOGD(this, error.toString());
+            }
+        });
+    }
+
+
 
 }

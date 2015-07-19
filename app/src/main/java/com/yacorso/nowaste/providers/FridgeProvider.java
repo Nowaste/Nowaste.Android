@@ -15,6 +15,8 @@ package com.yacorso.nowaste.providers;
 import com.yacorso.nowaste.NowasteApplication;
 import com.yacorso.nowaste.dao.FridgeDao;
 import com.yacorso.nowaste.events.ApiErrorEvent;
+import com.yacorso.nowaste.events.FridgeCreatedEvent;
+import com.yacorso.nowaste.events.FridgeUpdatedEvent;
 import com.yacorso.nowaste.events.FridgesLoadedEvent;
 import com.yacorso.nowaste.events.LoadFridgesEvent;
 import com.yacorso.nowaste.models.FoodList;
@@ -38,47 +40,107 @@ public class FridgeProvider extends Provider<Fridge, Long> {
     public FridgeProvider() {
         super();
     }
-    public FridgeProvider(NowasteApi api) {
-        super(api);
-        /**
-         * Register all event on this service
-         */
-        EventBus.getDefault().register(this);
-    }
 
-    public void onEvent(LoadFridgesEvent event){
-
-        mApi.getAllFridges(new Callback<List<Fridge>>() {
-            @Override
-            public void success(List<Fridge> fridges, Response response) {
-                EventBus.getDefault().post(new FridgesLoadedEvent(fridges));
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                EventBus.getDefault().post(new ApiErrorEvent(error));
-            }
-        });
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
     }
 
     @Override
     public void create(Fridge item) {
         mFridgeDao.create(item);
+
+        final Fridge itemCreated = item;
+
+        NowasteApi api = NowasteApi.ApiInstance.getInstance();
+        api.createFridge(itemCreated, new Callback<Fridge>() {
+            @Override
+            public void success(Fridge fridge, Response response) {
+                try {
+                    Fridge newItem = (Fridge) itemCreated.clone();
+                    newItem.setServerId(fridge.getId());
+                    mFridgeDao.update(newItem);
+                } catch (CloneNotSupportedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                LogUtil.LOGD(this, error.toString());
+            }
+        });
+
     }
 
     @Override
     public void update(Fridge item) {
         mFridgeDao.update(item);
+
+        if(item.getServerId() != 0){
+
+            Fridge itemUpdated = null;
+            try {
+                itemUpdated = (Fridge)item.clone();
+                itemUpdated.setId(item.getServerId());
+            } catch (CloneNotSupportedException e) {
+                e.printStackTrace();
+            }
+
+            if(itemUpdated != null){
+
+                NowasteApi api = NowasteApi.ApiInstance.getInstance();
+                api.updateFridge(itemUpdated.getId(),itemUpdated, new Callback<Fridge>() {
+                    @Override
+                    public void success(Fridge fridge, Response response) {
+
+                    }
+
+                    @Override
+                    public void failure(RetrofitError error) {
+                        LogUtil.LOGD(this, "## ERROR ##");
+                    }
+                });
+            }
+        }
     }
 
     @Override
     public void delete(Fridge item) {
         mFridgeDao.delete(item);
+
+        if(item.getServerId() != 0){
+
+            Fridge itemDeleted = null;
+            try {
+                itemDeleted = (Fridge)item.clone();
+                itemDeleted.setId(item.getServerId());
+            } catch (CloneNotSupportedException e) {
+                e.printStackTrace();
+            }
+
+            if(itemDeleted != null){
+
+                NowasteApi api = NowasteApi.ApiInstance.getInstance();
+                api.deleteFridge(itemDeleted.getId(), new Callback<Fridge>() {
+                    @Override
+                    public void success(Fridge fridge, Response response) {
+
+                    }
+
+                    @Override
+                    public void failure(RetrofitError error) {
+
+                    }
+                });
+            }
+        }
     }
 
     @Override
     public Fridge get(Long id) {
         Fridge fridge = mFridgeDao.get(id);
+        this.sync();
 
         return fridge;
     }

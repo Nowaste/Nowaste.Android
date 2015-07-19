@@ -87,13 +87,18 @@ public class CustomListDao extends Dao<CustomList, Long> {
             item.async().withListener(callback).save();
         }
         else if (type == TYPE_UPDATE){
-            TransactionListenerAdapter resultFoods = new TransactionListenerAdapter() {
-                @Override
-                public void onResultReceived(Object o) {
-                    item.async().withListener(callback).update();
-                }
-            };
-            updateFood(item.getFoods(), resultFoods);
+
+            if(item.getFoods().size() > 0){
+                TransactionListenerAdapter resultFoods = new TransactionListenerAdapter() {
+                    @Override
+                    public void onResultReceived(Object o) {
+                        item.async().withListener(callback).update();
+                    }
+                };
+                updateFood(item.getFoods(), resultFoods);
+            }else{
+                item.async().withListener(callback).update();
+            }
         }
     }
 

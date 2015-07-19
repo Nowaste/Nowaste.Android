@@ -48,13 +48,13 @@ public class UserProvider extends Provider<User, Long> {
     @Override
     public User get(Long id) {
         User user = mUserDao.get(id);
+        this.sync();
 
         return user;
     }
 
     @Override
     public List<User> all() {
-
         List<User> users = mUserDao.all();
 
         return users;

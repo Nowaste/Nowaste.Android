@@ -88,13 +88,18 @@ public class FridgeDao extends Dao<Fridge, Long> {
         if (type == TYPE_CREATE) {
             item.async().withListener(callback).save();
         } else if (type == TYPE_UPDATE) {
-            TransactionListenerAdapter resultFoods = new TransactionListenerAdapter() {
-                @Override
-                public void onResultReceived(Object o) {
-                    item.async().withListener(callback).update();
-                }
-            };
-            updateFood(item.getFoods(), resultFoods);
+
+            if(item.getFoods().size() > 0){
+                TransactionListenerAdapter resultFoods = new TransactionListenerAdapter() {
+                    @Override
+                    public void onResultReceived(Object o) {
+                        item.async().withListener(callback).update();
+                    }
+                };
+                updateFood(item.getFoods(), resultFoods);
+            }else{
+                item.async().withListener(callback).update();
+            }
         }
     }
 

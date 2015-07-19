@@ -14,15 +14,17 @@ package com.yacorso.nowaste.models;
 
 
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * Created by quentin on 16/07/15.
  */
-public abstract class Model extends BaseModel {
+public abstract class Model extends BaseModel implements Cloneable {
 
     @Column
     @Expose
@@ -35,6 +37,11 @@ public abstract class Model extends BaseModel {
     @Column
     @Expose
     Date deleted;
+
+    @Column
+    @Expose
+    @SerializedName("server_id")
+    long serverId;
 
     public Date getCreated() {
         return created;
@@ -58,5 +65,17 @@ public abstract class Model extends BaseModel {
 
     public void setDeleted(Date deleted) {
         this.deleted = deleted;
+    }
+
+    public long getServerId() {
+        return serverId;
+    }
+
+    public void setServerId(long serverId) {
+        this.serverId = serverId;
+    }
+
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 }

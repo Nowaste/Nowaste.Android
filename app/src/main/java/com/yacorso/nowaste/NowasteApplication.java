@@ -16,7 +16,13 @@ import android.app.Application;
 
 import com.raizlabs.android.dbflow.config.FlowManager;
 import com.yacorso.nowaste.events.ApiErrorEvent;
+import com.yacorso.nowaste.utils.ConfigurationUtil;
 import com.yacorso.nowaste.utils.LogUtil;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Random;
 
 import de.greenrobot.event.EventBus;
 
@@ -26,6 +32,13 @@ public class NowasteApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+
+        ConfigurationUtil configuration = ConfigurationUtil.getInstance();
+        configuration.setContext(this);
+        Calendar calendar = new GregorianCalendar(1992,Calendar.OCTOBER,3);
+        configuration.setLastSync(calendar.getTime());
+
         FlowManager.init(this);
         EventBus.getDefault().register(this);
     }
@@ -39,5 +52,18 @@ public class NowasteApplication extends Application {
 
     public void onEvent(ApiErrorEvent event) {
         LogUtil.LOGD(this, "###API-FAIL### " + event.getErrorMessage());
+    }
+
+
+    public static String random() {
+        Random generator = new Random();
+        StringBuilder randomStringBuilder = new StringBuilder();
+        int randomLength = generator.nextInt(8);
+        char tempChar;
+        for (int i = 0; i < randomLength; i++) {
+            tempChar = (char) (generator.nextInt(96) + 32);
+            randomStringBuilder.append(tempChar);
+        }
+        return randomStringBuilder.toString();
     }
 }

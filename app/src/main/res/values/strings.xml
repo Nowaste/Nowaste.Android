@@ -53,4 +53,7 @@
     <string name="notif_text_single">est bientôt périmé</string>
     <string name="notif_text_multiple">sont bientôt périmés</string>
 
+    <string name="key_no_waste">no_waste</string>
+    <string name="key_last_sync">app_last_sync</string>
+
 </resources>

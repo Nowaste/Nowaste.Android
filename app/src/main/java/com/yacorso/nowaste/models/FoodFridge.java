@@ -16,6 +16,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.ModelContainer;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
@@ -43,6 +44,7 @@ public class FoodFridge extends Model implements Parcelable {
 
     @Column
     @Expose
+    @SerializedName("out_of_date")
     Date outOfDate;
 
     @Column

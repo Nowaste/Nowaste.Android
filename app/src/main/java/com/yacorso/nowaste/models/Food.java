@@ -18,6 +18,7 @@ import android.os.Parcelable;
 import android.support.annotation.Nullable;
 
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.ForeignKey;
 import com.raizlabs.android.dbflow.annotation.ForeignKeyReference;
@@ -49,6 +50,7 @@ public class Food extends Model implements Parcelable {
 
     @Column
     @Expose
+    @SerializedName("food_fridge")
     @Nullable
     @ForeignKey(
             references = {@ForeignKeyReference(
@@ -79,6 +81,10 @@ public class Food extends Model implements Parcelable {
             saveForeignKeyModel = false
     )
     ForeignKeyContainer<CustomList> customList;
+
+    @Expose
+    @SerializedName("fridge_id")
+    protected long fridgeId;
 
     /**
      * Functions
@@ -149,8 +155,15 @@ public class Food extends Model implements Parcelable {
         this.fridge = new ForeignKeyContainer<>(Fridge.class);
         Map<String, Object> keys = new LinkedHashMap<>();
         keys.put(Fridge$Table.ID, fridge.id);
+        fridgeId = fridge.serverId;
         this.fridge.setData(keys);
         //this.fridge.setModel(fridge);
+    }
+
+    public void setFridgeId(){
+        if(fridge != null){
+            fridgeId = getFridge().getServerId();
+        }
     }
 
     public CustomList getCustomList() {

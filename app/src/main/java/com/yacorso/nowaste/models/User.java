@@ -22,6 +22,7 @@ import com.raizlabs.android.dbflow.annotation.OneToMany;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.sql.builder.Condition;
+import com.raizlabs.android.dbflow.sql.builder.ConditionQueryBuilder;
 import com.raizlabs.android.dbflow.sql.language.Select;
 import com.yacorso.nowaste.data.NowasteDatabase;
 
@@ -134,9 +135,14 @@ public class User extends Model implements Parcelable {
     @OneToMany(methods = {OneToMany.Method.LOAD}, variableName = "fridges")
     public List<Fridge> getFridges() {
         if (fridges == null) {
+
+            ConditionQueryBuilder<Fridge> queryBuilder = new ConditionQueryBuilder<Fridge>(Fridge.class,
+                    Condition.column(Fridge$Table.USER_USER_ID).is(id))
+                    .and(Condition.column(Fridge$Table.DELETED).isNull());
+
             fridges = new Select()
                     .from(Fridge.class)
-                    .where(Condition.column(Fridge$Table.USER_USER_ID).is(id))
+                    .where(queryBuilder)
                     .queryList();
         }
         return fridges;

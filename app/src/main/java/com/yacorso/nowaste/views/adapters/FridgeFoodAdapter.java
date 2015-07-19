@@ -94,9 +94,21 @@ public class FridgeFoodAdapter extends BaseAdapter {
 
         setColorCircleFromDate(holder.btnQuantity, outOfDate, mContext.getResources());
 
+        final FoodProvider foodProvider = new FoodProvider();
+
+
         View.OnClickListener clickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+//                try {
+//                    Food o = (Food)food.clone();
+//                    o.setId(0);
+//                    foodProvider.create(o);
+//                } catch (CloneNotSupportedException e) {
+//                    e.printStackTrace();
+//                }
+//
 
                 lastFoodClickedPosition = position;
                 switch (v.getId()) {

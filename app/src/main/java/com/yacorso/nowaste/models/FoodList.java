@@ -22,6 +22,7 @@ import com.raizlabs.android.dbflow.annotation.ForeignKeyReference;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.structure.container.ForeignKeyContainer;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +52,7 @@ public abstract class FoodList extends Model implements Parcelable {
                     foreignColumnName = "id")},
             saveForeignKeyModel = false
     )
-    @Expose
+//    @Expose
     ForeignKeyContainer<User> user;
 
 
