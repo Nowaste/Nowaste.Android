@@ -12,6 +12,9 @@
 
 package com.yacorso.nowaste.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.ForeignKey;
@@ -23,7 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class FoodList extends Model {
+public abstract class FoodList extends Model implements Parcelable {
 
     /**
      * Attributes
@@ -106,4 +109,13 @@ public abstract class FoodList extends Model {
 
     public abstract List<Food> getFoods();
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+
+    }
 }

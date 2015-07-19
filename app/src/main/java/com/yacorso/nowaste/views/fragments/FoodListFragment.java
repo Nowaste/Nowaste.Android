@@ -30,63 +30,71 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 
 import com.yacorso.nowaste.R;
-import com.yacorso.nowaste.events.CallAddFoodEvent;
+import com.yacorso.nowaste.events.CallCreateFoodEvent;
+import com.yacorso.nowaste.events.CallSpeechAddFoodEvent;
 import com.yacorso.nowaste.events.CancelSearchEvent;
-import com.yacorso.nowaste.events.CurrentFridgeChangedEvent;
 import com.yacorso.nowaste.events.FoodCreatedEvent;
 import com.yacorso.nowaste.events.FoodDeletedEvent;
 import com.yacorso.nowaste.events.FoodUpdatedEvent;
 import com.yacorso.nowaste.events.FridgesLoadedEvent;
 import com.yacorso.nowaste.events.LaunchSearchEvent;
+import com.yacorso.nowaste.models.CustomList;
 import com.yacorso.nowaste.models.Food;
 import com.yacorso.nowaste.models.FoodList;
+import com.yacorso.nowaste.models.Fridge;
+import com.yacorso.nowaste.providers.CustomListProvider;
 import com.yacorso.nowaste.providers.FoodProvider;
 import com.yacorso.nowaste.providers.FridgeProvider;
-import com.yacorso.nowaste.providers.UserProvider;
 import com.yacorso.nowaste.utils.LogUtil;
+import com.yacorso.nowaste.views.adapters.BaseAdapter;
+import com.yacorso.nowaste.views.adapters.CustomListFoodAdapter;
 import com.yacorso.nowaste.views.adapters.FridgeFoodAdapter;
 
 import butterknife.Bind;
-import butterknife.ButterKnife;
 import de.greenrobot.event.EventBus;
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class FridgeFragment extends BaseFragment {
+public class FoodListFragment extends BaseFragment {
 
     @Bind(R.id.rv_food_list)RecyclerView mRecyclerView;
     LinearLayoutManager mLayoutManager;
     @Bind(R.id.btnAddFood) FloatingActionButton mFabButton;
     @Bind(R.id.swipeRefreshFoodListLayout) SwipeRefreshLayout mSwipeRefreshLayout;
-    FridgeFoodAdapter mAdapter;
-    FoodList mFoodList;
-    FridgeProvider mFridgeProvider;
-    FoodProvider mFoodProvider;
-    UserProvider mUserProvider;
+    BaseAdapter adapter;
+    FoodList foodList;
+    FridgeProvider fridgeProvider;
+    CustomListProvider customListProvider;
+    FoodProvider foodProvider;
 
+    public static FoodListFragment newInstance(FoodList foodList) {
 
-    public static FridgeFragment newInstance() {
-        return new FridgeFragment();
-    }
+        FoodListFragment fragment = new FoodListFragment();
+        fragment.foodList = foodList;
 
-    public static FridgeFragment newInstance(FoodList foodList) {
+        if(fragment.foodList.getClass().equals(CustomList.class)){
+            fragment.adapter = new CustomListFoodAdapter();
+        }else{
+            fragment.adapter = new FridgeFoodAdapter();
+        }
 
-        FridgeFragment fragment = new FridgeFragment();
-        fragment.mFoodList = foodList;
+        EventBus.getDefault().register(fragment);
 
         return fragment;
     }
 
-    public FridgeFragment() {
+    public FoodListFragment() {
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         mRootView = super.onCreateView(inflater, container, savedInstanceState);
 
-        mFridgeProvider = new FridgeProvider();
-        mFoodProvider = new FoodProvider();
+        fridgeProvider = new FridgeProvider();
+        customListProvider = new CustomListProvider();
+        foodProvider = new FoodProvider();
 
         setList();
 
@@ -101,8 +109,16 @@ public class FridgeFragment extends BaseFragment {
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        mAdapter = new FridgeFoodAdapter();
-        mRecyclerView.setAdapter(mAdapter);
+
+        if(adapter == null){
+            if(foodList.getClass().equals(CustomList.class)){
+                adapter = new CustomListFoodAdapter();
+            }else{
+                adapter = new FridgeFoodAdapter();
+            }
+        }
+
+        mRecyclerView.setAdapter(adapter);
 
         displayFoodList();
     }
@@ -132,8 +148,8 @@ public class FridgeFragment extends BaseFragment {
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
 
                 final int position = viewHolder.getAdapterPosition();
-                final Food item = mAdapter.get(position);
-                mAdapter.remove(item);
+                final Food item = adapter.get(position);
+                adapter.remove(item);
 
                 final boolean[] hasCancel = {false};
                 Snackbar snack = Snackbar.make(getView(), R.string.snackbar_confirm_food_delete, Snackbar.LENGTH_LONG)
@@ -141,7 +157,7 @@ public class FridgeFragment extends BaseFragment {
                                              @Override
                                              public void onClick(View v) {
                                                  hasCancel[0] = true;
-                                                 mAdapter.add(item);
+                                                 adapter.add(item);
                                              }
                                          });
 
@@ -152,7 +168,7 @@ public class FridgeFragment extends BaseFragment {
                     @Override
                     public void onViewDetachedFromWindow(View v) {
                         if (!hasCancel[0]) {
-                            mFoodProvider.delete(item);
+                            foodProvider.delete(item);
                         }
                     }
                 });
@@ -164,7 +180,7 @@ public class FridgeFragment extends BaseFragment {
 
         /**
          * Si on veut cacher la toolbar et le bouton lors du scroll
-         * Déjà implété avec ces fonctions
+         * Déjà implémenté avec ces fonctions
          */
 //        recyclerView.clearOnScrollListeners();
 //        recyclerView.addOnScrollListener(new HidingScrollListener() {
@@ -183,11 +199,12 @@ public class FridgeFragment extends BaseFragment {
     private void initFabButton() {
         mFabButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                EventBus.getDefault().post(new CallAddFoodEvent());
-//                EventBus.getDefault().post(new AddFoodEvent());
-//                mSpeechRecognizer.stopListening();
-//                SpeechAddFoodFragment fragment = SpeechAddFoodFragment.newInstance();
-//                fragment.show(getSupportFragmentManager(), "dialog");
+                if (foodList instanceof Fridge) {
+                    EventBus.getDefault().post(new CallSpeechAddFoodEvent());
+                }
+                else {
+                    EventBus.getDefault().post(new CallCreateFoodEvent(null));
+                }
             }
         });
     }
@@ -206,42 +223,49 @@ public class FridgeFragment extends BaseFragment {
 
     private void displayFoodList() {
         // Update the adapter and notify data set changed
-        mAdapter.clear();
-        mAdapter.addAll(mFoodList.getFoods());
+        adapter.clear();
+        adapter.addAll(foodList.getFoods());
 
         // Stop refresh animation
-        mSwipeRefreshLayout.setRefreshing(false);
+        if(mSwipeRefreshLayout != null){
+            mSwipeRefreshLayout.setRefreshing(false);
+        }
     }
+
 
     public void onEvent(FridgesLoadedEvent event) {
         LogUtil.LOGD(this, "onFridgeLoaded");
         LogUtil.LOGD(this, event.getFridges().toString());
     }
 
-    public void onEvent(CurrentFridgeChangedEvent event) {
-        mFoodList = event.getFridge();
-        displayFoodList();
-    }
-
     public void onEvent(FoodCreatedEvent event) {
+        LogUtil.LOGD(this,"FoodCreatedEvent");
         Food food = event.getFood();
-        mFoodList.addFood(food);
-        mAdapter.add(food);
+
+        if((food.getFridge() != null && foodList.getClass().equals(Fridge.class)
+                && food.getFridge().getId() == foodList.getId()) ||
+            (food.getCustomList() != null && foodList.getClass().equals(CustomList.class)
+                    && food.getCustomList().getId() == foodList.getId())){
+            foodList.addFood(food);
+            adapter.add(food);
+        }
+
     }
 
     public void onEvent(FoodUpdatedEvent event) {
         Food food = event.getFood();
-        mAdapter.updateItem(food);
+        adapter.updateItem(food);
     }
 
     public void onEvent(FoodDeletedEvent event) {
+        LogUtil.LOGD(this,"FoodDeletedEvent");
         Food food = event.getFood();
-        mFoodList.removeFood(food);
+        foodList.removeFood(food);
     }
 
     public void onEvent(LaunchSearchEvent event) {
         String search = event.getSearchQuery();
-        mAdapter.setFilter(search, mFoodList.getFoods());
+        adapter.setFilter(search, foodList.getFoods());
     }
 
     public void onEvent(CancelSearchEvent event) {
@@ -268,7 +292,7 @@ public class FridgeFragment extends BaseFragment {
     public void onStart() {
         super.onStart();
         // Registring the bus for MessageEvent
-        EventBus.getDefault().register(this);
+//        EventBus.getDefault().register(this);
     }
 
     @Override
@@ -276,13 +300,24 @@ public class FridgeFragment extends BaseFragment {
         super.onResume();
         LogUtil.LOGD(this, "OnResume");
 
+        if(! EventBus.getDefault().isRegistered(this)){
+            EventBus.getDefault().register(this);
+        }
+
+
 //        EventBus.getDefault().post(new LoadFoodsEvent(new Fridge()));
     }
 
     @Override
     public void onStop() {
+        LogUtil.LOGD(this, "OnStop");
+
         // Unregistering the bus
-        EventBus.getDefault().unregister(this);
+//        EventBus.getDefault().unregister(this);
         super.onStop();
+    }
+
+    public FoodList getFoodList() {
+        return foodList;
     }
 }

@@ -12,7 +12,6 @@
 
 package com.yacorso.nowaste.views.adapters;
 
-import android.content.Context;
 import android.support.v7.util.SortedList;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -22,23 +21,18 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.yacorso.nowaste.R;
+import com.yacorso.nowaste.events.CallUpdateFoodEvent;
 import com.yacorso.nowaste.models.Food;
 import com.yacorso.nowaste.providers.FoodProvider;
 
-import java.util.Arrays;
-import java.util.List;
+import butterknife.*;
+import de.greenrobot.event.EventBus;
 
-import butterknife.ButterKnife;
-
-public class CustomListFoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-
-    SortedList<Food> mFoods;
-    Context mContext;
-    FoodProvider mFoodProvider;
+public class CustomListFoodAdapter extends BaseAdapter {
 
     public CustomListFoodAdapter() {
         mFoodProvider = new FoodProvider();
-        mFoods = new SortedList<Food>(Food.class, new SortedList.Callback<Food>() {
+        mFoods = new SortedList<>(Food.class, new SortedList.Callback<Food>() {
             @Override
             public int compare(Food o1, Food o2) {
                 return o1.getName().compareTo(o2.getName());
@@ -86,89 +80,28 @@ public class CustomListFoodAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         return vh;
     }
 
-
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         CustomListViewHolder holder = (CustomListViewHolder) viewHolder;
-        Food food = mFoods.get(position);
+        final Food food = mFoods.get(position);
 
         holder.tvName.setText(food.getName());
-
+        holder.textZone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EventBus.getDefault().post(new CallUpdateFoodEvent(food));
+            }
+        });
     }
 
-    public static class CustomListViewHolder extends RecyclerView.ViewHolder
-            implements View.OnClickListener, View.OnLongClickListener {
+    public static class CustomListViewHolder extends RecyclerView.ViewHolder {
 
-        TextView tvName;
-        View textZone;
+        @Bind(R.id.txt_food_name) TextView tvName;
+        @Bind(R.id.item_text_zone) View textZone;
 
         public CustomListViewHolder(View itemView) {
             super(itemView);
-            tvName = ButterKnife.findById(itemView, R.id.txt_food_name);
-            textZone = ButterKnife.findById(itemView, R.id.item_text_zone);
-
-            itemView.setOnClickListener(this);
-            itemView.setOnLongClickListener(this);
-        }
-
-        @Override
-        public void onClick(View v) {
-        }
-
-        @Override
-        public boolean onLongClick(View v) {
-            return false;
+            ButterKnife.bind(this, itemView);
         }
     }
-
-    @Override
-    public int getItemCount() {
-        return mFoods == null ? 0 : mFoods.size();
-    }
-
-    public Food get(int position) {
-        return mFoods.get(position);
-    }
-
-    public int add(Food item) {
-        return mFoods.add(item);
-    }
-
-    public int indexOf(Food item) {
-        return mFoods.indexOf(item);
-    }
-
-    public void updateItemAt(int index, Food item) {
-        mFoods.updateItemAt(index, item);
-    }
-
-    public void addAll(List<Food> items) {
-        mFoods.beginBatchedUpdates();
-        for (Food item : items) {
-            mFoods.add(item);
-        }
-        mFoods.endBatchedUpdates();
-    }
-
-    public void addAll(Food[] items) {
-        addAll(Arrays.asList(items));
-    }
-
-    public boolean remove(Food item) {
-        return mFoods.remove(item);
-    }
-
-    public Food removeItemAt(int index) {
-        return mFoods.removeItemAt(index);
-    }
-
-    public void clear() {
-        mFoods.beginBatchedUpdates();
-        //remove items at end, to avoid unnecessary array shifting
-        while (mFoods.size() > 0) {
-            mFoods.removeItemAt(mFoods.size() - 1);
-        }
-        mFoods.endBatchedUpdates();
-    }
-
 }
