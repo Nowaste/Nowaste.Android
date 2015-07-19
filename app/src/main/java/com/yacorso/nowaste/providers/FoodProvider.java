@@ -63,7 +63,7 @@ public class FoodProvider extends Provider<Food, Long> {
 
 //            NowasteApi webservice = Nt WasteApi.ApiInstance.getInstance();
 //
-//            webservice.getFridge(id, new Callback<Fridge>() {
+//            webservice.getFridgeFromCache(id, new Callback<Fridge>() {
 //                @Override
 //                public void success(Fridge fridge, Response response) {
 //

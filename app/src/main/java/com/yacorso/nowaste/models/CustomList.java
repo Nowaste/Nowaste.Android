@@ -28,12 +28,9 @@ public class CustomList extends FoodList {
 
     @OneToMany(methods = {OneToMany.Method.LOAD}, variableName = "foods")
     public List<Food> getFoods() {
-        if(foods == null) {
-            foods = new Select()
+        return foods = new Select()
                     .from(Food.class)
                     .where(Condition.column(Food$Table.CUSTOMLIST_CUSTOMLIST_ID).is(id))
                     .queryList();
-        }
-        return foods;
     }
 }

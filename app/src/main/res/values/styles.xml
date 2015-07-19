@@ -42,7 +42,11 @@
 
     <style name="MySearchViewStyle" parent="Widget.AppCompat.SearchView">
         <item name="submitBackground">@color/black</item>
-        <item name="queryHint">@string/name_hint</item>
+        <item name="queryHint">@string/name_food_hint</item>
+    </style>
+
+    <style name="Test" parent="Widget.Design.NavigationView">
+        <item name="android:tint">@color/primary_dark</item>
     </style>
 
     <style name="Button" parent="Base.Widget.AppCompat.Button">

@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.yacorso.nowaste.R;
+import com.yacorso.nowaste.events.CallAddFoodToCustomListEvent;
 import com.yacorso.nowaste.events.CallUpdateFoodEvent;
 import com.yacorso.nowaste.models.CustomList;
 import com.yacorso.nowaste.models.Food;
@@ -50,7 +51,7 @@ public class FridgeFoodAdapter extends BaseAdapter {
 
     public FridgeFoodAdapter() {
         mFoodProvider = new FoodProvider();
-        mFoods = new SortedList<>(Food.class, new SortedListAdapterCallback<Food>(this) {
+        foodList = new SortedList<>(Food.class, new SortedListAdapterCallback<Food>(this) {
             @Override
             public int compare(Food o1, Food o2) {
                 return o1.getFoodFridge().getOutOfDate().compareTo(o2.getFoodFridge().getOutOfDate());
@@ -82,7 +83,7 @@ public class FridgeFoodAdapter extends BaseAdapter {
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, final int position) {
         final FridgeViewHolder holder = (FridgeViewHolder) viewHolder;
 
-        final Food food = mFoods.get(position);
+        final Food food = foodList.get(position);
 
         final int quantity = food.getFoodFridge().getQuantity();
 
@@ -114,7 +115,7 @@ public class FridgeFoodAdapter extends BaseAdapter {
                         builder.setMessage(R.string.title_quantity_number_picker);
                         builder.setView(numberPicker);
 
-                        builder.setPositiveButton(R.string.validate, new DialogInterface.OnClickListener() {
+                        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                         /*
@@ -126,7 +127,7 @@ public class FridgeFoodAdapter extends BaseAdapter {
                             }
                         });
 
-                        builder.setNegativeButton(R.string.cancel, null);
+                        builder.setNegativeButton(android.R.string.cancel, null);
 
                         builder.create().show();
                         break;
@@ -147,46 +148,7 @@ public class FridgeFoodAdapter extends BaseAdapter {
                         EventBus.getDefault().post(new CallUpdateFoodEvent(food));
                         break;
                     case R.id.btn_favorite_toggle:
-                        User user = food.getFridge().getUser();
-//                CustomList customList = user.getCustomList();
-                        final List<CustomList> customLists = user.getCustomLists();
-
-                        String[] values = new String[customLists.size()];
-
-                        for (int i = 0; i < customLists.size(); i++) {
-                            values[i] = customLists.get(i).getName();
-                        }
-
-                        final NumberPicker customListPicker = new NumberPicker(mContext);
-                        customListPicker.setMinValue(0);
-                        customListPicker.setMaxValue(values.length - 1);
-                        customListPicker.setDisplayedValues(values);
-                        customListPicker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
-
-                        AlertDialog.Builder builderCustomList = new AlertDialog.Builder(mContext);
-                        builderCustomList.setMessage(R.string.title_select_custom_list);
-                        builderCustomList.setView(customListPicker);
-
-                        builderCustomList.setPositiveButton(R.string.validate, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                int index = customListPicker.getValue();
-                                CustomList customList = customLists.get(index);
-
-                                if(customList != null){
-                                    Food newFood = new Food(food.getName());
-                                    newFood.setFoodList(customList);
-
-                                    FoodProvider foodProvider = new FoodProvider();
-                                    foodProvider.create(newFood);
-                                }
-                            }
-                        });
-
-                        builderCustomList.setNegativeButton(R.string.cancel, null);
-
-                        builderCustomList.create().show();
-
+                        EventBus.getDefault().post(new CallAddFoodToCustomListEvent(food));
                         break;
                 }
             }
@@ -233,7 +195,7 @@ public class FridgeFoodAdapter extends BaseAdapter {
     @Override
     public void updateItem(Food item) {
         LogUtil.LOGD(this, "UpdateItem");
-        mFoods.recalculatePositionOfItemAt(lastFoodClickedPosition);
-        mFoods.updateItemAt(indexOf(item), item);
+        foodList.recalculatePositionOfItemAt(lastFoodClickedPosition);
+        foodList.updateItemAt(indexOf(item), item);
     }
 }

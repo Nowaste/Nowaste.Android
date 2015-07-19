@@ -26,6 +26,7 @@ import com.yacorso.nowaste.models.Food$Table;
 import com.yacorso.nowaste.models.FoodFridge;
 import com.yacorso.nowaste.models.FoodList;
 import com.yacorso.nowaste.models.Fridge;
+import com.yacorso.nowaste.utils.Utils;
 
 import java.util.List;
 
@@ -45,7 +46,7 @@ public class FoodDao extends Dao<Food, Long> {
      * @param item
      */
     public void create(final Food item) {
-        type = TYPE_CREATE;
+        type = Utils.TYPE_CREATE;
         transact(item);
     }
 
@@ -55,7 +56,7 @@ public class FoodDao extends Dao<Food, Long> {
      * @param item
      */
     public void update(Food item) {
-        type = TYPE_UPDATE;
+        type = Utils.TYPE_UPDATE;
         transact(item);
     }
 
@@ -69,10 +70,10 @@ public class FoodDao extends Dao<Food, Long> {
         };
         FoodFridge foodFridge = item.getFoodFridge();
         if (foodFridge != null) {
-            if (type == TYPE_CREATE) {
+            if (type == Utils.TYPE_CREATE) {
                 foodFridge.async().withListener(callback).save();
             }
-            else if (type == TYPE_UPDATE) {
+            else if (type == Utils.TYPE_UPDATE) {
                 foodFridge.async().withListener(callback).update();
             }
         }
@@ -90,11 +91,11 @@ public class FoodDao extends Dao<Food, Long> {
             }
         };
 
-        if (type == TYPE_CREATE) {
+        if (type == Utils.TYPE_CREATE) {
             item.setFoodFridge(foodFridge);
             item.async().withListener(callback).save();
         }
-        else if (type == TYPE_UPDATE) {
+        else if (type == Utils.TYPE_UPDATE) {
             item.setFoodFridge(foodFridge);
             item.async().withListener(callback).update();
         }
@@ -110,9 +111,9 @@ public class FoodDao extends Dao<Food, Long> {
             customList.async().update();
         }
 
-        if (type == TYPE_CREATE) {
+        if (type == Utils.TYPE_CREATE) {
             EventBus.getDefault().post(new FoodCreatedEvent(food));
-        } else if (type == TYPE_UPDATE) {
+        } else if (type == Utils.TYPE_UPDATE) {
             EventBus.getDefault().post(new FoodUpdatedEvent(food));
         }
     }
@@ -123,7 +124,7 @@ public class FoodDao extends Dao<Food, Long> {
      * @param item
      */
     public void delete(final Food item) {
-        type = TYPE_DELETE;
+        type = Utils.TYPE_DELETE;
         Fridge fridge = item.getFridge();
         if (fridge != null) {
             fridge.async().update();

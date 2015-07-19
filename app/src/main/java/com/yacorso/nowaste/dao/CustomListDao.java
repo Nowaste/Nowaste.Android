@@ -28,6 +28,7 @@ import com.yacorso.nowaste.models.CustomList;
 import com.yacorso.nowaste.models.CustomList$Table;
 import com.yacorso.nowaste.models.Food;
 import com.yacorso.nowaste.models.User;
+import com.yacorso.nowaste.utils.Utils;
 
 import java.util.List;
 
@@ -48,7 +49,7 @@ public class CustomListDao extends Dao<CustomList, Long> {
      * @return
      */
     public void create(final CustomList item) {
-        type= TYPE_CREATE;
+        type= Utils.TYPE_CREATE;
         transact(item);
     }
 
@@ -59,7 +60,7 @@ public class CustomListDao extends Dao<CustomList, Long> {
      * @return
      */
     public void update(CustomList item) {
-        type = TYPE_UPDATE;
+        type = Utils.TYPE_UPDATE;
         transact(item);
     }
 
@@ -69,18 +70,18 @@ public class CustomListDao extends Dao<CustomList, Long> {
             public void onModelChanged(Model model) {
                 CustomList customList = (CustomList) model;
 
-                if (type == TYPE_CREATE) {
+                if (type == Utils.TYPE_CREATE) {
                     EventBus.getDefault().post(new CustomListCreatedEvent(customList));
-                } else if (type == TYPE_UPDATE) {
+                } else if (type == Utils.TYPE_UPDATE) {
                     EventBus.getDefault().post(new CustomListUpdatedEvent(customList));
                 }
             }
         };
 
-        if (type == TYPE_CREATE) {
+        if (type == Utils.TYPE_CREATE) {
             item.async().withListener(callback).save();
         }
-        else if (type == TYPE_UPDATE){
+        else if (type == Utils.TYPE_UPDATE){
             TransactionListenerAdapter resultFoods = new TransactionListenerAdapter() {
                 @Override
                 public void onResultReceived(Object o) {
@@ -103,9 +104,8 @@ public class CustomListDao extends Dao<CustomList, Long> {
      * @param item
      */
     public void delete(CustomList item) {
-        type = TYPE_DELETE;
+        type = Utils.TYPE_DELETE;
         User user = item.getUser();
-        user.removeCustomList(item);
         user.async().update();
 
         final AsyncModel.OnModelChangedListener callback = new AsyncModel.OnModelChangedListener() {

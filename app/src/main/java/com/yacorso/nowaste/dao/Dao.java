@@ -24,11 +24,6 @@ import java.util.List;
  */
 public abstract class Dao<T, U> {
 
-    static final int TYPE_UPDATE = 1;
-    static final int TYPE_CREATE = 2;
-    static final int TYPE_DELETE = 3;
-    static final int TYPE_SELECT = 4;
-
     /**
      * Insert item in database
      *

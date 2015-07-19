@@ -24,7 +24,6 @@ import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
 import com.raizlabs.android.dbflow.structure.BaseModel;
-import com.raizlabs.android.dbflow.structure.cache.BaseCacheableModel;
 import com.yacorso.nowaste.data.NowasteDatabase;
 
 import java.util.List;
@@ -135,58 +134,20 @@ public class User extends BaseModel implements Parcelable {
 
     @OneToMany(methods = {OneToMany.Method.LOAD}, variableName = "fridges")
     public List<Fridge> getFridges() {
-        if (fridges == null) {
-            fridges = new Select()
-                    .from(Fridge.class)
-                    .where(Condition.column(Fridge$Table.USER_USER_ID).is(id))
-                    .queryList();
-        }
+        fridges = new Select()
+                .from(Fridge.class)
+                .where(Condition.column(Fridge$Table.USER_USER_ID).is(id))
+                .queryList();
         return fridges;
-    }
-
-
-    /**
-     * TODO: METHODE A RETIRER UNE FOIS LE DEVELOPPEMENT PASSÉ
-     * UTILISÉ SEULEMENT DANS L'INITIALISATION DE L'APP
-     *
-     * @param fridge
-     */
-    public void addFridge(Fridge fridge) {
-        fridges.add(fridge);
-    }
-
-    public void removeFridge(Fridge fridge) {
-        fridges.remove(fridge);
-    }
-
-    public void addCustomList(CustomList customList) {
-        customLists.add(customList);
     }
 
     @OneToMany(methods = {OneToMany.Method.LOAD}, variableName = "customLists")
     public List<CustomList> getCustomLists() {
-        if (customLists == null) {
-            customLists = new Select()
-                    .from(CustomList.class)
-                    .where(Condition.column(CustomList$Table.USER_USER_ID).is(id))
-                    .queryList();
-        }
+        customLists = new Select()
+                .from(CustomList.class)
+                .where(Condition.column(CustomList$Table.USER_USER_ID).is(id))
+                .queryList();
         return customLists;
-    }
-
-
-    public CustomList getCustomList() {
-        this.getCustomLists();
-        CustomList customList = null;
-        if (customLists.size() > 0) {
-            customList = customLists.get(0);
-        }
-
-        return customList;
-    }
-
-    public void removeCustomList(CustomList customList) {
-        customLists.remove(customList);
     }
 
     public boolean isEmpty() {

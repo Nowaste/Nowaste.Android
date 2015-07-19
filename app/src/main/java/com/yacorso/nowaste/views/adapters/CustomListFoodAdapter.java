@@ -17,7 +17,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.yacorso.nowaste.R;
@@ -32,7 +31,7 @@ public class CustomListFoodAdapter extends BaseAdapter {
 
     public CustomListFoodAdapter() {
         mFoodProvider = new FoodProvider();
-        mFoods = new SortedList<>(Food.class, new SortedList.Callback<Food>() {
+        foodList = new SortedList<>(Food.class, new SortedList.Callback<Food>() {
             @Override
             public int compare(Food o1, Food o2) {
                 return o1.getName().compareTo(o2.getName());
@@ -83,7 +82,7 @@ public class CustomListFoodAdapter extends BaseAdapter {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         CustomListViewHolder holder = (CustomListViewHolder) viewHolder;
-        final Food food = mFoods.get(position);
+        final Food food = foodList.get(position);
 
         holder.tvName.setText(food.getName());
         holder.textZone.setOnClickListener(new View.OnClickListener() {

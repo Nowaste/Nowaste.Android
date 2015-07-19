@@ -30,6 +30,8 @@ import com.yacorso.nowaste.models.FoodFridge;
 import com.yacorso.nowaste.models.Fridge;
 import com.yacorso.nowaste.models.Fridge$Table;
 import com.yacorso.nowaste.models.User;
+import com.yacorso.nowaste.utils.Utils;
+import com.yacorso.nowaste.views.activities.DrawerActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +53,7 @@ public class FridgeDao extends Dao<Fridge, Long> {
      * @return
      */
     public void create(final Fridge item) {
-        type = TYPE_CREATE;
+        type = Utils.TYPE_CREATE;
         transact(item);
     }
 
@@ -62,7 +64,7 @@ public class FridgeDao extends Dao<Fridge, Long> {
      * @return
      */
     public void update(Fridge item) {
-        type = TYPE_UPDATE;
+        type = Utils.TYPE_UPDATE;
         transact(item);
     }
 
@@ -72,18 +74,18 @@ public class FridgeDao extends Dao<Fridge, Long> {
             public void onModelChanged(Model model) {
                 Fridge fridge = (Fridge) model;
 
-                if (type == TYPE_CREATE) {
+                if (type == Utils.TYPE_CREATE) {
                     EventBus.getDefault().post(new FridgeCreatedEvent(fridge));
-                } else if (type == TYPE_UPDATE) {
+                } else if (type == Utils.TYPE_UPDATE) {
                     EventBus.getDefault().post(new FridgeUpdatedEvent(fridge));
                 }
             }
         };
 
-        if (type == TYPE_CREATE) {
+        if (type == Utils.TYPE_CREATE) {
             item.async().withListener(callback).save();
         }
-        else if (type == TYPE_UPDATE){
+        else if (type == Utils.TYPE_UPDATE){
             TransactionListenerAdapter resultFoods = new TransactionListenerAdapter() {
                 @Override
                 public void onResultReceived(Object o) {
@@ -120,9 +122,8 @@ public class FridgeDao extends Dao<Fridge, Long> {
      * @param item
      */
     public void delete(Fridge item) {
-        type = TYPE_DELETE;
+        type = Utils.TYPE_DELETE;
         User user = item.getUser();
-        user.removeFridge(item);
         user.async().update();
 
         final AsyncModel.OnModelChangedListener callback = new AsyncModel.OnModelChangedListener() {

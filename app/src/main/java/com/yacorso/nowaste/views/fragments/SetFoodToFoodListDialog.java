@@ -26,7 +26,7 @@ import com.yacorso.nowaste.models.FoodList;
 import com.yacorso.nowaste.models.Fridge;
 import com.yacorso.nowaste.providers.FoodProvider;
 import com.yacorso.nowaste.utils.DateUtils;
-import com.yacorso.nowaste.views.activities.DrawerActivity;
+import com.yacorso.nowaste.utils.Utils;
 
 import java.util.Date;
 
@@ -37,7 +37,7 @@ import de.greenrobot.event.EventBus;
 import static com.yacorso.nowaste.utils.DateUtils.resetDatePicker;
 import static com.yacorso.nowaste.utils.DateUtils.setDatePicker;
 
-public class SetFoodToFoodListFragment extends BaseFragment {
+public class SetFoodToFoodListDialog extends BaseFragment {
 
     @Bind(R.id.name_edit_text) EditText nameField;
     @Bind(R.id.out_of_date_picker) DatePicker datePicker;
@@ -50,8 +50,8 @@ public class SetFoodToFoodListFragment extends BaseFragment {
     int type;
     Food food;
 
-    public static SetFoodToFoodListFragment newInstance(Food food, FoodList foodList, int type) {
-        SetFoodToFoodListFragment setFoodToFoodListFragment = new SetFoodToFoodListFragment();
+    public static SetFoodToFoodListDialog newInstance(Food food, FoodList foodList, int type) {
+        SetFoodToFoodListDialog setFoodToFoodListDialog = new SetFoodToFoodListDialog();
 
         Bundle args = new Bundle();
         args.putParcelable("foodList", foodList);
@@ -59,12 +59,12 @@ public class SetFoodToFoodListFragment extends BaseFragment {
         if (food != null) {
             args.putParcelable("food", food);
         }
-        setFoodToFoodListFragment.setArguments(args);
+        setFoodToFoodListDialog.setArguments(args);
 
-        return setFoodToFoodListFragment;
+        return setFoodToFoodListDialog;
     }
 
-    public SetFoodToFoodListFragment() {
+    public SetFoodToFoodListDialog() {
     }
 
     @Override
@@ -127,15 +127,15 @@ public class SetFoodToFoodListFragment extends BaseFragment {
     private AlertDialog getFoodDialog(AlertDialog.Builder builder, Food food) {
         AlertDialog dialog;
 
-        builder.setNegativeButton(R.string.cancel, null);
+        builder.setNegativeButton(android.R.string.cancel, null);
 
-        if (type == DrawerActivity.TYPE_CREATE) {
+        if (type == Utils.TYPE_CREATE) {
             builder.setPositiveButton(R.string.add_one_element, null);
             builder.setNeutralButton(R.string.add_another_element, null);
             dialog = setButtonsListener(builder, null);
         }
         else {
-            builder.setPositiveButton(R.string.validate, null);
+            builder.setPositiveButton(android.R.string.ok, null);
             dialog = setButtonsListener(builder, food);
         }
 
@@ -157,7 +157,7 @@ public class SetFoodToFoodListFragment extends BaseFragment {
     private AlertDialog setButtonsListener(AlertDialog.Builder builder, Food food) {
         final AlertDialog dialog = builder.create();
 
-        if (type == DrawerActivity.TYPE_CREATE) {
+        if (type == Utils.TYPE_CREATE) {
             setButtonListenerForCreate(dialog, food);
         }
         else {
@@ -246,7 +246,7 @@ public class SetFoodToFoodListFragment extends BaseFragment {
 
     @Override
     public int getTitle() {
-        return R.string.menu_title_add_food;
+        return R.string.title_add_food;
     }
 
     private void resetFields() {

@@ -33,12 +33,10 @@ public class Fridge extends FoodList {
 
     @OneToMany(methods = {OneToMany.Method.LOAD}, variableName = "foods")
     public List<Food> getFoods() {
-        if(foods == null) {
-            foods = new Select()
+        foods = new Select()
                     .from(Food.class)
                     .where(Condition.column(Food$Table.FRIDGE_FRIDGE_ID).is(id))
                     .queryList();
-        }
         return foods;
     }
 }

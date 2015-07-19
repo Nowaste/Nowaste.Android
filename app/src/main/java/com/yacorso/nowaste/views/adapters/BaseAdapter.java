@@ -26,7 +26,7 @@ import java.util.List;
 
 public class BaseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    SortedList<Food> mFoods;
+    SortedList<Food> foodList;
     Context mContext;
     FoodProvider mFoodProvider;
 
@@ -42,7 +42,7 @@ public class BaseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return mFoods == null ? 0 : mFoods.size();
+        return foodList == null ? 0 : foodList.size();
     }
 
     public void setFilter(String queryText, List<Food> foodList) {
@@ -58,28 +58,28 @@ public class BaseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     // region PageList Helpers
     public Food get(int position) {
-        mFoods.recalculatePositionOfItemAt(position);
-        return mFoods.get(position);
+        foodList.recalculatePositionOfItemAt(position);
+        return foodList.get(position);
     }
 
     public int add(Food item) {
-        return mFoods.add(item);
+        return foodList.add(item);
     }
 
     public int indexOf(Food item) {
-        return mFoods.indexOf(item);
+        return foodList.indexOf(item);
     }
 
     public void updateItem(Food item) {
-        mFoods.updateItemAt(indexOf(item), item);
+        foodList.updateItemAt(indexOf(item), item);
     }
 
     public void addAll(List<Food> items) {
-        mFoods.beginBatchedUpdates();
+        foodList.beginBatchedUpdates();
         for (Food item : items) {
-            mFoods.add(item);
+            foodList.add(item);
         }
-        mFoods.endBatchedUpdates();
+        foodList.endBatchedUpdates();
     }
 
     public void addAll(Food[] items) {
@@ -87,19 +87,19 @@ public class BaseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public boolean remove(Food item) {
-        return mFoods.remove(item);
+        return foodList.remove(item);
     }
 
     public Food removeItemAt(int index) {
-        return mFoods.removeItemAt(index);
+        return foodList.removeItemAt(index);
     }
 
     public void clear() {
-        mFoods.beginBatchedUpdates();
+        foodList.beginBatchedUpdates();
         //remove items at end, to avoid unnecessary array shifting
-        while (mFoods.size() > 0) {
-            mFoods.removeItemAt(mFoods.size() - 1);
+        while (foodList.size() > 0) {
+            foodList.removeItemAt(foodList.size() - 1);
         }
-        mFoods.endBatchedUpdates();
+        foodList.endBatchedUpdates();
     }
 }

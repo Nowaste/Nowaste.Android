@@ -1,41 +1,39 @@
 <resources>
     <string name="app_name">No Waste</string>
 
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
-    <string name="title_activity_main">MainActivity</string>
-    <string name="title_activity_add_food">AddFoodActivity</string>
-    <string name="title_activity_foods">FoodsActivity</string>
-    <string name="title_activity_activity_food_list">ActivityFoodList</string>
-    <string name="title_activity_drawer">DrawerActivity</string>
-    
-
+    <!-- Navigation Drawer -->
     <string name="drawer_open">Ouvert</string>
     <string name="drawer_close">Fermé</string>
     <string name="menu_title_settings">Paramètres</string>
-    <string name="menu_title_my_fridge">Votre frigo</string>
-    <string name="menu_title_add_food">Ajoutez un aliment</string>
+    <string name="menu_title_my_fridge">Mon frigo</string>
+    <string name="menu_title_my_list">Ma liste</string>
     <string name="menu_section_fridges">Mes frigos</string>
     <string name="menu_section_custom_lists">Mes listes</string>
+    <string name="menu_add_foodlist">Ajouter</string>
 
+    <!-- Dialog to choose foodlist type -->
+    <string name="dialog_add_fridge">Frigo</string>
+    <string name="dialog_add_customlist">Liste personnalisée</string>
 
-    <string name="navigation_drawer_open" translatable="false"/>
-    <string name="navigation_drawer_close" translatable="false"/>
+    <!-- User informations -->
     <string name="sample_email">sample.user@email.com</string>
-    <string name="not_implemented_yet">Not implemented yet</string>
-    <string name="contact_desc">contact photo</string>
     <string name="sample_name">User Name</string>
     <string name="not_title_set">No title set</string>
-    <string name="name_hint">Nom de l\'aliment</string>
-    <string name="name_mandatory">Vous devez entrer un nom</string>
 
+    <!-- Add Food -->
+    <string name="title_add_food">Ajoutez un aliment</string>
+    <string name="name_food_hint">Nom de l\'aliment</string>
+    <string name="name_mandatory">Vous devez entrer un nom</string>
     <string name="title_quantity_number_picker">Veuillez sélectionner la nouvelle quantité</string>
     <string name="title_select_custom_list">Veuillez sélectionner la liste personnalisée</string>
-    <string name="cancel">Annuler</string>
-    <string name="validate">OK</string>
     <string name="add_another_element">Ajouter un autre</string>
     <string name="add_one_element">Ajoutez</string>
 
+    <!-- Add FoodList -->
+    <string name="name_fridge_hint">Nom du frigo</string>
+    <string name="name_customlist_hint">Nom de la liste</string>
+
+    <!-- Speech Add food -->
     <string name="speech_please_waiting">Veuillez patientez...</string>
     <string name="speech_speak_now">Parlez maintenant !</string>
     <string name="speech_click_for_stop">Appuyer pour interrompre.</string>
@@ -45,9 +43,10 @@
     <string name="speech_error_no_match">J\'ai mal compris. \n Appuyer pour parler à nouveau.</string>
     <string name="speech_no_found">J\'ai mal compris.\n Essayer sous la forme : 6 tomates 15 juillet.\n Appuyer pour parler à nouveau.</string>
 
-    <string name="snackbar_undo">Annuler</string>
+    <!-- SnackBar -->
     <string name="snackbar_confirm_food_delete">Êtes-vous sûr de vouloir supprimer l\'aliment ?</string>
 
+    <!-- Notification -->
     <string name="local_service_started">notification_service</string>
     <string name="notif_title">Des aliments sont bientôt périmés</string>
     <string name="notif_text_single">est bientôt périmé</string>

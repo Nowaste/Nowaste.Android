@@ -101,14 +101,6 @@ public abstract class FoodList extends BaseModel implements Parcelable {
         return stringBuilder.toString();
     }
 
-    public void addFood(Food food){
-        this.foods.add(food);
-    }
-
-    public void removeFood(Food food){
-        this.foods.remove(food);
-    }
-
     public abstract List<Food> getFoods();
 
     @Override
@@ -117,7 +109,8 @@ public abstract class FoodList extends BaseModel implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
-
+    public void writeToParcel(Parcel out, int flags) {
+        out.writeLong(this.id);
+        out.writeString(this.name);
     }
 }

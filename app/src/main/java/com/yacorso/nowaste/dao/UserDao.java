@@ -34,6 +34,7 @@ import com.yacorso.nowaste.models.FoodList;
 import com.yacorso.nowaste.models.Fridge;
 import com.yacorso.nowaste.models.User;
 import com.yacorso.nowaste.models.User$Table;
+import com.yacorso.nowaste.utils.Utils;
 
 import java.util.List;
 
@@ -55,7 +56,7 @@ public class UserDao extends Dao<User, Long> {
      * @return
      */
     public void create(final User item) {
-        type = TYPE_CREATE;
+        type = Utils.TYPE_CREATE;
         transact(item);
     }
 
@@ -67,7 +68,7 @@ public class UserDao extends Dao<User, Long> {
      * @return
      */
     public void update(User item) {
-        type = TYPE_UPDATE;
+        type = Utils.TYPE_UPDATE;
         transact(item);
     }
 
@@ -77,18 +78,18 @@ public class UserDao extends Dao<User, Long> {
             public void onModelChanged(Model model) {
                 User user = (User) model;
 
-                if (type == TYPE_CREATE) {
+                if (type == Utils.TYPE_CREATE) {
                     EventBus.getDefault().post(new UserCreatedEvent(user));
-                } else if (type == TYPE_UPDATE) {
+                } else if (type == Utils.TYPE_UPDATE) {
                     EventBus.getDefault().post(new UserUpdatedEvent(user));
                 }
             }
         };
 
-        if (type == TYPE_CREATE) {
+        if (type == Utils.TYPE_CREATE) {
             user.async().withListener(callback).save();
         }
-        else if (type == TYPE_UPDATE){
+        else if (type == Utils.TYPE_UPDATE){
             final TransactionListenerAdapter resultCustomLists = new TransactionListenerAdapter() {
                 @Override
                 public void onResultReceived(Object o) {
@@ -135,7 +136,7 @@ public class UserDao extends Dao<User, Long> {
      * @param item
      */
     public void delete(User item) {
-        type = TYPE_DELETE;
+        type = Utils.TYPE_DELETE;
 
         final AsyncModel.OnModelChangedListener callback = new AsyncModel.OnModelChangedListener() {
             @Override
