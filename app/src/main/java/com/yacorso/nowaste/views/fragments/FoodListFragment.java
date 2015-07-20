@@ -31,6 +31,7 @@ import android.view.animation.DecelerateInterpolator;
 
 import com.yacorso.nowaste.R;
 import com.yacorso.nowaste.events.CallCreateFoodEvent;
+import com.yacorso.nowaste.events.CallSpeechAddFoodEvent;
 import com.yacorso.nowaste.events.CancelSearchEvent;
 import com.yacorso.nowaste.events.FoodCreatedEvent;
 import com.yacorso.nowaste.events.FoodDeletedEvent;
@@ -196,12 +197,12 @@ public class FoodListFragment extends BaseFragment {
         mFabButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //TODO : Remove after tests
-                EventBus.getDefault().post(new CallCreateFoodEvent(null));
-                /*if (foodList instanceof Fridge) {
+//                EventBus.getDefault().post(new CallCreateFoodEvent(null));
+                if (foodList instanceof Fridge) {
                     EventBus.getDefault().post(new CallSpeechAddFoodEvent());
                 } else {
                     EventBus.getDefault().post(new CallCreateFoodEvent(null));
-                }*/
+                }
             }
         });
     }
