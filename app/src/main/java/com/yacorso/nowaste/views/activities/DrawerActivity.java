@@ -17,6 +17,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.MenuItemCompat;
@@ -57,11 +58,13 @@ import com.yacorso.nowaste.utils.Utils;
 import com.yacorso.nowaste.views.fragments.AddFoodListDialog;
 import com.yacorso.nowaste.views.fragments.AddFoodToCustomListDialog;
 import com.yacorso.nowaste.views.fragments.ChooseTypeFoodListDialog;
+import com.yacorso.nowaste.views.fragments.LoginFragment;
 import com.yacorso.nowaste.views.fragments.SetFoodToFoodListDialog;
 import com.yacorso.nowaste.views.fragments.BaseFragment;
 import com.yacorso.nowaste.views.fragments.FoodListFragment;
 import com.yacorso.nowaste.views.fragments.SettingsFragment;
 import com.yacorso.nowaste.views.fragments.SpeechAddFoodFragment;
+import com.yacorso.nowaste.views.old.MainActivity;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -115,7 +118,7 @@ public class DrawerActivity extends AppCompatActivity implements SearchView.OnQu
         else{
             initApp(userProvider.get(userId));
             loadNavItems();
-            changeFragment(0, true);
+            changeRootFragment(0, true);
         }
     }
 
@@ -194,12 +197,6 @@ public class DrawerActivity extends AppCompatActivity implements SearchView.OnQu
             }
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
-        mDrawerLayout.post(new Runnable() {
-            @Override
-            public void run() {
-                mDrawerToggle.syncState();
-            }
-        });
     }
 
     private void loadNavItems() {
@@ -229,11 +226,11 @@ public class DrawerActivity extends AppCompatActivity implements SearchView.OnQu
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
                 if (menuItem.getGroupId() < 2) {
-                    changeFragment(menuItem.getItemId(), true);
+                    changeRootFragment(menuItem.getItemId(), true);
                 } else if (menuItem.getGroupId() == 2) {
                     launchDialog(ChooseTypeFoodListDialog.newInstance());
                 } else if (menuItem.getGroupId() == 3) {
-                    changeFragment(menuItem.getItemId(), false);
+                    changeRootFragment(menuItem.getItemId(), false);
                 }
 
                 return true;
@@ -248,12 +245,19 @@ public class DrawerActivity extends AppCompatActivity implements SearchView.OnQu
         });
     }
 
+    @OnClick(R.id.profile_image)
+    void login() {
+        LoginFragment loginFragment = LoginFragment.newInstance();
+        addFragment(loginFragment);
+
+    }
+
 
 
     /**
      * Events to change fragment/dialog displayed
      */
-    private void changeFragment(int id, boolean isFoodList) {
+    private void changeRootFragment(int id, boolean isFoodList) {
         BaseFragment fragment;
         String title;
 
@@ -268,13 +272,20 @@ public class DrawerActivity extends AppCompatActivity implements SearchView.OnQu
             title = getText(R.string.menu_title_settings).toString();
         }
 
-        changeFragment(fragment, title);
+        changeRootFragment(fragment, title);
     }
 
-    private void changeFragment(BaseFragment fragment, String title) {
+    private void changeRootFragment(BaseFragment fragment, String title) {
         mNavigatorUtil.setRootFragment(fragment);
         mDrawerLayout.closeDrawer(navigationView);
         updateToolbarTitle(title);
+    }
+
+    private void addFragment(BaseFragment fragment) {
+        mNavigatorUtil.goTo(fragment);
+        mDrawerLayout.closeDrawer(navigationView);
+        updateToolbarTitle(getString(fragment.getTitle()));
+        mDrawerToggle.setDrawerIndicatorEnabled(false);
     }
 
     public void onEvent(CallSpeechAddFoodEvent event) {
@@ -319,7 +330,7 @@ public class DrawerActivity extends AppCompatActivity implements SearchView.OnQu
 
         BaseFragment fragment = FoodListFragment.newInstance(fridge);
         String title = fridge.getName();
-        changeFragment(fragment, title);
+        changeRootFragment(fragment, title);
 
         loadNavItems();
 
@@ -331,7 +342,7 @@ public class DrawerActivity extends AppCompatActivity implements SearchView.OnQu
 
         BaseFragment fragment = FoodListFragment.newInstance(customList);
         String title = customList.getName();
-        changeFragment(fragment, title);
+        changeRootFragment(fragment, title);
 
         loadNavItems();
 
@@ -448,7 +459,17 @@ public class DrawerActivity extends AppCompatActivity implements SearchView.OnQu
     }
 
     @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mDrawerToggle.syncState();
+    }
+
+    @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        //super.onBackPressed();
+        mNavigatorUtil.goOneBack();
+        mDrawerToggle.setDrawerIndicatorEnabled(true);
+        //BaseFragment fragment = (BaseFragment) mNavigatorUtil.getActiveFragment();
+        //updateToolbarTitle(getString(fragment.getTitle()));
     }
 }

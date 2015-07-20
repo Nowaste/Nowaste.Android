@@ -28,6 +28,8 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".views.old.MainActivity"></activity>
+
         <service android:name=".services.NotificationService" >
         </service>
 

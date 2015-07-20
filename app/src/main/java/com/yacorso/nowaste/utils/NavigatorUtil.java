@@ -60,9 +60,9 @@ public class NavigatorUtil {
      */
     public void goTo(final Fragment fragment) {
         mFragmentManager.beginTransaction()
-                .addToBackStack(getName(fragment))
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .replace(mDefaultContainer, fragment, getName(fragment))
+                .addToBackStack(null)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .commit();
         mFragmentManager.executePendingTransactions();
     }
