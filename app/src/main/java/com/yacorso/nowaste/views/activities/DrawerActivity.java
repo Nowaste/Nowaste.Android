@@ -82,6 +82,7 @@ public class DrawerActivity extends AppCompatActivity implements SearchView.OnQu
     UserProvider userProvider;
     Map<Integer, FoodList> navigationItems;
     SharedPreferences settings;
+    SearchView mSearchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -150,8 +151,8 @@ public class DrawerActivity extends AppCompatActivity implements SearchView.OnQu
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_search, menu);
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_search));
-        searchView.setOnQueryTextListener(this);
+        mSearchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_search));
+        mSearchView.setOnQueryTextListener(this);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -170,8 +171,9 @@ public class DrawerActivity extends AppCompatActivity implements SearchView.OnQu
      */
     private void initNavDrawerAndNavItems(User user) {
         int index = 0;
+
         Menu navigationMenu = navigationView.getMenu();
-        SubMenu fridgeSection = navigationMenu.addSubMenu(getText(R.string.menu_section_fridges));
+        SubMenu fridgeSection = navigationMenu.addSubMenu(R.string.menu_section_fridges);
         //fridgeSection.setHeaderIcon(ContextCompat.getDrawable(this, R.drawable.ic_fridge));
         fridgeSection.setIcon(R.drawable.ic_fridge);
         List<Fridge> fridges = user.getFridges();
@@ -180,7 +182,7 @@ public class DrawerActivity extends AppCompatActivity implements SearchView.OnQu
             fridgeSection.add(0, index++, 0, fridge.getName());
         }
 
-        SubMenu customListSection = navigationMenu.addSubMenu(getText(R.string.menu_section_custom_lists));
+        SubMenu customListSection = navigationMenu.addSubMenu(R.string.menu_section_custom_lists);
         //customListSection.setHeaderIcon(ContextCompat.getDrawable(this, R.drawable.ic_folder));
         List<CustomList> customLists = user.getCustomLists();
 
@@ -300,6 +302,10 @@ public class DrawerActivity extends AppCompatActivity implements SearchView.OnQu
         return false;
     }
 
+
+    public void onEvent(CancelSearchEvent event) {
+        mSearchView.setQuery("", true);
+    }
 
     /**
      * Enable every day local notification
