@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="choose_notifications">Envoyer notification avant :</string>
+
+    <string-array name="items_notifications">
+        <item>1 jour</item>
+        <item>2 jours</item>
+        <item>3 jours</item>
+        <item>5 jours</item>
+        <item>1 semaine</item>
+    </string-array>
+
+</resources>

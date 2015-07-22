@@ -50,75 +50,60 @@ public class SettingsFragment extends BaseFragment {
     LinearLayoutManager mLayoutManager;
     UserProvider mProvider;
     RecyclerView mRecyclerView;
+    Configuration maConfig;
+    User monUser;
+    View layout;
 
     public SettingsFragment() {
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View layout = inflater.inflate(R.layout.fragment_settings, container, false);
+        layout = inflater.inflate(R.layout.fragment_settings, container, false);
         mRootView = super.onCreateView(inflater, container, savedInstanceState);
 
-        Configuration maConfig = new Configuration();
-        setMailContent(layout, maConfig);
-        setFirstNameContent(layout, maConfig);
-        setLastNameContent(layout, maConfig);
-        setPasswordContent(layout, maConfig);
-        //isNotificationContent(layout);
+        maConfig = new Configuration();
+        monUser = new User();
 
-        setSpinnerContent(layout);
+        setMailContent();
+        setFirstNameContent();
+        setLastNameContent();
+        setPasswordContent();
+
+        setSpinnerContent();
         return mRootView;
     }
 
-    private void setMailContent(View view, Configuration config){
-        text_email = (EditText) view.findViewById(R.id.text_email);
+    private void setMailContent(){
+        text_email = (EditText) layout.findViewById(R.id.text_email);
         String string_email = text_email.getText().toString();
-        //config.setEmail(string_email);
-        config.setKey("email");
-        config.setValue("marjorie.debote@free.fr");
+        //monUser.setEmail(string_email);
+        monUser.setEmail("marjorie.debote@free.fr");
     }
-    private void setFirstNameContent(View view, Configuration config){
-        text_first_name = (EditText) view.findViewById(R.id.text_first_name);
+    private void setFirstNameContent(){
+        text_first_name = (EditText) layout.findViewById(R.id.text_first_name);
         String string_first_name = text_first_name.getText().toString();
-        //config.setFirstName(string_first_name);
-        config.setKey("firstname");
-        config.setValue("Debote");
+        //monUser.setFirstName(string_first_name);
+        monUser.setFirstName("Debote");
     }
-    private void setLastNameContent(View view, Configuration config){
-        text_last_name = (EditText) view.findViewById(R.id.text_last_name);
+    private void setLastNameContent(){
+        text_last_name = (EditText) layout.findViewById(R.id.text_last_name);
         String string_last_name = text_last_name.getText().toString();
-        //config.setLastName(string_last_name);
-        config.setKey("lastname");
-        config.setValue("Marjorie");
+        //monUser.setLastName(string_last_name);
+        monUser.setLastName("Marjorie");
     }
-    private void setPasswordContent(View view, Configuration config){
-        text_password = (EditText) view.findViewById(R.id.text_password);
+    private void setPasswordContent(){
+        text_password = (EditText) layout.findViewById(R.id.text_password);
         String string_password = text_password.getText().toString();
-        //config.setPassword(string_password);
-        config.setKey("password");
-        config.setValue("Password");
+        //monUser.setPassword(string_password);
+        monUser.setPassword("password");
         //verifier sil ny a pas besoin de rajouter un salt
     }
-    private void isNotificationContent(View view){
-        activate_notifications = (Switch) view.findViewById(R.id.activate_notifications);
+    private void isNotificationContent(){
+        activate_notifications = (Switch) layout.findViewById(R.id.activate_notifications);
+        maConfig.setKey("isNotificationContent");
+        maConfig.setValue("true");
         /** A REMPLIR **/
-    }
-
-    private void setSpinnerContent(View view){
-        mySpinner = (Spinner) view.findViewById(R.id.spinner_notifications);
-
-        List<String> list = new ArrayList<String>();
-        list.add("1 jour");
-        list.add("2 jours");
-        list.add("3 jours");
-        list.add("5 jours");
-        list.add("1 semaine");
-
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>
-                (getActivity(), android.R.layout.simple_spinner_item,list);
-        dataAdapter.setDropDownViewResource
-                (android.R.layout.simple_spinner_item);
-        mySpinner.setAdapter(dataAdapter);
     }
 
     public static SettingsFragment newInstance(){
