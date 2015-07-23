@@ -70,7 +70,6 @@ public class SettingsFragment extends BaseFragment {
         setLastNameContent();
         setPasswordContent();
 
-        setSpinnerContent();
         return mRootView;
     }
 
@@ -105,6 +104,32 @@ public class SettingsFragment extends BaseFragment {
         maConfig.setValue("true");
         /** A REMPLIR **/
     }
+
+        /*
+        mySpinner = (Spinner) layout.findViewById(R.id.spinner_notifications);
+
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                layout.findViewById(R.id.items_notifications), layout.findViewById(R.id.spinner_notifications));
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        mySpinner.setAdapter(adapter);
+        */
+        /*mySpinner = (Spinner) layout.findViewById(R.id.spinner_notifications);
+
+        List<String> list = new ArrayList<String>();
+        list.add("1 jour");
+        list.add("2 jours");
+        list.add("3 jours");
+        list.add("5 jours");
+        list.add("1 semaine");
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>
+                (getActivity(), android.R.layout.simple_spinner_item,list);
+        dataAdapter.setDropDownViewResource
+                (android.R.layout.simple_spinner_item);
+        mySpinner.setAdapter(dataAdapter);*/
+
 
     public static SettingsFragment newInstance(){
         return new SettingsFragment();
