@@ -21,6 +21,7 @@ import com.yacorso.nowaste.events.ConfigurationDeletedEvent;
 import com.yacorso.nowaste.events.ConfigurationUpdatedEvent;
 import com.yacorso.nowaste.models.Configuration;
 import com.yacorso.nowaste.models.Configuration$Table;
+import com.yacorso.nowaste.utils.Utils;
 
 import java.util.List;
 
@@ -38,40 +39,40 @@ public class ConfigurationDao extends Dao<Configuration, Long> {
             @Override
             public void onModelChanged(Model model) {
                 Configuration config = (Configuration) model;
-                if (type == TYPE_CREATE) {
+                if (type == Utils.TYPE_CREATE) {
                     EventBus.getDefault().post(new ConfigurationCreatedEvent(config));
-                } else if (type == TYPE_UPDATE) {
+                } else if (type == Utils.TYPE_UPDATE) {
                     EventBus.getDefault().post(new ConfigurationUpdatedEvent(config));
-                } else if (type == TYPE_DELETE) {
+                } else if (type == Utils.TYPE_DELETE) {
                     EventBus.getDefault().post(new ConfigurationDeletedEvent(config));
                 }
             }
         };
 
-        if (type == TYPE_CREATE) {
+        if (type == Utils.TYPE_CREATE) {
             item.async().withListener(resultConfiguration).save();
         }
-        else if (type == TYPE_UPDATE) {
+        else if (type == Utils.TYPE_UPDATE) {
             item.async().withListener(resultConfiguration).update();
         }
-        else if (type == TYPE_DELETE) {
+        else if (type == Utils.TYPE_DELETE) {
             item.async().withListener(resultConfiguration).delete();
         }
     };
 
     @Override
     public void create(Configuration item) {
-        transact(item, TYPE_CREATE);
+        transact(item, Utils.TYPE_CREATE);
     }
 
     @Override
     public void update(Configuration item) {
-        transact(item, TYPE_UPDATE);
+        transact(item, Utils.TYPE_UPDATE);
     }
 
     @Override
     public void delete(Configuration item) {
-        transact(item, TYPE_DELETE);
+        transact(item, Utils.TYPE_DELETE);
     }
 
     @Override
