@@ -58,5 +58,6 @@
     <string name="prompt_password">Entrez votre mot de passe</string>
     <string name="action_sign_in_short">Connexion</string>
     <string name="action_sign_in">Connectez vous</string>
+    <string name="error_incorrect_password">Mauvais mot de passe</string>
 
 </resources>

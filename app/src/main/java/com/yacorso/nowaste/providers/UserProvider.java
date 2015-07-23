@@ -19,6 +19,10 @@ import com.yacorso.nowaste.data.NowasteApi;
 
 import java.util.List;
 
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
+
 public class UserProvider extends Provider<User, Long> {
 
     UserDao mUserDao = new UserDao();
@@ -58,5 +62,23 @@ public class UserProvider extends Provider<User, Long> {
         List<User> users = mUserDao.all();
 
         return users;
+    }
+
+    public void login(User user) {
+        mApi.login(user.getEmail(), user.getPassword(), new Callback<String>() {
+            @Override
+            public void success(String s, Response response) {
+                String test = s;
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                RetrofitError e = error;
+            }
+        });
+    }
+
+    public void register (User user) {
+
     }
 }

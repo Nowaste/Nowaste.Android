@@ -27,6 +27,8 @@ import android.support.v4.content.Loader;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -40,6 +42,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.yacorso.nowaste.R;
+import com.yacorso.nowaste.models.User;
+import com.yacorso.nowaste.providers.UserProvider;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -56,10 +60,6 @@ public class LoginFragment extends BaseFragment implements LoaderManager.LoaderC
     private static final String[] DUMMY_CREDENTIALS = new String[]{
             "foo@example.com:hello", "bar@example.com:world"
     };
-    /**
-     * Keep track of the login task to ensure we can cancel it if requested.
-     */
-    private UserLoginTask mAuthTask = null;
 
     // UI references.
     @Bind(R.id.email) AutoCompleteTextView mEmailView;
@@ -68,6 +68,7 @@ public class LoginFragment extends BaseFragment implements LoaderManager.LoaderC
     @Bind(R.id.login_progress) View mProgressView;
     @Bind(R.id.login_form) View mLoginFormView;
 
+    UserProvider userProvider;
 
     public static LoginFragment newInstance() {
         return new LoginFragment();
@@ -101,7 +102,19 @@ public class LoginFragment extends BaseFragment implements LoaderManager.LoaderC
             }
         });
 
+        userProvider = new UserProvider();
+
         return mRootView;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
     }
 
     private void populateAutoComplete() {
@@ -115,9 +128,6 @@ public class LoginFragment extends BaseFragment implements LoaderManager.LoaderC
      * errors are presented and no actual login attempt is made.
      */
     public void attemptLogin() {
-        if (mAuthTask != null) {
-            return;
-        }
 
         // Reset errors.
         mEmailView.setError(null);
@@ -156,8 +166,10 @@ public class LoginFragment extends BaseFragment implements LoaderManager.LoaderC
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
-            mAuthTask.execute((Void) null);
+            User user = new User();
+            user.setEmail(email);
+            user.setPassword(password);
+            userProvider.login(user);
         }
     }
 
@@ -268,63 +280,6 @@ public class LoginFragment extends BaseFragment implements LoaderManager.LoaderC
                         android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
 
         mEmailView.setAdapter(adapter);
-    }
-
-    /**
-     * Represents an asynchronous login/registration task used to authenticate
-     * the user.
-     */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
-
-        private final String mEmail;
-        private final String mPassword;
-
-        UserLoginTask(String email, String password) {
-            mEmail = email;
-            mPassword = password;
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
-
-            try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            }
-
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                }
-            }
-
-            // TODO: register the new account here.
-            return true;
-        }
-
-        @Override
-        protected void onPostExecute(final Boolean success) {
-//            mAuthTask = null;
-//            showProgress(false);
-//
-//            if (success) {
-//                finish();
-//            } else {
-//                mPasswordView.setError(getString(R.string.error_incorrect_password));
-//                mPasswordView.requestFocus();
-//            }
-        }
-
-        @Override
-        protected void onCancelled() {
-//            mAuthTask = null;
-//            showProgress(false);
-        }
     }
 }
 

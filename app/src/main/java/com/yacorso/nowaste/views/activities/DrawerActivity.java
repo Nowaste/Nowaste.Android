@@ -144,6 +144,10 @@ public class DrawerActivity extends AppCompatActivity implements SearchView.OnQu
         getSupportActionBar().setHomeButtonEnabled(true);
     }
 
+    private void updateToolbarTitle(int titleId) {
+        updateToolbarTitle(getString(titleId));
+    }
+
     private void updateToolbarTitle(String title) {
         getSupportActionBar().setTitle(title);
     }
@@ -249,7 +253,6 @@ public class DrawerActivity extends AppCompatActivity implements SearchView.OnQu
     void login() {
         LoginFragment loginFragment = LoginFragment.newInstance();
         addFragment(loginFragment);
-
     }
 
 
@@ -459,17 +462,9 @@ public class DrawerActivity extends AppCompatActivity implements SearchView.OnQu
     }
 
     @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        mDrawerToggle.syncState();
-    }
-
-    @Override
     public void onBackPressed() {
-        //super.onBackPressed();
-        mNavigatorUtil.goOneBack();
+        super.onBackPressed();
         mDrawerToggle.setDrawerIndicatorEnabled(true);
-        //BaseFragment fragment = (BaseFragment) mNavigatorUtil.getActiveFragment();
-        //updateToolbarTitle(getString(fragment.getTitle()));
+        updateToolbarTitle(currentFoodList.getName());
     }
 }

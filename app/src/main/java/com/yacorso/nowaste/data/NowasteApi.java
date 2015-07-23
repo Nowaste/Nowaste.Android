@@ -17,6 +17,7 @@ import com.google.gson.GsonBuilder;
 import com.squareup.okhttp.OkHttpClient;
 import com.yacorso.nowaste.models.Food;
 import com.yacorso.nowaste.models.Fridge;
+import com.yacorso.nowaste.models.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +26,12 @@ import retrofit.Callback;
 import retrofit.RestAdapter;
 import retrofit.client.OkClient;
 import retrofit.converter.GsonConverter;
+import retrofit.http.Body;
+import retrofit.http.Field;
 import retrofit.http.GET;
+import retrofit.http.Multipart;
+import retrofit.http.POST;
+import retrofit.http.Part;
 import retrofit.http.Path;
 
 /**
@@ -53,6 +59,12 @@ public interface NowasteApi {
     /**
      * All requests available
      */
+    @Multipart
+    @POST("/auth/login?bypass=1")
+    void login(@Part("email") String email, @Part("password") String password, Callback<String> token);
+
+    @POST("/register")
+    void register(@Body User userDemand, Callback<User> user);
 
     @GET("/test")
     void getTest(Callback<ArrayList<String>> message);

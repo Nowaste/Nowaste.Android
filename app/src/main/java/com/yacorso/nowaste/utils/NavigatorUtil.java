@@ -22,6 +22,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
+import com.yacorso.nowaste.views.fragments.BaseFragment;
+
+import java.util.List;
+
 
 public class NavigatorUtil {
     @NonNull
@@ -44,13 +48,23 @@ public class NavigatorUtil {
     /**
      * @return the current active fragment. If no fragment is active it return null.
      */
-    public Fragment getActiveFragment() {
+    /*public BaseFragment getActiveFragment() {
         if (mFragmentManager.getBackStackEntryCount() == 0) {
             return null;
         }
         String tag = mFragmentManager
                 .getBackStackEntryAt(mFragmentManager.getBackStackEntryCount() - 1).getName();
-        return mFragmentManager.findFragmentByTag(tag);
+        return (BaseFragment) mFragmentManager.findFragmentByTag(tag);
+    }*/
+
+    public BaseFragment getActiveFragment() {
+        List<Fragment> fragments = mFragmentManager.getFragments();
+        for (Fragment fragment : fragments) {
+            if (fragment.isVisible()) {
+                return (BaseFragment) fragment;
+            }
+        }
+        return null;
     }
 
     /**
@@ -58,10 +72,10 @@ public class NavigatorUtil {
      *
      * @param fragment the fragment which
      */
-    public void goTo(final Fragment fragment) {
+    public void goTo(final BaseFragment fragment) {
         mFragmentManager.beginTransaction()
                 .replace(mDefaultContainer, fragment, getName(fragment))
-                .addToBackStack(null)
+                .addToBackStack(getName(fragment))
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .commit();
         mFragmentManager.executePendingTransactions();
@@ -74,7 +88,7 @@ public class NavigatorUtil {
      * @param fragment that get added to the history (BackStack)
      * @return the simple name of the given fragment
      */
-    protected String getName(final Fragment fragment) {
+    protected String getName(final BaseFragment fragment) {
         return fragment.getClass().getSimpleName();
     }
 
@@ -84,7 +98,7 @@ public class NavigatorUtil {
      *
      * @param startFragment the new root fragment
      */
-    public void setRootFragment(final Fragment startFragment) {
+    public void setRootFragment(final BaseFragment startFragment) {
         if (getSize() > 0) {
             this.clearHistory();
         }
@@ -98,7 +112,7 @@ public class NavigatorUtil {
      *
      * @param fragment the new fragment
      */
-    private void replaceFragment(final Fragment fragment) {
+    private void replaceFragment(final BaseFragment fragment) {
         mFragmentManager.beginTransaction()
                 .replace(mDefaultContainer, fragment, getName(fragment))
                 .commit();
