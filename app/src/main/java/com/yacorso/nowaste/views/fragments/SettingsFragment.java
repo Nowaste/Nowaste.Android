@@ -69,7 +69,6 @@ public class SettingsFragment extends BaseFragment {
         setFirstNameContent();
         setLastNameContent();
         setPasswordContent();
-
         return mRootView;
     }
 
@@ -129,7 +128,6 @@ public class SettingsFragment extends BaseFragment {
         dataAdapter.setDropDownViewResource
                 (android.R.layout.simple_spinner_item);
         mySpinner.setAdapter(dataAdapter);*/
-
 
     public static SettingsFragment newInstance(){
         return new SettingsFragment();

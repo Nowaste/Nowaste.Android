@@ -124,6 +124,9 @@ public class Configuration extends BaseModel implements Parcelable {
     public Configuration getConfiguration() {
         return config.toModel();
     }
+    public Configuration getConfiguration() {
+        return config.toModel();
+    }
     public void setConfiguration(Configuration config) {
         if (!config.isEmpty()) {
             this.config = new ForeignKeyContainer<>(Configuration.class);
