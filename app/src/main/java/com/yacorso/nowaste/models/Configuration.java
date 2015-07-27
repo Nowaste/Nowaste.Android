@@ -63,6 +63,7 @@ public class Configuration extends BaseModel implements Parcelable {
                     foreignColumnName = "id")},
             saveForeignKeyModel = false
     )
+    protected ForeignKeyContainer<User> user;
     protected ForeignKeyContainer<Configuration> config;
 
     /**
@@ -108,7 +109,6 @@ public class Configuration extends BaseModel implements Parcelable {
         this.value = value;
     }
 
-
     public User getUser() {
         if (user == null) {
             return null;
@@ -121,9 +121,7 @@ public class Configuration extends BaseModel implements Parcelable {
         keys.put(User$Table.ID, user.id);
         this.user.setData(keys);
 	}
-    public Configuration getConfiguration() {
-        return config.toModel();
-    }
+
     public Configuration getConfiguration() {
         return config.toModel();
     }
@@ -135,7 +133,6 @@ public class Configuration extends BaseModel implements Parcelable {
             this.config.setData(keys);
             this.config.setModel(config);
         }
-
     }
 
     @Override

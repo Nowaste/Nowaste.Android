@@ -22,8 +22,6 @@ import com.yacorso.nowaste.events.ConfigurationUpdatedEvent;
 import com.yacorso.nowaste.models.Configuration;
 import com.yacorso.nowaste.models.Configuration$Table;
 import com.yacorso.nowaste.utils.Utils;
-
-
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
@@ -44,11 +42,10 @@ public class ConfigurationDao extends Dao<Configuration, Long> {
                     EventBus.getDefault().post(new ConfigurationCreatedEvent(config));
                 } else if (type == Utils.TYPE_UPDATE) {
                     EventBus.getDefault().post(new ConfigurationUpdatedEvent(config));
-                } else if (type == Utils.TYPE_DELETE) {                    EventBus.getDefault().post(new ConfigurationDeletedEvent(config));
-                }
+                } else if (type == Utils.TYPE_DELETE) {
+                    EventBus.getDefault().post(new ConfigurationDeletedEvent(config));                }
             }
         };
-
 
         if (type == Utils.TYPE_CREATE) {
             item.async().withListener(resultConfiguration).save();
@@ -63,17 +60,17 @@ public class ConfigurationDao extends Dao<Configuration, Long> {
 
     @Override
     public void create(Configuration item) {
-        transact(item, Utils.TYPE_CREATE);    }
+        transact(item, Utils.TYPE_CREATE);
+    }
 
     @Override
     public void update(Configuration item) {
-
-        transact(item, Utils.TYPE_UPDATE);    }
+        transact(item, Utils.TYPE_UPDATE);
+    }
 
     @Override
-    public void delete(Configuration item) {
-
-        transact(item, Utils.TYPE_DELETE);
+    public void delete(Configuration item) {        
+		transact(item, Utils.TYPE_DELETE);
     }
 
     @Override
