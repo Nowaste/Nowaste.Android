@@ -70,7 +70,6 @@ public class SettingsFragment extends BaseFragment {
         setLastNameContent();
         setPasswordContent();
 
-        setSpinnerContent();
         return mRootView;
     }
 
