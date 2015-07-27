@@ -22,7 +22,6 @@ import com.yacorso.nowaste.events.ConfigurationUpdatedEvent;
 import com.yacorso.nowaste.models.Configuration;
 import com.yacorso.nowaste.models.Configuration$Table;
 import com.yacorso.nowaste.utils.Utils;
-
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
@@ -44,8 +43,7 @@ public class ConfigurationDao extends Dao<Configuration, Long> {
                 } else if (type == Utils.TYPE_UPDATE) {
                     EventBus.getDefault().post(new ConfigurationUpdatedEvent(config));
                 } else if (type == Utils.TYPE_DELETE) {
-                    EventBus.getDefault().post(new ConfigurationDeletedEvent(config));
-                }
+                    EventBus.getDefault().post(new ConfigurationDeletedEvent(config));                }
             }
         };
 
@@ -71,8 +69,8 @@ public class ConfigurationDao extends Dao<Configuration, Long> {
     }
 
     @Override
-    public void delete(Configuration item) {
-        transact(item, Utils.TYPE_DELETE);
+    public void delete(Configuration item) {        
+		transact(item, Utils.TYPE_DELETE);
     }
 
     @Override
